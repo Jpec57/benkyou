@@ -1,0 +1,63 @@
+[
+  {
+    "id": 1,
+    "deck_id": 1,
+    "question": "有難う",
+    "hint": "ありがとう",
+    "useInContext": "arigatou gozaimasu",
+    "lvl": 3,
+    "nbErrors": 0,
+    "nbSuccess": 2,
+    "nextAvailable": 1575147537501,
+    "isReversible": true,
+    "hasSolution": true
+  },
+  {
+    "id": 2,
+    "deck_id": 1,
+    "question": "散歩",
+    "hint": "さんぽ",
+    "useInContext": "aruku",
+    "lvl": 2,
+    "nbErrors": 0,
+    "nbSuccess": 1,
+    "nextAvailable": 1575147537501,
+    "isReversible": true,
+    "hasSolution": true
+  },
+  {
+    "id": 3,
+    "deck_id": 1,
+    "question": "Too many errors",
+    "hint": "nul",
+    "useInContext": null,
+    "lvl": 1,
+    "nbErrors": 5,
+    "nbSuccess": 1,
+    "nextAvailable": 1575147537501,
+    "isReversible": true,
+    "hasSolution": true
+  },
+  {
+    "id": 4,
+    "deck_id": 1,
+    "question": "Not init",
+    "lvl": 0,
+    "nbErrors": 0,
+    "nbSuccess": 0,
+    "nextAvailable": 1575147537501,
+    "isReversible": false,
+    "hasSolution": false
+  },
+  {
+    "id": 5,
+    "deck_id": 2,
+    "question": "Not in  japanese",
+    "lvl": 0,
+    "nbErrors": 0,
+    "nbSuccess": 0,
+    "nextAvailable": 1575147537501,
+    "isReversible": false,
+    "hasSolution": true
+  }
+]
