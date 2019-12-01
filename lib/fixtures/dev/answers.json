@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "card_id": 1,
+    "content": "Merci",
+    "isSynchronized": true
+  },
+  {
+    "id": 2,
+    "card_id": 1,
+    "content": "Thank you",
+    "isSynchronized": true
+  },
+  {
+    "id": 3,
+    "card_id": 2,
+    "content": "Walk",
+    "isSynchronized": true
+  },
+  {
+    "id": 4,
+    "card_id": 3,
+    "content": "Shit",
+    "isSynchronized": true
+  },
+  {
+    "id": 5,
+    "card_id": 5,
+    "content": "French",
+    "isSynchronized": true
+  }
+]
