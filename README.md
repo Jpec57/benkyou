@@ -13,9 +13,9 @@ https://flutter.dev/docs/cookbook/persistence/sqlite
 flutter packages pub run build_runner build  --delete-conflicting-outputs
 flutter packages pub run build_runner watch
 
-#SQL
+# SQL
 
-##Update
+## Update
 
 '''
     await database.database.update('Card',
@@ -26,6 +26,11 @@ flutter packages pub run build_runner watch
     );
 '''
 
-#TODOs
+# TODOs
 
 Create CreateAnswerWidget instead of duplicating code
+
+# Test
+## Launch test suite
+
+flutter test test/unit/first.dart
