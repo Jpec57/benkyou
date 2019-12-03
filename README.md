@@ -1,6 +1,13 @@
 #TODO
 https://codelabs.developers.google.com/codelabs/flutter-firebase/index.html#4
 
+# READ
+https://medium.com/stuart-engineering/mocking-integration-tests-with-flutter-af3b6ba846c7
+https://api.flutter.dev/flutter/dart-isolate/Isolate-class.html
+https://medium.com/flutter-community/blazingly-fast-flutter-driver-tests-5e375c833aa
+
+https://github.com/flutter/flutter/issues/27826
+https://docs.fastlane.tools/
 # Benkyou
 
 A new Flutter application using the SRS System to learn.
@@ -31,6 +38,18 @@ flutter packages pub run build_runner watch
 Create CreateAnswerWidget instead of duplicating code
 
 # Test
-## Launch test suite
 
-flutter test test/unit/first.dart
+## Initialisation for integration test
+flutter emulators --launch Nexus_5X_API_29
+
+## Launch test suite
+https://flutter.dev/docs/cookbook/testing/widget/introduction
+flutter test test/translator/translationUnit.dart
+
+https://flutter.dev/docs/cookbook/testing/integration/introduction
+flutter drive --target=test_driver/app.dart
+
+
+## Enable GitHub Hooks for project
+
+ln -s -f ../../hooks/pre-commit .git/hooks/pre-commit

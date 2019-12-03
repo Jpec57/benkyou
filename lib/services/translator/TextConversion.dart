@@ -393,11 +393,11 @@ String getJapaneseTranslation(String val) {
 }
 
 String getHiragana(String val) {
-  return getConversion(val, HIRAGANA_ALPHABET);
+  return getConversion(val, HIRAGANA_ALPHABET).trim();
 }
 
 String getKatakana(String val) {
-  return getConversion(val, KATAKANA_ALPHABET);
+  return getConversion(val, KATAKANA_ALPHABET).trim();
 }
 // TODO convert kana to romaji
 //String getRomaji(String val) {
@@ -465,7 +465,7 @@ String getSafeSubstring(String str, int startIndex, int size, int strLength) {
       : str.substring(startIndex, startIndex + size);
 }
 
-getConversion(String val, alphabet) {
+String getConversion(String val, alphabet) {
   var i = 0;
   var res = "";
   String tmpChar;

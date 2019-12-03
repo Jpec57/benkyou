@@ -50,9 +50,9 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  floor_generator: ^0.8.0
+  test: any
+  floor_generator: ^0.9.0
   build_runner: ^1.6.7
-  analyzer: 0.38.2
 
 #dependency_overrides:
 #  image: 2.0.7
