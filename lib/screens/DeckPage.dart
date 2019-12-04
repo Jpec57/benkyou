@@ -138,6 +138,7 @@ class DeckPageState extends State<DeckPage> {
                   } else {
                     return (GridView.count(
                         crossAxisCount: 2,
+                        key: ValueKey('deck-grid'),
                         children: List.generate(snapshot.data.length, (index) {
                           _deckDeleteButtons.add(false);
                           return Padding(

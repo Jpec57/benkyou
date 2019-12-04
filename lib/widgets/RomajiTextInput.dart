@@ -64,7 +64,6 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
           visible: false,
           child: TextField(
             onChanged: (text){
-              print('onChanged $text');
             },
             controller: _hiddenTitleEditingController,
           ),
