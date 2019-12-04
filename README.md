@@ -26,14 +26,14 @@ flutter packages pub run build_runner watch
 
 ## Update
 
-'''
+```
     await database.database.update('Card',
         {'lvl': this.lvl, 'nextAvailable': this.nextAvailable + ((60 * 60 * 1000) * 10), 'isSynchronized': this.isSynchronized},
         where: 'id = ?',
         whereArgs: [this.id],
         conflictAlgorithm: ConflictAlgorithm.replace
     );
-'''
+```
 
 # TODOs
 
