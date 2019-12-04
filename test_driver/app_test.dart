@@ -1,31 +1,29 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:io';
+
+import 'package:flutter_driver/flutter_driver.dart';
+import 'package:test/test.dart';
 
 void main() {
-  group('Counter App', () {
+  group('DeckPage', () {
 
-//    final deckFinder = FlutterDriver.find.byValueKey("Deck");
-//    FlutterDriver.FlutterDriver driver;
-//    setUpAll(() async {
-//      driver = await FlutterDriver.FlutterDriver.connect();
-//    });
-//    tearDownAll(() async {
-//      if (driver != null) {
-//        driver.close();
-//      }
-//    });
-//    test('increments the counter', () async {
-//      expect(deckFinder, findsNWidgets(2));
-//    });
+    final firstDeckFinder = find.byValueKey("deck-0");
+    final secondDeckFinder = find.byValueKey("deck-1");
+    FlutterDriver driver;
 
-    // First, tap the button.
-//      await driver.tap(buttonFinder);
-    // Then, verify the counter text is incremented by 1.
-//      expect(await driver.getText(counterTextFinder), "1");
+    setUpAll(() async {
+      driver = await FlutterDriver.connect();
+    });
 
+    tearDownAll(() async {
+      if (driver != null) {
+        driver.close();
+      }
+    });
 
-    //    test('starts at 0', () async {
-//      // Use the `driver.getText` method to verify the counter starts at 0.
-//      expect(await driver.getText(counterTextFinder), "0");
-//    });
+    test('Assert two decks are well created', () async {
+      await sleep(Duration(seconds: 5));
+      expect(await driver.getText(firstDeckFinder), "Default");
+      expect(await driver.getText(secondDeckFinder), "Test");
+    });
   });
 }

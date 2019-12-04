@@ -142,7 +142,6 @@ class DeckPageState extends State<DeckPage> {
                         children: List.generate(snapshot.data.length, (index) {
                           _deckDeleteButtons.add(false);
                           return Padding(
-                            key: ValueKey('deck'),
                             padding: const EdgeInsets.all(8.0),
                             child: DeckContainer(
                                 parent: this,

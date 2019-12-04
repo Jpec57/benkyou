@@ -73,6 +73,7 @@ class DeckContainerState extends State<DeckContainer> {
             child: Center(
               child: Text(
                 widget.deck.title,
+                key: ValueKey('deck-${widget.index}'),
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

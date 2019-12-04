@@ -1,4 +1,4 @@
-name: CI
+name: Flutter Integration and Unit Test
 
 on: [push]
 

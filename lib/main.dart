@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'package:benkyou/screens/GuessPage.dart';
+import 'package:benkyou/screens/DeckPage.dart';
 import 'package:flutter/services.dart';
 import 'package:benkyou/models/AppState.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/models/Deck.dart';
-import 'package:benkyou/screens/DeckPage.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/notifications/notification.dart';
 import 'package:benkyou/widgets/StateContainer.dart';
@@ -79,11 +78,10 @@ class MyApp extends StatelessWidget {
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
-//        DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
-        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
+        DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
+//        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
 //        CreateCardPage(cardDao: database.cardDao, deck: deck,)
 
-//        HomePage(database: database),
 //      home: BasicContainer(child:
 //      ),
 
