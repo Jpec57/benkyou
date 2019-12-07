@@ -51,7 +51,7 @@ class DeckPageState extends State<DeckPage> {
     super.initState();
     var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-//      synchroniseFirebase();
+      synchroniseFirebase();
       //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }
@@ -80,13 +80,14 @@ class DeckPageState extends State<DeckPage> {
 
   void sendEntityToFirebase(AppDatabase localDatabase,
       CollectionReference databaseReference, String path, List entities) {
+
     if (entities != null && entities.length > 0) {
       Map<String, Map> map = new Map();
       for (var entity in entities) {
         map["${entity.id}"] = entity.toMap();
         updateEntity(localDatabase, path, entity);
       }
-      databaseReference.document(path).setData(map);
+      databaseReference.document(path).setData(map, merge: true);
     }
   }
 

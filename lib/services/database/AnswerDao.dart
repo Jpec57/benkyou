@@ -41,21 +41,27 @@ abstract class AnswerDao {
     );
   }
 
-  //TODO throw err if none
   Future<Answer> findOneAnswerForCard(int id) async{
-    return (await findAnswers(
-      where: 'card_id = ?',
-      whereArgs: [id],
-      limit: 1
-    ))[0];
+    var res = await findAnswers(
+        where: 'card_id = ?',
+        whereArgs: [id],
+        limit: 1
+    );
+    if (res.isEmpty) {
+      return null;
+    }
+    return (res)[0];
   }
 
-  //TODO throw err if none
   Future<Answer> findAnswerById(int id) async{
-    return (await findAnswers(
+    var res = await findAnswers(
     where: 'id = ?',
     whereArgs: [id],
-    ))[0];
+    );
+    if (res.isEmpty) {
+      return null;
+    }
+    return (res)[0];
   }
 
   Future<List<Answer>> findAllAnswers(){

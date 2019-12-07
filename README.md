@@ -1,5 +1,6 @@
-#TODO
+# TODOs
 https://codelabs.developers.google.com/codelabs/flutter-firebase/index.html#4
+https://jisho.org/api/v1/search/words?keyword=house
 
 # READ
 https://medium.com/stuart-engineering/mocking-integration-tests-with-flutter-af3b6ba846c7

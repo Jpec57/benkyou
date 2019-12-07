@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:benkyou/screens/DeckPage.dart';
+import 'package:benkyou/screens/GuessPage.dart';
 import 'package:flutter/services.dart';
 import 'package:benkyou/models/AppState.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
@@ -69,22 +70,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MaterialApp(
-      title: 'Benkyou',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-        home:
+    return GestureDetector(
+      onTap: (){
+        FocusScope.of(context).requestFocus(new FocusNode());
+      },
+      child: MaterialApp(
+        title: 'Benkyou',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+          home:
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
-        DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
-//        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
+//          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
+        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
 //        CreateCardPage(cardDao: database.cardDao, deck: deck,)
 
 //      home: BasicContainer(child:
 //      ),
 
+      ),
     );
   }
 }

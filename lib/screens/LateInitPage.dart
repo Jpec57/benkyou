@@ -3,6 +3,7 @@ import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/navigator.dart';
+import 'package:benkyou/utils/utils.dart';
 import 'package:benkyou/widgets/AddAnswerCardWidget.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/animations/ShowUp.dart';
@@ -169,6 +170,7 @@ class _LateInitPageState extends State<LateInitPage>
               ),
             ),
           ),
+          keyboardIsVisible(context) ? Container() :
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -178,7 +180,7 @@ class _LateInitPageState extends State<LateInitPage>
                 color: Colors.red,
                 child: Center(
                     child: Text(
-                      'DELETE CARD',
+                      'DISCARD CARD',
                       style: TextStyle(color: Colors.white, fontSize: 30),
                     )),
               ),
