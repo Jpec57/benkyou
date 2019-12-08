@@ -29,6 +29,7 @@ dependencies:
   # Add the dependency for the FlutterFire plugin for Google Analytics
   firebase_analytics: ^4.0.2
   flutter_launcher_icons:
+  shared_preferences: ^0.4.2
 
   # Add the dependencies for any other Firebase products you want to use in your app
   # For example, to use Firebase Authentication and Cloud Firestore
@@ -88,6 +89,7 @@ flutter:
     - resources/imgs/arrow_backward_black.png
     - resources/imgs/waiting_cards.png
     - resources/imgs/sound.png
+    - resources/imgs/profile.png
     - resources/imgs/mute.png
     - resources/imgs/add_photo.png
     - resources/imgs/arrow_back.png

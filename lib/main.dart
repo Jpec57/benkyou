@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:benkyou/screens/CreateCardPage.dart';
 import 'package:benkyou/screens/DeckPage.dart';
 import 'package:benkyou/screens/GuessPage.dart';
+import 'package:benkyou/widgets/drawer/SideDrawer.dart';
 import 'package:flutter/services.dart';
 import 'package:benkyou/models/AppState.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
@@ -23,9 +25,12 @@ void insertFixtureInDatabase(Sqli.Database database, String tableName, String js
 
 final callback = Callback(
   onCreate: (database, version) {
-    insertFixtureInDatabase(database, 'Deck', 'lib/fixtures/dev/decks.json');
-    insertFixtureInDatabase(database, 'Card', 'lib/fixtures/dev/cards.json');
-    insertFixtureInDatabase(database, 'Answer', 'lib/fixtures/dev/answers.json');
+    try{
+      insertFixtureInDatabase(database, 'Deck', 'lib/fixtures/dev/decks.json');
+      insertFixtureInDatabase(database, 'Card', 'lib/fixtures/dev/cards.json');
+      insertFixtureInDatabase(database, 'Answer', 'lib/fixtures/dev/answers.json');
+    }catch(e){
+    }
   },
   onOpen: (database){ /* database has been opened */},
   onUpgrade: (database, startVersion, endVersion) { /* database has been upgraded */ },
@@ -54,6 +59,7 @@ class BasicContainer extends StatelessWidget{
     return SafeArea(
       child: Scaffold(
         body: child,
+        drawer: SideDrawer(),
       ),
     );
   }
@@ -84,8 +90,8 @@ class MyApp extends StatelessWidget {
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
 //          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
-        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
-//        CreateCardPage(cardDao: database.cardDao, deck: deck,)
+//        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
+        CreateCardPage(cardDao: database.cardDao, deck: deck,)
 
 //      home: BasicContainer(child:
 //      ),

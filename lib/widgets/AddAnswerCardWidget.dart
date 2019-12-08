@@ -1,22 +1,21 @@
+import 'package:benkyou/models/JishoTranslation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AddAnswerCardWidget extends StatefulWidget{
-  const AddAnswerCardWidget({@required Key key}) : super(key: key);
+  final String hint;
+
+  const AddAnswerCardWidget({@required Key key, this.hint}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => AddAnswerCardWidgetState();
-
-
 }
 
 class AddAnswerCardWidgetState extends State<AddAnswerCardWidget>{
   List<TextEditingController> textEditingControllers =
   <TextEditingController>[];
   int numberPossibleAnswers = 1;
-
-
-
 
   @override
   void initState() {
@@ -37,6 +36,11 @@ class AddAnswerCardWidgetState extends State<AddAnswerCardWidget>{
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<http.Response> getJishoTranslations(String word) async{
+    JishoTranslation.getJishoTransLationListFromRequest(word);
+    return null;
   }
 
   @override
@@ -64,26 +68,29 @@ class AddAnswerCardWidgetState extends State<AddAnswerCardWidget>{
             ),
           ),
         ),
-        ListView.builder(
-            itemCount: numberPossibleAnswers,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                child: Container(
-                  decoration: BoxDecoration(),
-                  child: TextField(
-                    controller: textEditingControllers[index],
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      labelStyle: TextStyle(fontSize: 20),
-                      hintText: 'Possible answer ${index + 1}',
+        Padding(
+          padding: EdgeInsets.only(bottom: 50),
+          child: ListView.builder(
+              itemCount: numberPossibleAnswers,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(),
+                    child: TextField(
+                      controller: textEditingControllers[index],
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(fontSize: 20),
+                        hintText: 'Possible answer ${index + 1}',
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+        ),
       ],
     );
   }

@@ -7,8 +7,10 @@ import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
+import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
 import 'package:benkyou/widgets/MyText.dart';
+import 'package:benkyou/widgets/login/LoginModal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,14 +46,17 @@ class DeckPageState extends State<DeckPage> {
     );
   }
 
-  void printCard() async {}
-
   @override
   void initState() {
     super.initState();
     var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      synchroniseFirebase();
+      var uuid = await isUserLoggedIn();
+      if (uuid != null) {
+        synchroniseFirebase(uuid);
+      } else {
+        //TODO show need to logged in to save online
+      }
       //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }
@@ -80,7 +85,6 @@ class DeckPageState extends State<DeckPage> {
 
   void sendEntityToFirebase(AppDatabase localDatabase,
       CollectionReference databaseReference, String path, List entities) {
-
     if (entities != null && entities.length > 0) {
       Map<String, Map> map = new Map();
       for (var entity in entities) {
@@ -91,16 +95,23 @@ class DeckPageState extends State<DeckPage> {
     }
   }
 
-  void synchroniseFirebase() async {
+  void synchroniseFirebase(String uuid, {onlyNotSynchronised = true}) async {
     final databaseReference =
-        Firestore.instance.collection('benkyou/users/jpec').reference();
+        Firestore.instance.collection('benkyou/users/$uuid').reference();
     AppDatabase database = await DBProvider.db.database;
-    List<DeckModel.Deck> decks =
-        await database.deckDao.findAllDecksNotSynchronized();
-    List<CardModel.Card> cards =
-        await database.cardDao.findAllCardsNotSynchronized();
-    List<AnswerModel.Answer> answers =
-        await database.answerDao.findAllAnswersNotSynchronized();
+    List<DeckModel.Deck> decks;
+    List<CardModel.Card> cards;
+    List<AnswerModel.Answer> answers;
+
+    if (onlyNotSynchronised) {
+      decks = await database.deckDao.findAllDecksNotSynchronized();
+      cards = await database.cardDao.findAllCardsNotSynchronized();
+      answers = await database.answerDao.findAllAnswersNotSynchronized();
+    } else {
+      decks = await database.deckDao.findAllDecks();
+      cards = await database.cardDao.findAllCards();
+      answers = await database.answerDao.findAllAnswers();
+    }
 
     sendEntityToFirebase(
         database, databaseReference, DeckModel.FIREBASE_KEY, decks);
@@ -114,16 +125,12 @@ class DeckPageState extends State<DeckPage> {
   Widget build(BuildContext context) {
     return BasicContainer(
       child: Column(children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height * 0.12,
-          decoration: BoxDecoration(color: Colors.orange),
-          child: Center(
-            child: Text(
-              'Benkyou',
-              style: TextStyle(fontSize: 30, fontFamily: 'Pacifico'),
-            ),
-          ),
-        ),
+        Header(title: 'Benkyou', type: HEADER_ICON, hasBackButton: false, icon: GestureDetector(
+          onTap: (){
+            showLoginDialog(context);
+          },
+          child: Image.asset('resources/imgs/profile.png'),
+        )),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
