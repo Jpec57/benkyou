@@ -17,7 +17,7 @@ class JishoListState extends State<JishoList> {
     String kanji = translation.kanji ?? '';
     String reading = translation.reading ?? '';
     if (kanji.length > 0 && reading.length > 0){
-      return '$kanji    $reading';
+      return '$kanji - $reading';
     }
     return '$kanji$reading';
   }
@@ -25,21 +25,34 @@ class JishoListState extends State<JishoList> {
   Widget returnList(BuildContext context){
     if (widget.researchWord != null && widget.researchWord.length > 0){
       return FutureBuilder(
+
         future: JishoTranslation.getJishoTransLationListFromRequest(widget.researchWord),
         builder: (BuildContext context, AsyncSnapshot<List<JishoTranslation>> snapshot){
           switch (snapshot.connectionState){
             case ConnectionState.done:
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index){
-                    return (ListTile(
-                      onTap: (){
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index){
+                        return Container(
+                          child: (ListTile(
+                            onTap: (){
 
-                      },
-                      title: Text(snapshot.data[index].english.join('; ')),
-                      subtitle: Text(subtitleFormatter(snapshot.data[index])),
-                    ));
-              });
+                            },
+                            title: Center(child: Text(snapshot.data[index].english.join('; '))),
+                            subtitle: Center(child: Text(subtitleFormatter(snapshot.data[index]))),
+                          )),
+                        );
+                  },
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              );
             case ConnectionState.waiting:
               return Text("Searching...");
             case ConnectionState.none:
@@ -50,8 +63,11 @@ class JishoListState extends State<JishoList> {
         }
       );
     }
-    return Container(
-      child: Text(""),
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0),
+      child: Container(
+        child: Text("Please enter a kana or a kanji.", style: TextStyle(fontStyle: FontStyle.italic)),
+      ),
     );
   }
 

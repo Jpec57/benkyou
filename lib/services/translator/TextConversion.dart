@@ -389,7 +389,7 @@ String getJapaneseTranslation(String val) {
     return '';
   }
   return getConversion(val,
-      val[0].toUpperCase() == val[0] ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET) ?? '';
+      val[0].toUpperCase() == val[0] ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET).trim() ?? '';
 }
 
 String getHiragana(String val) {

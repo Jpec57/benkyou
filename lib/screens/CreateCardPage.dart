@@ -14,6 +14,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+const ERR_KANA = 'There is no kana in your question';
+const ERR_KANA_KANJI = 'You must at least provide a kana or a kanji.';
+const ERR_ALREADY_EXISTING = 'A card has already the same kanji/kana.\n Please enter something else.';
+
 class CreateCardPage extends StatefulWidget {
   final CardDao cardDao;
   final Deck deck;
@@ -35,36 +39,45 @@ class _CreateCardState extends State<CreateCardPage> {
 
   TextEditingController _titleEditingController;
   TextEditingController _hintEditingController;
-  final FocusNode _questionFocusNode = FocusNode();
-  bool _isReversible = false;
+  final FocusNode _kanjiFocusNode = FocusNode();
+  final FocusNode _kanaFocusNode = FocusNode();
   bool _needParseInJapanese = true;
   bool _isLateInit = false;
   bool _isQuestionErrorVisible = false;
-  GlobalKey<AddAnswerCardWidgetState> answerWidgetKey = new GlobalKey<AddAnswerCardWidgetState>();
-
+  GlobalKey<AddAnswerCardWidgetState> answerWidgetKey =
+      new GlobalKey<AddAnswerCardWidgetState>();
 
   //TODO Jpec
-  void triggerJishoResearch() async {
+  void triggerJishoResearch(String text) async {
     setState(() {
-      _researchWord = _titleEditingController.text;
+      _researchWord = text;
+      print(text);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _questionFocusNode.addListener((){
-      triggerJishoResearch();
-    });
     _titleEditingController = new TextEditingController();
     _hintEditingController = new TextEditingController();
+
+    _kanjiFocusNode.addListener(() {
+      print("kanji listener");
+      triggerJishoResearch(_titleEditingController.text);
+    });
+
+    _kanaFocusNode.addListener(() {
+      print("kana listener");
+      triggerJishoResearch(_hintEditingController.text);
+    });
   }
 
   @override
   void dispose() {
     _titleEditingController.dispose();
     _hintEditingController.dispose();
-    _questionFocusNode.dispose();
+    _kanjiFocusNode.dispose();
+    _kanaFocusNode.dispose();
     super.dispose();
   }
 
@@ -79,25 +92,37 @@ class _CreateCardState extends State<CreateCardPage> {
         _formKey.currentState.validate();
         return false;
       }
-      String question = _needParseInJapanese
-          ? getJapaneseTranslation(_titleEditingController.text)
-          : _titleEditingController.text;
+      String hint;
+      String question;
+      if (_hintEditingController.text.trim().length > 0){
+        hint = _needParseInJapanese
+            ? getJapaneseTranslation(_hintEditingController.text)
+            : _hintEditingController.text;
+      }
+      if (_titleEditingController.text.trim().length == 0){
+        question = hint;
+        hint = '';
+      } else {
+        question = _titleEditingController.text;
+      }
 
-      if (!_isLateInit){
+      if (!_isLateInit) {
         List<String> answers = [];
-        for (var answerController in answerWidgetKey.currentState.textEditingControllers) {
+        for (var answerController
+            in answerWidgetKey.currentState.textEditingControllers) {
           if (answerController.text.length > 0) {
             answers.add(answerController.text.toLowerCase());
           }
         }
         await CardModel.Card.setCardWithBasicAnswers(
-            widget.deck.id, question, answers, hint: _hintEditingController.text);
+            widget.deck.id, question, answers,
+            hint: hint);
       } else {
-        CardModel.Card card = new CardModel.Card(null, widget.deck.id, question, null, null, false);
+        CardModel.Card card = new CardModel.Card(
+            null, widget.deck.id, question, hint, null, false);
         AppDatabase appDatabase = await DBProvider.db.database;
         int res = await appDatabase.cardDao.insertCard(card);
       }
-
 
       setState(() {
         _bottomButtonLabel = 'DONE';
@@ -113,33 +138,57 @@ class _CreateCardState extends State<CreateCardPage> {
   }
 
   Future<String> _validateCreateCard() async {
+    String hint = _hintEditingController.text.trim();
     String question = _needParseInJapanese
         ? getJapaneseTranslation(_titleEditingController.text)
         : _titleEditingController.text;
-    if (question == null || question.length == 0 || question == ' ') {
-      return 'The question cannot be empty. ${_needParseInJapanese ? 'There is no kana in your question' : '' }';
+    if (question == null || question.trim().length == 0) {
+      //If no kanji is given, kana can be considered as question
+      if (hint == null || hint.length == 0){
+        return ERR_KANA_KANJI;
+      }
+      if (_needParseInJapanese){
+        hint = japanese;
+      }
+      if (hint.length < 1){
+        return ERR_KANA;
+      }
+      question = hint;
     }
     CardModel.Card res = await widget.cardDao.findCardByQuestion(question);
 
     if (res != null) {
-      return 'This question is already used.\n Please choose another one.';
+      return ERR_ALREADY_EXISTING;
     }
-    if (!_isLateInit){
-      List<String> answers = [];
-      for (var answerController in answerWidgetKey.currentState.textEditingControllers) {
-        if (answerController.text.length > 0) {
-          answers.add(answerController.text.toLowerCase());
-        }
+    List<String> answers = [];
+    for (var answerController
+        in answerWidgetKey.currentState.textEditingControllers) {
+      if (answerController.text.length > 0) {
+        answers.add(answerController.text.toLowerCase());
       }
-      if (answers.length < 1) {
-        return 'You must have at least one answer not blank.';
-      }
+    }
+    if (answers.length < 1) {
+      _isLateInit = true;
     }
     return null;
   }
 
+  bool stringNeedToBeParsed(text){
+    int startLower = "a".codeUnitAt(0);
+    int endLower = "z".codeUnitAt(0);
+    int startUpper = "A".codeUnitAt(0);
+    int endUpper = "Z".codeUnitAt(0);
+    for (var i = 0; i < text.length; i++){
+      int char = text.codeUnitAt(i);
+      if ((startLower <= char && char <= endLower) ||
+          (startUpper <= char && char <= endUpper)){
+        return true;
+      }
+    }
+    return false;
+  }
 
-  Widget _renderForm(){
+  Widget _renderForm() {
     return Padding(
       padding: EdgeInsets.only(left: 50.0, right: 50.0),
       child: Column(
@@ -154,39 +203,33 @@ class _CreateCardState extends State<CreateCardPage> {
                   children: <Widget>[
                     Container(
                       child: Padding(
-                        padding:
-                        EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                         child: Column(children: <Widget>[
                           Visibility(
                             visible: _needParseInJapanese,
                             child: Text(japanese),
                           ),
                           TextFormField(
-                            focusNode: _questionFocusNode,
+                            focusNode: _kanjiFocusNode,
                             controller: _titleEditingController,
                             onChanged: (text) {
-                              setState(() {
-                                _isQuestionErrorVisible = false;
-                                japanese =
-                                "${getJapaneseTranslation(text) ?? ''}";
-                              });
+                              _isQuestionErrorVisible = false;
                               _formKey.currentState.validate();
                             },
                             validator: (value) {
                               if (_isQuestionErrorVisible) {
-                                if (value.isEmpty) {
-                                  return 'Please enter a question';
+                                if (_error != ERR_KANA){
+                                  return _error;
                                 }
-                                return _error;
                               }
                               return null;
                             },
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
-                                labelText: 'Question *',
+                                labelText: 'Kanji',
                                 labelStyle: TextStyle(fontSize: 20),
                                 hintText:
-                                'Enter a question / a word to remember'),
+                                    'Enter kanji here'),
                             autofocus: true,
                           ),
                         ]),
@@ -194,99 +237,57 @@ class _CreateCardState extends State<CreateCardPage> {
                     ),
                     Container(
                       child: Padding(
-                        padding:
-                        EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                         child: TextFormField(
                           controller: _hintEditingController,
-                          onChanged: (text) {
+                          focusNode: _kanaFocusNode,
+                          validator: (value) {
+                            if (_isQuestionErrorVisible) {
+                              return _error;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            _isQuestionErrorVisible = false;
+                            bool needtoBeParsed = stringNeedToBeParsed(_hintEditingController.text);
+                            setState(() {
+                              _needParseInJapanese = needtoBeParsed;
+                              japanese = needtoBeParsed ?
+                              "${getJapaneseTranslation(_hintEditingController.text) ?? ''}": '';
+                            });
                             _formKey.currentState.validate();
                           },
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                              labelText: 'Hint',
+                              labelText: 'Kana',
                               labelStyle: TextStyle(fontSize: 20),
-                              hintText:
-                              'Enter a hint'),
+                              hintText: 'Enter kana here'),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          top: 20.0),
-                      child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Need to be parsed in Kana ?',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Checkbox(
-                            value: _needParseInJapanese,
-                            onChanged: (bool value) {
-                              setState(() {
-                                _needParseInJapanese = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Late init ?',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Checkbox(
-                          value: _isLateInit,
-                          onChanged: (bool value) {
-                            setState(() {
-                              _isLateInit = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 20.0),
-                        child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Is reversible ?',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Checkbox(
-                              value: _isReversible,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isReversible = value;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: !_isLateInit,
+                      padding: const EdgeInsets.only(top: 10.0),
                       child: AddAnswerCardWidget(key: answerWidgetKey),
                     ),
+                    Container(child: Text(
+                      'Propositions of answer',
+                      style: TextStyle(fontSize: 20),
+                      textAlign: TextAlign.start,
+                    ),),
+
+                    JishoList(researchWord: _researchWord),
+
                   ],
                 ),
               ),
             ),
-          ),],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _renderAgainOrLeave(){
+  Widget _renderAgainOrLeave() {
     return (Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -313,8 +314,7 @@ class _CreateCardState extends State<CreateCardPage> {
                 _bottomButtonLabel = 'NEXT';
               });
               _pageController.animateToPage(0,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.easeIn);
+                  duration: Duration(milliseconds: 500), curve: Curves.easeIn);
             },
             child: Container(
               height: MediaQuery.of(context).size.height * 0.12,
@@ -336,19 +336,20 @@ class _CreateCardState extends State<CreateCardPage> {
   Widget build(BuildContext context) {
     return BasicContainer(
       child: Column(children: <Widget>[
-        Header(title: 'Create a card', type: HEADER_DEFAULT, backFunction: (){
-          goToDeckInfoPage(context, widget.deck.id);
-        },),
+        Header(
+          title: 'Create a card',
+          type: HEADER_DEFAULT,
+          backFunction: () {
+            goToDeckInfoPage(context, widget.deck.id);
+          },
+        ),
         Expanded(
           flex: 4,
           child: PageView(
             controller: _pageController,
             pageSnapping: false,
             physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              _renderForm(),
-              _renderAgainOrLeave()
-            ],
+            children: <Widget>[_renderForm(), _renderAgainOrLeave()],
           ),
         ),
         GestureDetector(

@@ -24,7 +24,6 @@ class JishoTranslation{
   }
 
   static Future<List<JishoTranslation>> getJishoTransLationListFromRequest(String word) async{
-    print('jisho');
     if (word.length < 1){
       return [];
     }
@@ -43,9 +42,6 @@ class JishoTranslation{
         }
         jishoList.add(JishoTranslation(jap['word'], jap['reading'], englishDefStringList));
       }
-    }
-    for (var jishoEntry in jishoList){
-      print(jishoEntry.toString());
     }
     return jishoList;
   }
