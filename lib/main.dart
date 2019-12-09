@@ -51,7 +51,6 @@ Future<void> main() async {
 
 class BasicContainer extends StatelessWidget{
   final Widget child;
-
   const BasicContainer({Key key, @required this.child}) : super(key: key);
 
   @override

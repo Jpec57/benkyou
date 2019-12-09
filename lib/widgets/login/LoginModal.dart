@@ -29,7 +29,8 @@ class LoginModalState extends State<LoginModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = new TextEditingController();
   final TextEditingController _passwordController = new TextEditingController();
-  bool _hasError = false;
+  final snackBar = SnackBar(content: Text("Successfully logged in."));
+  String _error = '';
 
 
   @override
@@ -61,7 +62,7 @@ class LoginModalState extends State<LoginModal> {
                         },
                         onChanged: (value) {
                           setState(() {
-                            _hasError = false;
+                            _error = '';
                           });
                         },
                         controller: _emailController,
@@ -79,7 +80,7 @@ class LoginModalState extends State<LoginModal> {
                       },
                       onChanged: (value) {
                         setState(() {
-                          _hasError = false;
+                          _error = '';
                         });
                       },
                       controller: _passwordController,
@@ -92,17 +93,14 @@ class LoginModalState extends State<LoginModal> {
                     ),
                   ],
                 ),
-                Visibility(
-                  visible: _hasError,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
-                    child: Text(
-                      "Credentials invalid. Please retry.",
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                      textAlign: TextAlign.center,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                  child: Text(
+                    _error,
+                    style: TextStyle(
+                      color: Colors.red,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 Column(
@@ -145,23 +143,26 @@ class LoginModalState extends State<LoginModal> {
         builder: (BuildContext context) {
           return LoadingCircle();
         });
-    var res = (isLogin) ? await loginUser(email, password) : await registerUser(email, password);
-    Navigator.pop(context);
-    if (res != null){
+    try
+    {
+      var res = (isLogin) ? await loginUser(email, password) : await registerUser(email, password);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('uuid', res.user.uid);
       AppDatabase database = await DBProvider.db.database;
+      Navigator.pop(context);
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => DeckPage(deckDao: database.deckDao, cardDao: database.cardDao)
           )
-      );//      Navigator.pop(context);
-    } else {
+      );
+    }
+    on Exception catch(exception){
       setState(() {
-        _hasError = true;
+        _error = exception.toString().replaceFirst("Exception: ", '');
       });
     }
+
   }
 
   Future<AuthResult> loginUser(String email, String password) async {
@@ -171,8 +172,7 @@ class LoginModalState extends State<LoginModal> {
       print(result);
       return result;
     } catch (e) {
-      print(e.message);
-      return null;
+      throw new Exception(e.message);
     }
   }
 
@@ -184,7 +184,7 @@ class LoginModalState extends State<LoginModal> {
       return result;
     } catch (e) {
       print(e.message);
-      return null;
+      throw new Exception(e.message);
     }
   }
 
