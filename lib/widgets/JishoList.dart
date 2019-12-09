@@ -1,11 +1,13 @@
+import 'package:benkyou/main.dart';
 import 'package:benkyou/models/JishoTranslation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class JishoList extends StatefulWidget {
   final String researchWord;
+  final Function callback;
 
-  const JishoList({Key key, this.researchWord}) : super(key: key);
+  const JishoList({Key key, this.researchWord, this.callback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => JishoListState();
@@ -25,7 +27,6 @@ class JishoListState extends State<JishoList> {
   Widget returnList(BuildContext context){
     if (widget.researchWord != null && widget.researchWord.length > 0){
       return FutureBuilder(
-
         future: JishoTranslation.getJishoTransLationListFromRequest(widget.researchWord),
         builder: (BuildContext context, AsyncSnapshot<List<JishoTranslation>> snapshot){
           switch (snapshot.connectionState){
@@ -40,7 +41,7 @@ class JishoListState extends State<JishoList> {
                         return Container(
                           child: (ListTile(
                             onTap: (){
-
+                              widget.callback(snapshot.data[index]);
                             },
                             title: Center(child: Text(snapshot.data[index].english.join('; '))),
                             subtitle: Center(child: Text(subtitleFormatter(snapshot.data[index]))),
@@ -66,7 +67,7 @@ class JishoListState extends State<JishoList> {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0),
       child: Container(
-        child: Text("Please enter a kana or a kanji.", style: TextStyle(fontStyle: FontStyle.italic)),
+        child: Text("Please enter a kana or a kanji to start searching.", style: TextStyle(fontStyle: FontStyle.italic)),
       ),
     );
   }

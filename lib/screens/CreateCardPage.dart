@@ -37,8 +37,8 @@ class _CreateCardState extends State<CreateCardPage> {
   PageController _pageController =
       PageController(initialPage: 0, keepPage: false);
 
-  TextEditingController _titleEditingController;
-  TextEditingController _hintEditingController;
+  TextEditingController _kanjiEditingController;
+  TextEditingController _kanaEditingController;
   final FocusNode _kanjiFocusNode = FocusNode();
   final FocusNode _kanaFocusNode = FocusNode();
   bool _needParseInJapanese = true;
@@ -47,35 +47,31 @@ class _CreateCardState extends State<CreateCardPage> {
   GlobalKey<AddAnswerCardWidgetState> answerWidgetKey =
       new GlobalKey<AddAnswerCardWidgetState>();
 
-  //TODO Jpec
   void triggerJishoResearch(String text) async {
     setState(() {
       _researchWord = text;
-      print(text);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _titleEditingController = new TextEditingController();
-    _hintEditingController = new TextEditingController();
+    _kanjiEditingController = new TextEditingController();
+    _kanaEditingController = new TextEditingController();
 
     _kanjiFocusNode.addListener(() {
-      print("kanji listener");
-      triggerJishoResearch(_titleEditingController.text);
+      triggerJishoResearch(_kanjiEditingController.text);
     });
 
     _kanaFocusNode.addListener(() {
-      print("kana listener");
-      triggerJishoResearch(_hintEditingController.text);
+      triggerJishoResearch(_kanaEditingController.text);
     });
   }
 
   @override
   void dispose() {
-    _titleEditingController.dispose();
-    _hintEditingController.dispose();
+    _kanjiEditingController.dispose();
+    _kanaEditingController.dispose();
     _kanjiFocusNode.dispose();
     _kanaFocusNode.dispose();
     super.dispose();
@@ -94,16 +90,16 @@ class _CreateCardState extends State<CreateCardPage> {
       }
       String hint;
       String question;
-      if (_hintEditingController.text.trim().length > 0){
+      if (_kanaEditingController.text.trim().length > 0){
         hint = _needParseInJapanese
-            ? getJapaneseTranslation(_hintEditingController.text)
-            : _hintEditingController.text;
+            ? getJapaneseTranslation(_kanaEditingController.text)
+            : _kanaEditingController.text;
       }
-      if (_titleEditingController.text.trim().length == 0){
+      if (_kanjiEditingController.text.trim().length == 0){
         question = hint;
         hint = '';
       } else {
-        question = _titleEditingController.text;
+        question = _kanjiEditingController.text;
       }
 
       if (!_isLateInit) {
@@ -138,17 +134,18 @@ class _CreateCardState extends State<CreateCardPage> {
   }
 
   Future<String> _validateCreateCard() async {
-    String hint = _hintEditingController.text.trim();
+    String hint = _kanaEditingController.text.trim();
     String question = _needParseInJapanese
-        ? getJapaneseTranslation(_titleEditingController.text)
-        : _titleEditingController.text;
+        ? getJapaneseTranslation(_kanjiEditingController.text)
+        : _kanjiEditingController.text;
     if (question == null || question.trim().length == 0) {
       //If no kanji is given, kana can be considered as question
       if (hint == null || hint.length == 0){
         return ERR_KANA_KANJI;
       }
-      if (_needParseInJapanese){
+      if (stringNeedToBeParsed(hint)){
         hint = japanese;
+      } else {
       }
       if (hint.length < 1){
         return ERR_KANA;
@@ -182,9 +179,15 @@ class _CreateCardState extends State<CreateCardPage> {
       int char = text.codeUnitAt(i);
       if ((startLower <= char && char <= endLower) ||
           (startUpper <= char && char <= endUpper)){
+        setState(() {
+          _needParseInJapanese = true;
+        });
         return true;
       }
     }
+    setState(() {
+      _needParseInJapanese = false;
+    });
     return false;
   }
 
@@ -211,7 +214,7 @@ class _CreateCardState extends State<CreateCardPage> {
                           ),
                           TextFormField(
                             focusNode: _kanjiFocusNode,
-                            controller: _titleEditingController,
+                            controller: _kanjiEditingController,
                             onChanged: (text) {
                               _isQuestionErrorVisible = false;
                               _formKey.currentState.validate();
@@ -239,7 +242,7 @@ class _CreateCardState extends State<CreateCardPage> {
                       child: Padding(
                         padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                         child: TextFormField(
-                          controller: _hintEditingController,
+                          controller: _kanaEditingController,
                           focusNode: _kanaFocusNode,
                           validator: (value) {
                             if (_isQuestionErrorVisible) {
@@ -249,11 +252,11 @@ class _CreateCardState extends State<CreateCardPage> {
                           },
                           onChanged: (value) {
                             _isQuestionErrorVisible = false;
-                            bool needtoBeParsed = stringNeedToBeParsed(_hintEditingController.text);
+                            bool needtoBeParsed = stringNeedToBeParsed(_kanaEditingController.text);
                             setState(() {
                               _needParseInJapanese = needtoBeParsed;
                               japanese = needtoBeParsed ?
-                              "${getJapaneseTranslation(_hintEditingController.text) ?? ''}": '';
+                              "${getJapaneseTranslation(_kanaEditingController.text) ?? ''}": '';
                             });
                             _formKey.currentState.validate();
                           },
@@ -275,7 +278,7 @@ class _CreateCardState extends State<CreateCardPage> {
                       textAlign: TextAlign.start,
                     ),),
 
-                    JishoList(researchWord: _researchWord),
+                    JishoList(researchWord: _researchWord, callback: getBackTranslation),
 
                   ],
                 ),
@@ -285,6 +288,19 @@ class _CreateCardState extends State<CreateCardPage> {
         ],
       ),
     );
+  }
+
+  void getBackTranslation(JishoTranslation translation){
+    if (_kanjiEditingController.text.length == 0){
+      _kanjiEditingController.text = translation.kanji;
+    }
+    if (_kanaEditingController.text.length == 0){
+      _kanaEditingController.text = translation.reading;
+    }
+    setState(() {
+    });
+    answerWidgetKey.currentState.setNewAnswers(translation.english);
+    //Call setNewAnswer(translation.english)
   }
 
   Widget _renderAgainOrLeave() {
@@ -309,8 +325,10 @@ class _CreateCardState extends State<CreateCardPage> {
           flex: 1,
           child: GestureDetector(
             onTap: () async {
-              _titleEditingController.clear();
+              _kanjiEditingController.clear();
+              _kanaEditingController.clear();
               setState(() {
+                japanese = '';
                 _bottomButtonLabel = 'NEXT';
               });
               _pageController.animateToPage(0,

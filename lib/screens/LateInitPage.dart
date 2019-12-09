@@ -114,12 +114,21 @@ class _LateInitPageState extends State<LateInitPage>
               children: <Widget>[
                 Container(
                   child: Center(
-                      child: ShowUp(
-                        child: Text(
-                          remainingCards != null && remainingCards.length > 0 ? remainingCards[index]
-                              .question : '',
-                          style: TextStyle(fontSize: 30),
-                        ),
+                      child: Column(
+                        children: <Widget>[
+                          ShowUp(
+                            child: Text(
+                              remainingCards != null && remainingCards.length > 0 ? remainingCards[index]
+                                  .question : '',
+                              style: TextStyle(fontSize: 30),
+                            ),
+                          ),
+                          Text(
+                            remainingCards != null && remainingCards.length > 0 ? (remainingCards[index].hint ??  '') : '',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.center,
                       ),
                   ),
                 ),

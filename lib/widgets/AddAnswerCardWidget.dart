@@ -22,9 +22,11 @@ class AddAnswerCardWidgetState extends State<AddAnswerCardWidget>{
     super.initState();
     textEditingControllers.add(new TextEditingController());
   }
-  void addAnswer() {
+  void addAnswer({String value}) {
     textEditingControllers.add(new TextEditingController());
-
+    if (value != null){
+      textEditingControllers[textEditingControllers.length - 1].text = value;
+    }
     setState(() {
       numberPossibleAnswers++;
     });
@@ -41,6 +43,26 @@ class AddAnswerCardWidgetState extends State<AddAnswerCardWidget>{
   Future<http.Response> getJishoTranslations(String word) async{
     JishoTranslation.getJishoTransLationListFromRequest(word);
     return null;
+  }
+
+  void setNewAnswers(List<String> answers){
+    List<int> availableControllers = new List<int>();
+    for (var i = 0; i < textEditingControllers.length; i++){
+      if (textEditingControllers[i].text.length == 0){
+        availableControllers.add(i);
+      }
+    }
+    int availableControllerNb = availableControllers.length;
+    int answerNb = answers.length;
+    int i = 0;
+    while (i < availableControllerNb && i < answerNb){
+      textEditingControllers[availableControllers[i]].text = answers[i];
+      i++;
+    }
+    while (i < answerNb){
+     addAnswer(value: answers[i]);
+     i++;
+    }
   }
 
   @override
