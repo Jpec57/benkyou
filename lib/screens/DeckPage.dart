@@ -8,6 +8,7 @@ import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
 import 'package:benkyou/widgets/Header.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
 import 'package:benkyou/widgets/MyText.dart';
 import 'package:benkyou/widgets/login/LoginModal.dart';
@@ -53,9 +54,12 @@ class DeckPageState extends State<DeckPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var uuid = await isUserLoggedIn();
       if (uuid != null) {
+        //TODO SHow welcome back 'name'
         synchroniseFirebase(uuid);
+        print('uuid');
       } else {
         //TODO show need to logged in to save online
+        print('no uuid');
       }
       //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
@@ -125,12 +129,21 @@ class DeckPageState extends State<DeckPage> {
   Widget build(BuildContext context) {
     return BasicContainer(
       child: Column(children: <Widget>[
-        Header(title: 'Benkyou', type: HEADER_ICON, hasBackButton: false, icon: GestureDetector(
-          onTap: (){
-            showLoginDialog(context);
-          },
-          child: Image.asset('resources/imgs/profile.png'),
-        )),
+        Header(
+            title: 'Benkyou',
+            type: HEADER_ICON,
+            hasBackButton: false,
+            icon: Builder(
+              builder: (BuildContext context) {
+                return (GestureDetector(
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+//            showLoginDialog(context);
+                  },
+                  child: Image.asset('resources/imgs/side_drawer_icon.png'),
+                ));
+              },
+            )),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),

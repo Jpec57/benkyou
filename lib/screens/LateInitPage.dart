@@ -7,6 +7,7 @@ import 'package:benkyou/utils/utils.dart';
 import 'package:benkyou/widgets/AddAnswerCardWidget.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/animations/ShowUp.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

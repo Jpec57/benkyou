@@ -1,5 +1,6 @@
 import 'package:benkyou/models/Card.dart';
 import 'package:benkyou/models/CardCounter.dart';
+import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:floor/floor.dart';
@@ -31,7 +32,6 @@ abstract class CardDao {
       String orderBy,
       int limit,
       int offset}) async {
-
     var cards = await DBProvider.db.find('Card',
         where: where,
         whereArgs: whereArgs,
@@ -54,6 +54,17 @@ abstract class CardDao {
 
   Future<List<Card>> findAllCards() async {
     return await findCards();
+  }
+
+  Future<List<CardWithAnswers>> findAllCardsWithAnswers() async {
+    AppDatabase db = await DBProvider.db.database;
+    var cards = await db.database.rawQuery(
+        'SELECT *, group_concat(DISTINCT a.content) AS answers FROM Card c LEFT JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
+    List<CardWithAnswers> parsedRes = [];
+    for (var card in cards) {
+      parsedRes.add(CardWithAnswers.fromJSON(card));
+    }
+    return parsedRes;
   }
 
   Future<List<Card>> findAllCardsFromDeckId(int id) async {
@@ -129,9 +140,8 @@ abstract class CardDao {
   Future<int> updateCardWithoutOverriding(
       Map<String, dynamic> values, String where,
       {List<dynamic> whereArgs}) async {
-
-    int res = await DBProvider.db
-        .update('Card', values, where, whereArgs: whereArgs);
+    int res =
+        await DBProvider.db.update('Card', values, where, whereArgs: whereArgs);
     return res;
   }
 
@@ -169,8 +179,7 @@ abstract class CardDao {
 
   Future<void> deleteCard(int cardId) async {
     var db = await DBProvider.db.database;
-    var res =
-        await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
+    var res = await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
     return res;
   }
 }

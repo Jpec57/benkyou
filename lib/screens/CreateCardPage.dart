@@ -10,6 +10,7 @@ import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:benkyou/widgets/AddAnswerCardWidget.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/JishoList.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -206,7 +207,38 @@ class _CreateCardState extends State<CreateCardPage> {
                   children: <Widget>[
                     Container(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        padding: EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                          controller: _kanaEditingController,
+                          focusNode: _kanaFocusNode,
+                          validator: (value) {
+                            if (_isQuestionErrorVisible) {
+                              return _error;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            _isQuestionErrorVisible = false;
+                            bool needtoBeParsed = stringNeedToBeParsed(_kanaEditingController.text);
+                            setState(() {
+                              _needParseInJapanese = needtoBeParsed;
+                              japanese = needtoBeParsed ?
+                              "${getJapaneseTranslation(_kanaEditingController.text) ?? ''}": '';
+                            });
+                            _formKey.currentState.validate();
+                          },
+                          textInputAction: TextInputAction.next,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                              labelText: 'Kana',
+                              labelStyle: TextStyle(fontSize: 20),
+                              hintText: 'Enter kana here'),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 10.0),
                         child: Column(children: <Widget>[
                           Visibility(
                             visible: _needParseInJapanese,
@@ -233,39 +265,8 @@ class _CreateCardState extends State<CreateCardPage> {
                                 labelStyle: TextStyle(fontSize: 20),
                                 hintText:
                                     'Enter kanji here'),
-                            autofocus: true,
                           ),
                         ]),
-                      ),
-                    ),
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: TextFormField(
-                          controller: _kanaEditingController,
-                          focusNode: _kanaFocusNode,
-                          validator: (value) {
-                            if (_isQuestionErrorVisible) {
-                              return _error;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            _isQuestionErrorVisible = false;
-                            bool needtoBeParsed = stringNeedToBeParsed(_kanaEditingController.text);
-                            setState(() {
-                              _needParseInJapanese = needtoBeParsed;
-                              japanese = needtoBeParsed ?
-                              "${getJapaneseTranslation(_kanaEditingController.text) ?? ''}": '';
-                            });
-                            _formKey.currentState.validate();
-                          },
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                              labelText: 'Kana',
-                              labelStyle: TextStyle(fontSize: 20),
-                              hintText: 'Enter kana here'),
-                        ),
                       ),
                     ),
                     Padding(
@@ -329,6 +330,7 @@ class _CreateCardState extends State<CreateCardPage> {
               _kanaEditingController.clear();
               setState(() {
                 japanese = '';
+                _researchWord = '';
                 _bottomButtonLabel = 'NEXT';
               });
               _pageController.animateToPage(0,

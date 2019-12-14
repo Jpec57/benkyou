@@ -1,6 +1,7 @@
 library utils_constants;
 
 const isDev = true;
+
 const String LONG_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean "
     "ipsum justo, auctor id tristique vitae, elementum vitae massa. Vestibulum "
     "cursus lobortis lobortis. Ut quis viverra justo, lacinia rhoncus velit. Etiam "

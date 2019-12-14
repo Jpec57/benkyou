@@ -40,6 +40,7 @@ class Card {
   bool hasSolution;
 
   Card(this.id, this.deckId, this.question, this.hint, this.useInContext, this.hasSolution);
+  //Need to modify CardWithAnswer too if we change something here...
   Card.init(
       this.id, this.deckId, this.question, this.hint, this.useInContext,
       this.lvl, this.nbErrors, this.nbSuccess, this.nextAvailable, this.isReversible,
@@ -56,7 +57,8 @@ class Card {
     this.nextAvailable,
     this.isReversible,
     this.isSynchronized,
-    this.hasSolution});
+    this.hasSolution,
+  });
 
   factory Card.fromJSON(Map<String, dynamic> json) {
     return Card.fromDatabase(
@@ -71,7 +73,7 @@ class Card {
       nextAvailable: json['nextAvailable'],
       isReversible: (json['isReversible'] == 0),
       isSynchronized: (json['isSynchronized'] == 0),
-      hasSolution: (json['hasSolution'] == 0)
+      hasSolution: (json['hasSolution'] == 0),
     );
   }
 

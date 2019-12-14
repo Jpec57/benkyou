@@ -90,6 +90,9 @@ flutter:
     - resources/imgs/waiting_cards.png
     - resources/imgs/sound.png
     - resources/imgs/profile.png
+    - resources/imgs/luffy.png
+    - resources/imgs/luffy_icon.png
+    - resources/imgs/side_drawer_icon.png
     - resources/imgs/mute.png
     - resources/imgs/add_photo.png
     - resources/imgs/arrow_back.png

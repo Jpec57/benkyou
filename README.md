@@ -24,7 +24,28 @@ flutter packages pub run build_runner build  --delete-conflicting-outputs
 flutter packages pub run build_runner watch
 
 # SQL
+## Access android database
 
+### Be sure to run as administrator 
+```
+adb root
+```
+### Search the device you want to connect to
+```
+adb devices
+```
+### Open the corresponding shell
+```
+adb -s <emulator-id> shell
+```
+
+The database is then located in /data/data/<package-name>/databases 
+We can get it on desktop by running the following commands:
+```
+cp <path>/<db-name.db> /sdcard
+adb pull /sdcard/<db-name.db>
+``` 
+ 
 ## Update
 
 ```

@@ -10,6 +10,7 @@ import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/SRSPreview.dart';
 import 'package:benkyou/widgets/WallOfShamePreview.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

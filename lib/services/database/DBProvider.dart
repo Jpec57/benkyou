@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:benkyou/services/database/Database.dart';
+import 'package:flutter/services.dart';
+import 'package:sqflite/sqlite_api.dart' as Sqli;
 
 class DBProvider {
   DBProvider._();
   static final DBProvider db = DBProvider._();
 
   static AppDatabase _database;
+  static const FIXTURES_PATH = 'lib/fixtures/dev/';
 
   Future<AppDatabase> get database async {
     if (_database != null)
@@ -41,5 +46,26 @@ class DBProvider {
     AppDatabase database = await DBProvider.db.database;
     return await database.database
         .update(type, values, where: where, whereArgs: whereArgs);
+  }
+
+  static void insertFixtureInDatabase(Sqli.Database database, String tableName, String jsonFile){
+    rootBundle.loadString(jsonFile).then((String jsonString) {
+      List<dynamic> jsonDeck = jsonDecode(jsonString);
+      jsonDeck.forEach((object){
+        database.insert(tableName, object);
+      });
+    });
+  }
+
+  static void insertAllFixturesInDatabase(Sqli.Database database){
+    insertFixtureInDatabase(database, 'Deck', '${FIXTURES_PATH}decks.json');
+    insertFixtureInDatabase(database, 'Card', '${FIXTURES_PATH}cards.json');
+    insertFixtureInDatabase(database, 'Answer', '${FIXTURES_PATH}answers.json');
+  }
+
+  static void resetDatabase(Sqli.Database database){
+    database.delete('Deck');
+    database.delete('Card');
+    database.delete('Answer');
   }
 }
