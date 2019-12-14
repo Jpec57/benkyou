@@ -153,44 +153,51 @@ class Card {
     if (this.lvl < 0){
       this.lvl = 0;
     }
-    int now = DateTime.now().millisecondsSinceEpoch;
+    final now = new DateTime.now();
+    final roundHour = now.subtract(Duration(
+      minutes: now.minute,
+      seconds: now.second,
+      milliseconds: now.millisecond,
+      microseconds: now.microsecond,
+    )).millisecondsSinceEpoch;
+
 
     if (isDev){
-      this.nextAvailable = now +  60;
+      this.nextAvailable = roundHour +  60;
     } else {
       switch (this.lvl){
         case 0:
-          this.nextAvailable = now + ((60 * 60 * 1000) * 4);
+          this.nextAvailable = roundHour + ((60 * 60 * 1000) * 4);
           break;
         case 1:
-          this.nextAvailable = now + ((60 * 60 * 1000) * 9);
+          this.nextAvailable = roundHour + ((60 * 60 * 1000) * 9);
           break;
         case 2:
-          this.nextAvailable = now +  ((60 * 60 * 1000) * 23);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000) * 23);
           break;
         case 3:
-          this.nextAvailable = now +  ((60 * 60 * 1000) * 48);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000) * 48);
           break;
         case 4:
-          this.nextAvailable = now +  ((60 * 60 * 1000  * 24) * 2);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000  * 24) * 2);
           break;
         case 5:
-          this.nextAvailable = now +  ((60 * 60 * 1000 * 24) * 7);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000 * 24) * 7);
           break;
         case 6:
-          this.nextAvailable = now +  ((60 * 60 * 1000  * 24 * 7) * 4);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000  * 24 * 7) * 4);
           break;
         case 7:
-          this.nextAvailable = now +  ((60 * 60 * 1000  * 24 * 7 * 4) * 4);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000  * 24 * 7 * 4) * 4);
           break;
         case 8:
-          this.nextAvailable = now +  ((60 * 60 * 1000  * 24 * 7 * 4) * 8);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000  * 24 * 7 * 4) * 8);
           break;
         case 9:
-          this.nextAvailable = now +  ((60 * 60 * 1000  * 24 * 7 * 4) * 12);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000  * 24 * 7 * 4) * 12);
           break;
         default:
-          this.nextAvailable = now +  ((60 * 60 * 1000) * 4);
+          this.nextAvailable = roundHour +  ((60 * 60 * 1000) * 4);
           break;
       }
     }

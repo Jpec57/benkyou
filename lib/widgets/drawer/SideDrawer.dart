@@ -1,12 +1,14 @@
 import 'package:benkyou/screens/CardListPage.dart';
+import 'package:benkyou/services/database/Database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class SideDrawer extends StatelessWidget {
   final bool isLoggedIn;
+  final AppDatabase database;
 
-  const SideDrawer({Key key, this.isLoggedIn = false}) : super(key: key);
+  const SideDrawer({Key key, this.isLoggedIn = false, @required this.database}) : super(key: key);
 
 
   Widget _renderDrawerHeader(BuildContext context){
@@ -50,7 +52,7 @@ class SideDrawer extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CardListPage()
+                          builder: (context) => CardListPage(database: database,)
                       )
                   );
                 },

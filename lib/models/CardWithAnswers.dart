@@ -34,8 +34,6 @@ class CardWithAnswers extends Model.Card {
       isSynchronized, hasSolution);
 
   factory CardWithAnswers.fromJSON(Map<String, dynamic> json) {
-    print('in');
-    print(json);
 
     return CardWithAnswers.fromDatabase(
         json['id'],

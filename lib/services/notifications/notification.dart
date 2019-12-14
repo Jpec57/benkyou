@@ -41,7 +41,6 @@ Future scheduleNotification(BuildContext context, flutterLocalNotificationsPlugi
   var db = await DBProvider.db.database;
   var cards = await db.cardDao.findAvailableCards(DateTime.now().millisecondsSinceEpoch + 4 * 60 * 60 * 1000);
   int cardLength = cards.length;
-  print(cardLength);
   if (cardLength > 1){
     await flutterLocalNotificationsPlugin.schedule(
       0,

@@ -1,3 +1,5 @@
+import 'package:benkyou/services/database/DBProvider.dart';
+import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/widgets/drawer/SideDrawer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,12 @@ class BasicContainerState extends State<BasicContainer>{
       child: Scaffold(
         key: _scaffoldKey,
         body: widget.child,
-        drawer: SideDrawer(),
+        drawer: FutureBuilder(
+          future: DBProvider.db.database,
+          builder: (BuildContext context, AsyncSnapshot<AppDatabase> snapshot) {
+          return SideDrawer(database: snapshot.data);
+        },
+        ),
       ),
     );
   }

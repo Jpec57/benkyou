@@ -1,6 +1,7 @@
 import 'package:benkyou/models/Card.dart';
 import 'package:benkyou/models/CardCounter.dart';
 import 'package:benkyou/models/CardWithAnswers.dart';
+import 'package:benkyou/models/TimeCard.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:floor/floor.dart';
@@ -56,9 +57,24 @@ abstract class CardDao {
     return await findCards();
   }
 
+  Future<List<TimeCard>> findCardsByHour({int maxDate}) async {
+    AppDatabase db = await DBProvider.db.database;
+    List<Map<String, dynamic>> cards = (maxDate != null ) ?
+    await db.database.rawQuery(
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE nextAvailable <= $maxDate GROUP BY nextAvailable') :
+    await db.database.rawQuery(
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card GROUP BY nextAvailable');
+    List<TimeCard> parsedRes = [];
+    for (var card in cards) {
+      parsedRes.add(TimeCard.fromJson(card));
+    }
+    return parsedRes;
+
+  }
+
   Future<List<CardWithAnswers>> findAllCardsWithAnswers() async {
     AppDatabase db = await DBProvider.db.database;
-    var cards = await db.database.rawQuery(
+    List<Map<String, dynamic>> cards = await db.database.rawQuery(
         'SELECT *, group_concat(DISTINCT a.content) AS answers FROM Card c LEFT JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
     List<CardWithAnswers> parsedRes = [];
     for (var card in cards) {
@@ -171,14 +187,14 @@ abstract class CardDao {
   }
 
   Future<void> deleteCardsFromDeck(int deckId) async {
-    var db = await DBProvider.db.database;
+    AppDatabase db = await DBProvider.db.database;
     var res =
         await db.database.rawQuery('DELETE FROM Card WHERE deck_id = $deckId');
     return res;
   }
 
   Future<void> deleteCard(int cardId) async {
-    var db = await DBProvider.db.database;
+    AppDatabase db = await DBProvider.db.database;
     var res = await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
     return res;
   }

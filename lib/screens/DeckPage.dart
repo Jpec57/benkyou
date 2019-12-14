@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Answer.dart' as AnswerModel;
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/models/Deck.dart' as DeckModel;
+import 'package:benkyou/models/TimeCard.dart';
+import 'package:benkyou/models/TimeSeriesBar.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
@@ -16,6 +20,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class DeckPage extends StatefulWidget {
   final DeckDao deckDao;
@@ -144,6 +149,17 @@ class DeckPageState extends State<DeckPage> {
                 ));
               },
             )),
+        ConstrainedBox(
+            constraints: BoxConstraints.expand(height: 100.0), // adjust the height here
+            child: FutureBuilder(
+                future: getTimelineSchedule(),
+              builder: (BuildContext context, AsyncSnapshot<TimeSeriesBar> snapshot) {
+                  if (!snapshot.hasData){
+                    return Text("Loading...");
+                  }
+                  return snapshot.data;
+            },)
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
@@ -194,6 +210,30 @@ class DeckPageState extends State<DeckPage> {
           ),
         )
       ]),
+    );
+  }
+
+
+
+  Future<TimeSeriesBar> getTimelineSchedule() async {
+    List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
+    List<TimeCard> cards = await widget.cardDao.findCardsByHour(maxDate: 4 * 60 *  60 * 1000 + DateTime.now().millisecondsSinceEpoch);
+
+    for (var card in cards){
+      dates.add(new TimeSeriesSales(DateTime.fromMillisecondsSinceEpoch(card.nextAvailable), card.num));
+    }
+    return TimeSeriesBar(
+      [
+        new charts.Series<TimeSeriesSales, DateTime>(
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (TimeSeriesSales sales, _) => sales.time,
+          measureFn: (TimeSeriesSales sales, _) => sales.sales,
+          data: dates,
+        )
+      ],
+      // Disable animations for image tests.
+      animate: false,
     );
   }
 }
