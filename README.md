@@ -56,27 +56,34 @@ adb pull /sdcard/<db-name.db>
     );
 ```
 
-# TODOs
-
-Create CreateAnswerWidget instead of duplicating code
-
 # Test
 
 ## Initialisation for integration test
+
+```
 flutter emulators --launch Nexus_5X_API_29
+``` 
+ 
+
 
 ## Launch test suite
 https://flutter.dev/docs/cookbook/testing/widget/introduction
+```
 flutter test test/translator/translationUnit.dart
+```
 
 https://flutter.dev/docs/cookbook/testing/integration/introduction
+```
 flutter drive --target=test_driver/app.dart
-
+```
 
 ## Enable GitHub Hooks for project
 
+```
 ln -s -f ../../hooks/pre-commit .git/hooks/pre-commit
-
+```
 # Dart analysis
 
+```
 dartanalyzer --options analysis_options.yaml .
+```
