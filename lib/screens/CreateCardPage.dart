@@ -90,12 +90,12 @@ class _CreateCardState extends State<CreateCardPage> {
       }
       String hint;
       String question;
-      if (_kanaEditingController.text.trim().length > 0){
+      if (_kanaEditingController.text.trim().isNotEmpty){
         hint = _needParseInJapanese
             ? getJapaneseTranslation(_kanaEditingController.text)
             : _kanaEditingController.text;
       }
-      if (_kanjiEditingController.text.trim().length == 0){
+      if (_kanjiEditingController.text.trim().isEmpty){
         question = hint;
         hint = '';
       } else {
@@ -106,7 +106,7 @@ class _CreateCardState extends State<CreateCardPage> {
         List<String> answers = [];
         for (var answerController
             in answerWidgetKey.currentState.textEditingControllers) {
-          if (answerController.text.length > 0) {
+          if (answerController.text.isNotEmpty) {
             answers.add(answerController.text.toLowerCase());
           }
         }
@@ -138,16 +138,16 @@ class _CreateCardState extends State<CreateCardPage> {
     String question = _needParseInJapanese
         ? getJapaneseTranslation(_kanjiEditingController.text)
         : _kanjiEditingController.text;
-    if (question == null || question.trim().length == 0) {
+    if (question == null || question.trim().isEmpty) {
       //If no kanji is given, kana can be considered as question
-      if (hint == null || hint.length == 0){
+      if (hint == null || hint.isEmpty){
         return ERR_KANA_KANJI;
       }
       if (stringNeedToBeParsed(hint)){
         hint = japanese;
       } else {
       }
-      if (hint.length < 1){
+      if (hint.isEmpty){
         return ERR_KANA;
       }
       question = hint;
@@ -160,11 +160,11 @@ class _CreateCardState extends State<CreateCardPage> {
     List<String> answers = [];
     for (var answerController
         in answerWidgetKey.currentState.textEditingControllers) {
-      if (answerController.text.length > 0) {
+      if (answerController.text.isNotEmpty) {
         answers.add(answerController.text.toLowerCase());
       }
     }
-    if (answers.length < 1) {
+    if (answers.isEmpty) {
       _isLateInit = true;
     }
     return null;
@@ -291,10 +291,10 @@ class _CreateCardState extends State<CreateCardPage> {
   }
 
   void getBackTranslation(JishoTranslation translation){
-    if (_kanjiEditingController.text.length == 0){
+    if (_kanjiEditingController.text.isEmpty){
       _kanjiEditingController.text = translation.kanji;
     }
-    if (_kanaEditingController.text.length == 0){
+    if (_kanaEditingController.text.isEmpty){
       _kanaEditingController.text = translation.reading;
     }
     setState(() {
@@ -368,7 +368,10 @@ class _CreateCardState extends State<CreateCardPage> {
             controller: _pageController,
             pageSnapping: false,
             physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[_renderForm(), _renderAgainOrLeave()],
+            children: <Widget>[
+              _renderForm(),
+              _renderAgainOrLeave()
+            ],
           ),
         ),
         GestureDetector(

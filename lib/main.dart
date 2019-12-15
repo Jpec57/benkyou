@@ -1,4 +1,6 @@
 import 'package:benkyou/screens/CardListPage.dart';
+import 'package:benkyou/screens/CardShowPage.dart';
+import 'package:benkyou/screens/CreateCardPage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/models/AppState.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
@@ -50,13 +52,14 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
           home:
-              CardListPage(database: database,),
+//              CardShowPage(card: cards[0]),
+//              CardListPage(database: database,),
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
 //          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
-//        CreateCardPage(cardDao: database.cardDao, deck: deck,)
+        CreateCardPage(cardDao: database.cardDao, deck: deck,)
 
 //      home: BasicContainer(child:
 //      ),

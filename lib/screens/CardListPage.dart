@@ -127,7 +127,7 @@ class CardListPageState extends State<CardListPage> {
                               children: <Widget>[
                                 GestureDetector(
                                   onTap: () {
-                                    print("Show card");
+                                    goToCardPage(context, snapshot.data[index].id);
                                   },
                                   child: Container(
                                     width: MediaQuery.of(context).size.width,

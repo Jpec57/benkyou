@@ -126,13 +126,22 @@ class DeckPageState extends State<DeckPage> {
   }
 
   Future<TimeSeriesBar> getTimelineSchedule() async {
+    bool hasEnd = false;
+    bool hasStart = false;
     List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
     DateTime start = DateTime.now();
-    DateTime end = start.add(Duration(days: 7));
+    DateTime end = start.add(Duration(days: 1));
     List<TimeCard> cards = await widget.cardDao.findCardsByHour(start.millisecondsSinceEpoch, endDate: end.millisecondsSinceEpoch);
 
     for (var card in cards){
-      dates.add(TimeSeriesSales(DateTime.fromMillisecondsSinceEpoch(card.nextAvailable), card.num));
+      DateTime date = DateTime.fromMillisecondsSinceEpoch(card.nextAvailable);
+      if (date.difference(start).inDays == 0){
+        hasStart = true;
+      }
+      if (date.difference(end).inDays == 0){
+        hasEnd = true;
+      }
+      dates.add(TimeSeriesSales(date, card.num));
     }
     return TimeSeriesBar(
       [

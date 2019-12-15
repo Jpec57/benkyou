@@ -13,14 +13,22 @@ class TimeSeriesBar extends StatelessWidget {
     return charts.TimeSeriesChart(
       seriesList,
       animate: animate,
-//      domainAxis: charts.DateTimeAxisSpec(
-//        tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
-//          day: charts.TimeFormatterSpec(
-//            format: 'mm',
-//            transitionFormat: 'dd MMM HH:mm',
-//          ),
-//        ),
-//      ),
+      domainAxis: charts.DateTimeAxisSpec(
+        tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
+          day: charts.TimeFormatterSpec(
+            format: 'HH:mm',
+            transitionFormat: 'd',
+          ),
+          hour: charts.TimeFormatterSpec(
+            format: 'H',
+            transitionFormat: 'dd MM HH:mm',
+          ),
+          minute: charts.TimeFormatterSpec(
+            format: 'mm',
+            transitionFormat: 'HH:mm',
+          ),
+        ),
+      ),
       // Set the default renderer to a bar renderer.
       // This can also be one of the custom renderers of the time series chart.
       defaultRenderer: charts.BarRendererConfig<DateTime>(),

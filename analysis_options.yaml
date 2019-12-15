@@ -10,3 +10,4 @@ analyzer:
 linter:
   rules:
     unnecessary_new: false
+    unawaited_futures: false
