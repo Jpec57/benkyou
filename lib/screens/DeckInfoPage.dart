@@ -1,4 +1,3 @@
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as cardModel;
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/screens/CreateCardPage.dart';

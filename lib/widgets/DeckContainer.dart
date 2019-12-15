@@ -4,7 +4,6 @@ import 'package:benkyou/screens/DeckPage.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
-import 'package:benkyou/services/navigator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:benkyou/models/Deck.dart' as DeckModel;
 import 'package:flutter/material.dart';

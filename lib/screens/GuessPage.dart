@@ -142,6 +142,7 @@ class _GuessPageState extends State<GuessPage>
     }
   }
 
+  //TODO enabling adding synonym on the fly
   Widget _getSynonymWidget() {
     return Padding(
       padding: EdgeInsets.only(top: 20),

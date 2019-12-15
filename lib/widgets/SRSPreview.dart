@@ -1,7 +1,6 @@
 import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/models/CardCounter.dart';
 import 'package:benkyou/services/database/CardDao.dart';
-import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

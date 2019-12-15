@@ -44,7 +44,7 @@ class _GuessBannerState extends State<GuessBanner> {
   }
 
   Future initTts() async {
-    List<dynamic> languages = await flutterTts.getLanguages;
+//    List<dynamic> languages = await flutterTts.getLanguages;
     await flutterTts.setLanguage("ja-JP");
     await flutterTts.setSpeechRate(1.0);
     await flutterTts.setVolume(1.0);

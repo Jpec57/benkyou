@@ -1,4 +1,3 @@
-import 'package:benkyou/models/Answer.dart';
 import 'package:benkyou/models/Card.dart' as Model;
 
 class CardWithAnswers extends Model.Card {
@@ -7,24 +6,6 @@ class CardWithAnswers extends Model.Card {
   CardWithAnswers(int id, int deckId, String question, String hint,
       String useInContext, bool hasSolution, this.answerContents)
       : super(id, deckId, question, hint, useInContext, hasSolution);
-
-//  CardWithAnswers.fromDatabase({
-//    int id,
-//    int deckId,
-//    String question,
-//    String hint,
-//    String useInContext,
-//    int lvl,
-//    int nbErrors,
-//    int nbSuccess,
-//    int nextAvailable,
-//    bool isReversible,
-//    bool isSynchronized,
-//    bool hasSolution,
-//    this.answers}) : super.fromDatabase(id: id, deckId: deckId,
-//    question: question, hint: hint, useInContext: useInContext, lvl: lvl,
-//  nbSuccess: nbSuccess, nbErrors: nbErrors, nextAvailable: nextAvailable,
-//  isReversible: isReversible, isSynchronized: isSynchronized, hasSolution: hasSolution);
 
   CardWithAnswers.fromDatabase(int id, int deckId, String question, String hint,
       String useInContext, int lvl, int nbErrors, int nbSuccess, int nextAvailable,

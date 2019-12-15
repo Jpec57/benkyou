@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Answer.dart' as AnswerModel;
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/models/Deck.dart' as DeckModel;
@@ -55,7 +52,7 @@ class DeckPageState extends State<DeckPage> {
   @override
   void initState() {
     super.initState();
-    var callback = onSelectNotification;
+//    var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var uuid = await isUserLoggedIn();
       if (uuid != null) {
@@ -128,6 +125,30 @@ class DeckPageState extends State<DeckPage> {
         database, databaseReference, CardModel.FIREBASE_KEY, cards);
     sendEntityToFirebase(
         database, databaseReference, AnswerModel.FIREBASE_KEY, answers);
+  }
+
+  Future<TimeSeriesBar> getTimelineSchedule() async {
+    List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
+    DateTime start = DateTime.now();
+    DateTime end = start.add(Duration(days: 7));
+    List<TimeCard> cards = await widget.cardDao.findCardsByHour(start.millisecondsSinceEpoch, endDate: end.millisecondsSinceEpoch);
+
+    for (var card in cards){
+      dates.add(TimeSeriesSales(DateTime.fromMillisecondsSinceEpoch(card.nextAvailable), card.num));
+    }
+    return TimeSeriesBar(
+      [
+        new charts.Series<TimeSeriesSales, DateTime>(
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (TimeSeriesSales sales, _) => sales.time,
+          measureFn: (TimeSeriesSales sales, _) => sales.sales,
+          data: dates,
+        )
+      ],
+      // Disable animations for image tests.
+      animate: false,
+    );
   }
 
   @override
@@ -210,30 +231,6 @@ class DeckPageState extends State<DeckPage> {
           ),
         )
       ]),
-    );
-  }
-
-
-
-  Future<TimeSeriesBar> getTimelineSchedule() async {
-    List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
-    List<TimeCard> cards = await widget.cardDao.findCardsByHour(maxDate: 4 * 60 *  60 * 1000 + DateTime.now().millisecondsSinceEpoch);
-
-    for (var card in cards){
-      dates.add(new TimeSeriesSales(DateTime.fromMillisecondsSinceEpoch(card.nextAvailable), card.num));
-    }
-    return TimeSeriesBar(
-      [
-        new charts.Series<TimeSeriesSales, DateTime>(
-          id: 'Sales',
-          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-          domainFn: (TimeSeriesSales sales, _) => sales.time,
-          measureFn: (TimeSeriesSales sales, _) => sales.sales,
-          data: dates,
-        )
-      ],
-      // Disable animations for image tests.
-      animate: false,
     );
   }
 }

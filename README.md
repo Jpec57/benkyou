@@ -6,7 +6,6 @@ https://jisho.org/api/v1/search/words?keyword=house
 https://medium.com/stuart-engineering/mocking-integration-tests-with-flutter-af3b6ba846c7
 https://api.flutter.dev/flutter/dart-isolate/Isolate-class.html
 https://medium.com/flutter-community/blazingly-fast-flutter-driver-tests-5e375c833aa
-
 https://github.com/flutter/flutter/issues/27826
 https://docs.fastlane.tools/
 https://github.com/jonsamwell/flutter_gherkin
@@ -77,3 +76,7 @@ flutter drive --target=test_driver/app.dart
 ## Enable GitHub Hooks for project
 
 ln -s -f ../../hooks/pre-commit .git/hooks/pre-commit
+
+# Dart analysis
+
+dartanalyzer --options analysis_options.yaml .

@@ -1,8 +1,4 @@
 import 'dart:async';
-
-import 'package:benkyou/constants/utils.dart';
-import 'package:benkyou/models/Answer.dart';
-import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:flutter/cupertino.dart';

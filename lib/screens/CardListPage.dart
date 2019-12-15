@@ -2,7 +2,6 @@ import 'package:benkyou/models/Card.dart' as ModelCard;
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/navigator.dart';
-import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

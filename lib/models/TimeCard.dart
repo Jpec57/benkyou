@@ -12,4 +12,10 @@ class TimeCard{
       nextAvailable: json['nextAvailable'],
     );
   }
+
+  @override
+  String toString() {
+    return '${this.num} ${this.nextAvailable}';
+  }
+
 }

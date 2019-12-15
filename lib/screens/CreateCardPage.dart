@@ -1,4 +1,3 @@
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/models/JishoTranslation.dart';
@@ -118,7 +117,7 @@ class _CreateCardState extends State<CreateCardPage> {
         CardModel.Card card = new CardModel.Card(
             null, widget.deck.id, question, hint, null, false);
         AppDatabase appDatabase = await DBProvider.db.database;
-        int res = await appDatabase.cardDao.insertCard(card);
+        await appDatabase.cardDao.insertCard(card);
       }
 
       setState(() {

@@ -6,24 +6,31 @@ class TimeSeriesBar extends StatelessWidget {
   final List<charts.Series<TimeSeriesSales, DateTime>> seriesList;
   final bool animate;
 
-  TimeSeriesBar(this.seriesList, {this.animate});
+  TimeSeriesBar(this.seriesList, {this.animate = true});
 
   @override
   Widget build(BuildContext context) {
     return charts.TimeSeriesChart(
       seriesList,
       animate: animate,
-
+      domainAxis: charts.DateTimeAxisSpec(
+        tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
+          day: charts.TimeFormatterSpec(
+            format: 'd M H',
+            transitionFormat: 'd M H',
+          ),
+        ),
+      ),
       // Set the default renderer to a bar renderer.
       // This can also be one of the custom renderers of the time series chart.
-      defaultRenderer: new charts.BarRendererConfig<DateTime>(),
+      defaultRenderer: charts.BarRendererConfig<DateTime>(),
       // It is recommended that default interactions be turned off if using bar
       // renderer, because the line point highlighter is the default for time
       // series chart.
       defaultInteractions: false,
       // If default interactions were removed, optionally add select nearest
       // and the domain highlighter that are typical for bar charts.
-      behaviors: [new charts.SelectNearest(), new charts.DomainHighlighter()],
+      behaviors: [charts.SelectNearest(), charts.DomainHighlighter()],
     );
   }
 
@@ -32,31 +39,17 @@ class TimeSeriesBar extends StatelessWidget {
   /// Create one series with sample hard coded data.
   static Future<List<charts.Series<TimeSeriesSales, DateTime>>> createSampleData() async{
     final data = [
-      new TimeSeriesSales(new DateTime(2017, 9, 1), 5),
-      new TimeSeriesSales(new DateTime(2017, 9, 2), 5),
-      new TimeSeriesSales(new DateTime(2017, 9, 3), 25),
-      new TimeSeriesSales(new DateTime(2017, 9, 4), 100),
-      new TimeSeriesSales(new DateTime(2017, 9, 5), 75),
-      new TimeSeriesSales(new DateTime(2017, 9, 6), 88),
-      new TimeSeriesSales(new DateTime(2017, 9, 7), 65),
-      new TimeSeriesSales(new DateTime(2017, 9, 8), 91),
-      new TimeSeriesSales(new DateTime(2017, 9, 9), 100),
-      new TimeSeriesSales(new DateTime(2017, 9, 10), 111),
-      new TimeSeriesSales(new DateTime(2017, 9, 11), 90),
-      new TimeSeriesSales(new DateTime(2017, 9, 12), 50),
-      new TimeSeriesSales(new DateTime(2017, 9, 13), 40),
-      new TimeSeriesSales(new DateTime(2017, 9, 14), 30),
-      new TimeSeriesSales(new DateTime(2017, 9, 15), 40),
-      new TimeSeriesSales(new DateTime(2017, 9, 16), 50),
-      new TimeSeriesSales(new DateTime(2017, 9, 17), 30),
-      new TimeSeriesSales(new DateTime(2017, 9, 18), 35),
-      new TimeSeriesSales(new DateTime(2017, 9, 19), 40),
-      new TimeSeriesSales(new DateTime(2017, 9, 20), 32),
-      new TimeSeriesSales(new DateTime(2017, 9, 21), 31),
+      TimeSeriesSales(DateTime(2017, 9, 1), 5),
+      TimeSeriesSales(DateTime(2017, 9, 2), 5),
+      TimeSeriesSales(DateTime(2017, 9, 3), 25),
+      TimeSeriesSales(DateTime(2017, 9, 4), 100),
+      TimeSeriesSales(DateTime(2017, 9, 5), 75),
+      TimeSeriesSales(DateTime(2017, 9, 6), 88),
+      TimeSeriesSales(DateTime(2017, 9, 7), 65),
     ];
 
     return [
-      new charts.Series<TimeSeriesSales, DateTime>(
+      charts.Series<TimeSeriesSales, DateTime>(
         id: 'Sales',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
         domainFn: (TimeSeriesSales sales, _) => sales.time,

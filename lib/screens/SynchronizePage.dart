@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';

@@ -21,7 +21,7 @@ void main() {
     });
 
     test('Assert two decks are well created', () async {
-      await sleep(Duration(seconds: 5));
+      sleep(Duration(seconds: 5));
       expect(await driver.getText(firstDeckFinder), "Default");
       expect(await driver.getText(secondDeckFinder), "Test");
     });

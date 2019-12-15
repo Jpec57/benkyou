@@ -1,4 +1,3 @@
-import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // TODO use input in french and display in japanese as one field
