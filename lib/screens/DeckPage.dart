@@ -1,18 +1,18 @@
-import 'package:benkyou/models/Answer.dart' as AnswerModel;
-import 'package:benkyou/models/Card.dart' as CardModel;
-import 'package:benkyou/models/Deck.dart' as DeckModel;
+import 'package:benkyou/models/Answer.dart' as answer_model;
+import 'package:benkyou/models/Card.dart' as card_model;
+import 'package:benkyou/models/Deck.dart' as deck_model;
 import 'package:benkyou/models/TimeCard.dart';
 import 'package:benkyou/models/TimeSeriesBar.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
+import 'package:benkyou/services/login.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
 import 'package:benkyou/widgets/MyText.dart';
-import 'package:benkyou/widgets/login/LoginModal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ class DeckPageState extends State<DeckPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future onSelectNotification(String payload) async {
-    showDialog(
+    await showDialog(
       context: context,
       builder: (_) {
         return new AlertDialog(
@@ -58,10 +58,8 @@ class DeckPageState extends State<DeckPage> {
       if (uuid != null) {
         //TODO SHow welcome back 'name'
         synchroniseFirebase(uuid);
-        print('uuid');
       } else {
         //TODO show need to logged in to save online
-        print('no uuid');
       }
       //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
@@ -69,17 +67,17 @@ class DeckPageState extends State<DeckPage> {
 
   void updateEntity(AppDatabase appDatabase, String path, entity) async {
     switch (path) {
-      case DeckModel.FIREBASE_KEY:
-        var deck = entity as DeckModel.Deck;
+      case deck_model.FIREBASE_KEY:
+        var deck = entity as deck_model.Deck;
         deck.isSynchronized = true;
         await appDatabase.deckDao.updateDeck(deck);
         break;
-      case CardModel.FIREBASE_KEY:
-        var card = entity as CardModel.Card;
+      case card_model.FIREBASE_KEY:
+        var card = entity as card_model.Card;
         await appDatabase.cardDao.setSynchronized(appDatabase, card.id, true);
         break;
-      case AnswerModel.FIREBASE_KEY:
-        var answer = entity as AnswerModel.Answer;
+      case answer_model.FIREBASE_KEY:
+        var answer = entity as answer_model.Answer;
         await appDatabase.answerDao.updateAnswer(
             {'isSynchronized': true}, 'id = ?',
             whereArgs: [answer.id]);
@@ -91,7 +89,7 @@ class DeckPageState extends State<DeckPage> {
 
   void sendEntityToFirebase(AppDatabase localDatabase,
       CollectionReference databaseReference, String path, List entities) {
-    if (entities != null && entities.length > 0) {
+    if (entities != null && entities.isNotEmpty) {
       Map<String, Map> map = new Map();
       for (var entity in entities) {
         map["${entity.id}"] = entity.toMap();
@@ -105,9 +103,9 @@ class DeckPageState extends State<DeckPage> {
     final databaseReference =
         Firestore.instance.collection('benkyou/users/$uuid').reference();
     AppDatabase database = await DBProvider.db.database;
-    List<DeckModel.Deck> decks;
-    List<CardModel.Card> cards;
-    List<AnswerModel.Answer> answers;
+    List<deck_model.Deck> decks;
+    List<card_model.Card> cards;
+    List<answer_model.Answer> answers;
 
     if (onlyNotSynchronised) {
       decks = await database.deckDao.findAllDecksNotSynchronized();
@@ -120,11 +118,11 @@ class DeckPageState extends State<DeckPage> {
     }
 
     sendEntityToFirebase(
-        database, databaseReference, DeckModel.FIREBASE_KEY, decks);
+        database, databaseReference, deck_model.FIREBASE_KEY, decks);
     sendEntityToFirebase(
-        database, databaseReference, CardModel.FIREBASE_KEY, cards);
+        database, databaseReference, card_model.FIREBASE_KEY, cards);
     sendEntityToFirebase(
-        database, databaseReference, AnswerModel.FIREBASE_KEY, answers);
+        database, databaseReference, answer_model.FIREBASE_KEY, answers);
   }
 
   Future<TimeSeriesBar> getTimelineSchedule() async {
@@ -186,12 +184,12 @@ class DeckPageState extends State<DeckPage> {
             padding: const EdgeInsets.only(top: 10.0),
             child: FutureBuilder(
                 future: widget.deckDao.findAllDecks(),
-                builder: (_, AsyncSnapshot<List<DeckModel.Deck>> snapshot) {
+                builder: (_, AsyncSnapshot<List<deck_model.Deck>> snapshot) {
                   if (!snapshot.hasData) {
                     return (Center(
                       child: MyText("You should create a deck first."),
                     ));
-                  } else if (snapshot.hasData && snapshot.data.length == 0) {
+                  } else if (snapshot.hasData && snapshot.data.isEmpty) {
                     return Text('Empty');
                   } else {
                     return (GridView.count(

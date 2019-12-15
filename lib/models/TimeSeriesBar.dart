@@ -6,21 +6,21 @@ class TimeSeriesBar extends StatelessWidget {
   final List<charts.Series<TimeSeriesSales, DateTime>> seriesList;
   final bool animate;
 
-  TimeSeriesBar(this.seriesList, {this.animate = true});
+  TimeSeriesBar(this.seriesList, {this.animate = false});
 
   @override
   Widget build(BuildContext context) {
     return charts.TimeSeriesChart(
       seriesList,
       animate: animate,
-      domainAxis: charts.DateTimeAxisSpec(
-        tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
-          day: charts.TimeFormatterSpec(
-            format: 'd M H',
-            transitionFormat: 'd M H',
-          ),
-        ),
-      ),
+//      domainAxis: charts.DateTimeAxisSpec(
+//        tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
+//          day: charts.TimeFormatterSpec(
+//            format: 'mm',
+//            transitionFormat: 'dd MMM HH:mm',
+//          ),
+//        ),
+//      ),
       // Set the default renderer to a bar renderer.
       // This can also be one of the custom renderers of the time series chart.
       defaultRenderer: charts.BarRendererConfig<DateTime>(),

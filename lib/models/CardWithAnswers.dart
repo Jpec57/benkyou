@@ -1,6 +1,6 @@
-import 'package:benkyou/models/Card.dart' as Model;
+import 'package:benkyou/models/Card.dart' as card_model;
 
-class CardWithAnswers extends Model.Card {
+class CardWithAnswers extends card_model.Card {
   final List<String> answerContents;
 
   CardWithAnswers(int id, int deckId, String question, String hint,
@@ -10,7 +10,8 @@ class CardWithAnswers extends Model.Card {
   CardWithAnswers.fromDatabase(int id, int deckId, String question, String hint,
       String useInContext, int lvl, int nbErrors, int nbSuccess, int nextAvailable,
       bool isReversible, bool isSynchronized, bool hasSolution, {
-    this.answerContents}) : super.init(id, deckId, question, hint, useInContext,
+    this.answerContents})
+      : super.init(id, deckId, question, hint, useInContext,
       lvl, nbErrors, nbSuccess, nextAvailable, isReversible,
       isSynchronized, hasSolution);
 

@@ -1,8 +1,8 @@
 import 'package:benkyou/screens/DeckPage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
+import 'package:benkyou/services/login.dart';
 import 'package:benkyou/widgets/LoadingCircle.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,19 +12,6 @@ class LoginModal extends StatefulWidget {
   State<StatefulWidget> createState() => LoginModalState();
 }
 
-void showLoginDialog(BuildContext context) {
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginModal();
-      });
-}
-
-Future<String> isUserLoggedIn() async{
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('uuid');
-}
-
 class LoginModalState extends State<LoginModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = new TextEditingController();
@@ -32,6 +19,16 @@ class LoginModalState extends State<LoginModal> {
   final snackBar = SnackBar(content: Text("Successfully logged in."));
   String _error = '';
 
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String usualUser = await getUsualUser();
+      if (usualUser != null){
+        _emailController.text = usualUser;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +135,7 @@ class LoginModalState extends State<LoginModal> {
   void launchLoginOrRegisterProcess(
       BuildContext context, String email, String password, bool isLogin) async {
     _formKey.currentState.validate();
+    // ignore: unawaited_futures
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -145,12 +143,15 @@ class LoginModalState extends State<LoginModal> {
         });
     try
     {
-      var res = (isLogin) ? await loginUser(email, password) : await registerUser(email, password);
+      var res = (isLogin) ? await loginUser(email.trim(), password.trim()) :
+      await registerUser(email.trim(), password.trim());
+
+      print(res);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('uuid', res.user.uid);
+      await prefs.setString('uuid', res.user.uid);
       AppDatabase database = await DBProvider.db.database;
       Navigator.pop(context);
-      Navigator.push(
+      await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => DeckPage(deckDao: database.deckDao, cardDao: database.cardDao)
@@ -158,34 +159,12 @@ class LoginModalState extends State<LoginModal> {
       );
     }
     on Exception catch(exception){
+      Navigator.pop(context);
       setState(() {
         _error = exception.toString().replaceFirst("Exception: ", '');
       });
     }
 
-  }
-
-  Future<AuthResult> loginUser(String email, String password) async {
-    try {
-      var result = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      print(result);
-      return result;
-    } catch (e) {
-      throw new Exception(e.message);
-    }
-  }
-
-  Future<AuthResult> registerUser(String email, String password) async {
-    try {
-      var result = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      print(result);
-      return result;
-    } catch (e) {
-      print(e.message);
-      throw new Exception(e.message);
-    }
   }
 
   @override

@@ -34,7 +34,7 @@ class CardListPageState extends State<CardListPage> {
   }
 
   String _getTitleFormat(ModelCard.Card card) {
-    if (card.hint != null && card.hint.trim().length > 0) {
+    if (card.hint != null && card.hint.trim().isNotEmpty) {
       return '${card.question} - ${card.hint}';
     }
     return '${card.question}';
@@ -117,7 +117,7 @@ class CardListPageState extends State<CardListPage> {
                 child: FutureBuilder(
                   future: widget.database.cardDao.findAllCardsWithAnswers(),
                   builder: (_, AsyncSnapshot<List<CardWithAnswers>> snapshot) {
-                    if (snapshot.hasData && snapshot.data.length > 0) {
+                    if (snapshot.hasData && snapshot.data.isNotEmpty) {
                       return ListView.builder(
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, int index) {

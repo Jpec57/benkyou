@@ -81,7 +81,7 @@ abstract class CardDao {
   Future<List<CardWithAnswers>> findAllCardsWithAnswers() async {
     AppDatabase db = await DBProvider.db.database;
     List<Map<String, dynamic>> cards = await db.database.rawQuery(
-        'SELECT *, group_concat(DISTINCT a.content) AS answers FROM Card c LEFT JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
+        'SELECT *, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
     List<CardWithAnswers> parsedRes = [];
     for (var card in cards) {
       parsedRes.add(CardWithAnswers.fromJSON(card));

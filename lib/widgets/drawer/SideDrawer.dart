@@ -1,17 +1,31 @@
 import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/services/database/Database.dart';
+import 'package:benkyou/services/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class SideDrawer extends StatelessWidget {
-  final bool isLoggedIn;
+class SideDrawer extends StatefulWidget {
   final AppDatabase database;
 
-  const SideDrawer({Key key, this.isLoggedIn = false, @required this.database}) : super(key: key);
+  const SideDrawer({Key key, @required this.database}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => SideDrawerState();
+}
 
-  Widget _renderDrawerHeader(BuildContext context){
+class SideDrawerState extends State<SideDrawer> {
+  String isLoggedIn;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      isLoggedIn = await isUserLoggedIn();
+    });
+  }
+
+  Widget _renderDrawerHeader(BuildContext context) {
     return Container(
       color: Colors.orange,
       height: MediaQuery.of(context).size.height * 0.12,
@@ -27,7 +41,9 @@ class SideDrawer extends StatelessWidget {
                     width: 40, height: 40),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                  child: Text(this.isLoggedIn ? "Coucou toi": "No user logged in"),
+                  child: Text(this.isLoggedIn != null
+                      ? "Coucou toi"
+                      : "No user logged in"),
                 ),
               ],
             ),
@@ -43,38 +59,42 @@ class SideDrawer extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.60,
       child: Drawer(
           child: ListView(
-            children: <Widget>[
-              _renderDrawerHeader(context),
-              ListTile(
-                title: Text("List cards"),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CardListPage(database: database,)
-                      )
-                  );
-                },
-              ),
-              ListTile(
-                title: Text("Item 1"),
-                onTap: () {
-                },
-              ),
-              ListTile(
-                title: Text("Item 1"),
-                onTap: () {
-                },
-              ),
-              ListTile(
-                title: Text("Log out"),
-                onTap: () {
-                  print("Log out");
-                },
-              ),
-            ],
-          )),
+        children: <Widget>[
+          _renderDrawerHeader(context),
+          ListTile(
+            title: Text("List cards"),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          CardListPage(database: widget.database)));
+            },
+          ),
+          ListTile(
+            title: Text("Item 1"),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text("Item 1"),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text(this.isLoggedIn != null ? "Log out" : "Log in"),
+            onTap: () async{
+              if (this.isLoggedIn != null) {
+                await logOut();
+                Navigator.of(context).pop();
+                setState(() {
+                });
+              } else {
+                showLoginDialog(context);
+              }
+            },
+          ),
+        ],
+      )),
     );
   }
 }
