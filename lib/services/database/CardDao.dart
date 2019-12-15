@@ -83,7 +83,7 @@ abstract class CardDao {
     List<Map<String, dynamic>> cards = await db.database.rawQuery(
         'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
     List<CardWithAnswers> parsedRes = [];
-    for (var card in cards) {
+    for (Map<String, dynamic> card in cards) {
       parsedRes.add(CardWithAnswers.fromJSON(card));
     }
     return parsedRes;
@@ -201,6 +201,7 @@ abstract class CardDao {
 
   Future<void> deleteCard(int cardId) async {
     AppDatabase db = await DBProvider.db.database;
+    await db.answerDao.deleteAnswersFromCard(cardId);
     var res = await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
     return res;
   }

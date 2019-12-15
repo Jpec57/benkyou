@@ -56,10 +56,11 @@ class _SRSPreviewState extends State<SRSPreview>{
                     case ConnectionState.waiting:
                       return Text('Awaiting result...');
                     case ConnectionState.done:
-                      if (snapshot.hasError)
+                      if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
+                      }
                       if (snapshot.hasData) {
-                        if (snapshot.data.length == 0){
+                        if (snapshot.data.isEmpty){
                           return Text('Empty');
                         }
                         return new ListView.separated(

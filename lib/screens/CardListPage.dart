@@ -118,7 +118,7 @@ class CardListPageState extends State<CardListPage> {
                   future: widget.database.cardDao.findAllCardsWithAnswers(),
                   builder: (_, AsyncSnapshot<List<CardWithAnswers>> snapshot) {
                     if (snapshot.hasData && snapshot.data.isNotEmpty) {
-                      return ListView.builder(
+                      return ListView.separated(
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ExpansionTile(
@@ -127,7 +127,7 @@ class CardListPageState extends State<CardListPage> {
                               children: <Widget>[
                                 GestureDetector(
                                   onTap: () {
-                                    goToCardPage(context, snapshot.data[index].id);
+                                    goToCardPage(context, snapshot.data[index]);
                                   },
                                   child: Container(
                                     width: MediaQuery.of(context).size.width,
@@ -152,7 +152,9 @@ class CardListPageState extends State<CardListPage> {
                                 )
                               ],
                             );
-                          });
+                          }, separatorBuilder: (BuildContext context, int index) {
+                            return Divider();
+                      },);
                     }
                     return Container(
                       child: Text('No entry yet. Please create a card.'),

@@ -73,11 +73,7 @@ class SideDrawerState extends State<SideDrawer> {
             },
           ),
           ListTile(
-            title: Text("Item 1"),
-            onTap: () {},
-          ),
-          ListTile(
-            title: Text("Item 1"),
+            title: Text("Stats"),
             onTap: () {},
           ),
           ListTile(

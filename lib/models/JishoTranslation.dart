@@ -24,7 +24,7 @@ class JishoTranslation{
   }
 
   static Future<List<JishoTranslation>> getJishoTransLationListFromRequest(String word) async{
-    if (word.length < 1){
+    if (word.isEmpty){
       return [];
     }
     var res = await http.get('https://jisho.org/api/v1/search/words?keyword=$word');

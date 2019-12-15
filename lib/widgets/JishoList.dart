@@ -17,14 +17,14 @@ class JishoListState extends State<JishoList> {
   String subtitleFormatter(JishoTranslation translation){
     String kanji = translation.kanji ?? '';
     String reading = translation.reading ?? '';
-    if (kanji.length > 0 && reading.length > 0){
+    if (kanji.isNotEmpty && reading.isNotEmpty){
       return '$kanji - $reading';
     }
     return '$kanji$reading';
   }
 
   Widget returnList(BuildContext context){
-    if (widget.researchWord != null && widget.researchWord.length > 0){
+    if (widget.researchWord != null && widget.researchWord.isNotEmpty){
       return FutureBuilder(
         future: JishoTranslation.getJishoTransLationListFromRequest(widget.researchWord),
         builder: (BuildContext context, AsyncSnapshot<List<JishoTranslation>> snapshot){

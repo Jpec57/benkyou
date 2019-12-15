@@ -1,4 +1,5 @@
 import 'package:benkyou/models/Card.dart' as card_model;
+import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/screens/CardShowPage.dart';
@@ -36,9 +37,7 @@ void goToDeckInfoPage(BuildContext context, int deckId) async{
   );
 }
 
-void goToCardPage(BuildContext context, int cardId) async{
-  AppDatabase appDatabase = await DBProvider.db.database;
-  card_model.Card card = await appDatabase.cardDao.findCardById(cardId);
+void goToCardPage(BuildContext context, CardWithAnswers card) async{
   Navigator.push(
       context,
       MaterialPageRoute(

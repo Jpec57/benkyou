@@ -53,13 +53,13 @@ class MyApp extends StatelessWidget {
         ),
           home:
 //              CardShowPage(card: cards[0]),
-//              CardListPage(database: database,),
+              CardListPage(database: database,),
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
 //          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
-        CreateCardPage(cardDao: database.cardDao, deck: deck,)
+//        CreateCardPage(cardDao: database.cardDao, deck: deck,)
 
 //      home: BasicContainer(child:
 //      ),

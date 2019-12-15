@@ -179,7 +179,7 @@ class _LateInitPageState extends State<LateInitPage>
               ),
             ),
           ),
-          keyboardIsVisible(context) ? Container() :
+          isKeyboardVisible(context) ? Container() :
           Expanded(
             child: GestureDetector(
               onTap: () {
