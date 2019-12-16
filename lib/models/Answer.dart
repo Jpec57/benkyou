@@ -27,7 +27,7 @@ class Answer {
   Map toMap() {
     Map toReturn = new Map();
     toReturn['id'] = id;
-    toReturn['cardId'] = cardId;
+    toReturn['card_id'] = cardId;
     toReturn['content'] = content;
     return toReturn;
   }
@@ -35,7 +35,7 @@ class Answer {
   factory Answer.fromJSON(Map<String, dynamic> json) {
     return Answer.fromDatabase(
         id: json['id'],
-        cardId: json['cardId'],
+        cardId: json['card_id'],
         content: json['content'],
         isSynchronized: (json['hasSolution'] == 0)
     );

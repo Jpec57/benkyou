@@ -1,6 +1,8 @@
 import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/services/database/Database.dart';
+import 'package:benkyou/services/firebase/synchronizing.dart';
 import 'package:benkyou/services/login.dart';
+import 'package:benkyou/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -75,6 +77,14 @@ class SideDrawerState extends State<SideDrawer> {
           ListTile(
             title: Text("Stats"),
             onTap: () {},
+          ),
+          ListTile(
+            title: Text("Synchronize online"),
+            onTap: () async{
+              showLoadingDialog(context);
+              await synchronizeFirebaseWithLocalData();
+              Navigator.pop(context);
+            },
           ),
           ListTile(
             title: Text(this.isLoggedIn != null ? "Log out" : "Log in"),

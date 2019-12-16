@@ -8,7 +8,7 @@ import 'package:floor/floor.dart';
 
 @dao
 abstract class CardDao {
-  @Insert(onConflict: OnConflictStrategy.REPLACE)
+  @Insert(onConflict: OnConflictStrategy.FAIL)
   Future<int> insertCard(Card card);
 
   Future<List<Card>> findAvailableCardsFromDeckId(int deckId, int time) async {

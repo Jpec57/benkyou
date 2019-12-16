@@ -5,7 +5,7 @@ import 'DBProvider.dart';
 
 @dao
 abstract class DeckDao {
-  @Insert(onConflict: OnConflictStrategy.REPLACE)
+  @Insert(onConflict: OnConflictStrategy.FAIL)
   Future<void> insertDeck(Deck deck);
 
   Future<List<Deck>> findDecks(

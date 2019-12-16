@@ -5,7 +5,7 @@ import 'package:floor/floor.dart';
 
 @dao
 abstract class AnswerDao {
-  @Insert(onConflict: OnConflictStrategy.REPLACE)
+  @Insert(onConflict: OnConflictStrategy.FAIL)
   Future<int> insertAnswer(Answer answer);
 
   Future<int> deleteAnswer(int answerId) async{

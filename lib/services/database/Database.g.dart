@@ -90,7 +90,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Answer` (`id` INTEGER, `card_id` INTEGER, `content` TEXT, `isSynchronized` INTEGER, FOREIGN KEY (`card_id`) REFERENCES `Card` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER, `username` TEXT, `lvl` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER, `username` TEXT, `email` TEXT, `uuid` TEXT, `lvl` INTEGER, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -115,7 +115,7 @@ class _$AppDatabase extends AppDatabase {
 
 class _$DeckDao extends DeckDao {
   _$DeckDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _deckInsertionAdapter = InsertionAdapter(
             database,
             'Deck',
@@ -124,8 +124,7 @@ class _$DeckDao extends DeckDao {
                   'title': item.title,
                   'lastUse': item.lastUse,
                   'isSynchronized': item.isSynchronized ? 1 : 0
-                },
-            changeListener),
+                }),
         _deckUpdateAdapter = UpdateAdapter(
             database,
             'Deck',
@@ -135,8 +134,7 @@ class _$DeckDao extends DeckDao {
                   'title': item.title,
                   'lastUse': item.lastUse,
                   'isSynchronized': item.isSynchronized ? 1 : 0
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -152,29 +150,6 @@ class _$DeckDao extends DeckDao {
   final UpdateAdapter<Deck> _deckUpdateAdapter;
 
   @override
-  Stream<List<Deck>> findAllDecksAsSteam() {
-    return _queryAdapter.queryListStream('SELECT * FROM Deck',
-        tableName: 'Deck', mapper: _deckMapper);
-  }
-
-  @override
-  Future<List<Deck>> findAllDecks() async {
-    return _queryAdapter.queryList('SELECT * FROM Deck', mapper: _deckMapper);
-  }
-
-  @override
-  Future<Deck> findDeckById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Deck WHERE id = ?',
-        arguments: <dynamic>[id], mapper: _deckMapper);
-  }
-
-  @override
-  Future<Deck> findDeckByTitle(String title) async {
-    return _queryAdapter.query('SELECT * FROM Deck WHERE title = ?',
-        arguments: <dynamic>[title], mapper: _deckMapper);
-  }
-
-  @override
   Future<List<Deck>> findAllDecksNotSynchronized() async {
     return _queryAdapter.queryList(
         'SELECT * FROM Deck WHERE isSynchronized = 0',
@@ -183,7 +158,7 @@ class _$DeckDao extends DeckDao {
 
   @override
   Future<void> insertDeck(Deck deck) async {
-    await _deckInsertionAdapter.insert(deck, sqflite.ConflictAlgorithm.replace);
+    await _deckInsertionAdapter.insert(deck, sqflite.ConflictAlgorithm.fail);
   }
 
   @override
@@ -221,7 +196,7 @@ class _$CardDao extends CardDao {
   @override
   Future<int> insertCard(Card card) {
     return _cardInsertionAdapter.insertAndReturnId(
-        card, sqflite.ConflictAlgorithm.replace);
+        card, sqflite.ConflictAlgorithm.fail);
   }
 }
 
@@ -246,6 +221,6 @@ class _$AnswerDao extends AnswerDao {
   @override
   Future<int> insertAnswer(Answer answer) {
     return _answerInsertionAdapter.insertAndReturnId(
-        answer, sqflite.ConflictAlgorithm.replace);
+        answer, sqflite.ConflictAlgorithm.fail);
   }
 }

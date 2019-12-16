@@ -2,6 +2,7 @@ import 'package:benkyou/screens/DeckPage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/login.dart';
+import 'package:benkyou/utils/utils.dart';
 import 'package:benkyou/widgets/LoadingCircle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -135,18 +136,11 @@ class LoginModalState extends State<LoginModal> {
   void launchLoginOrRegisterProcess(
       BuildContext context, String email, String password, bool isLogin) async {
     _formKey.currentState.validate();
-    // ignore: unawaited_futures
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return LoadingCircle();
-        });
+    showLoadingDialog(context);
     try
     {
       var res = (isLogin) ? await loginUser(email.trim(), password.trim()) :
       await registerUser(email.trim(), password.trim());
-
-      print(res);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('uuid', res.user.uid);
       AppDatabase database = await DBProvider.db.database;

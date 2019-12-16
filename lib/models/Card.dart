@@ -128,7 +128,7 @@ class Card {
   Map toMap() {
     Map toReturn = new Map();
     toReturn['id'] = id;
-    toReturn['deckId'] = deckId;
+    toReturn['deck_id'] = deckId;
     toReturn['question'] = question;
     toReturn['hint'] = hint;
     toReturn['useInContext'] = useInContext;
