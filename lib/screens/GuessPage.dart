@@ -321,9 +321,9 @@ class _GuessPageState extends State<GuessPage>
                                       case ConnectionState.waiting:
                                         return Text('Awaiting result...');
                                       case ConnectionState.done:
-                                        if (snapshot.hasError)
-                                          return Text(
-                                              'Error: ${snapshot.error}');
+                                        if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        }
                                         if (snapshot.hasData) {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,

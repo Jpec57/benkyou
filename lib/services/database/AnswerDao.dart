@@ -1,6 +1,6 @@
 import 'package:benkyou/models/Answer.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
-import 'package:benkyou/utils/utils.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:floor/floor.dart';
 
 @dao

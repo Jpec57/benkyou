@@ -6,9 +6,6 @@ bool isKeyboardVisible(BuildContext context) {
   return !(MediaQuery.of(context).viewInsets.bottom == 0.0);
 }
 
-String getComparableString(String string){
-  return string.trim().toLowerCase();
-}
 /// Show a loading dialog dismissable with Navigator.pop(context);
 void showLoadingDialog(BuildContext context){
   showDialog(
@@ -17,3 +14,6 @@ void showLoadingDialog(BuildContext context){
         return LoadingCircle();
       });
 }
+
+
+

@@ -1,8 +1,8 @@
-import 'package:benkyou/models/Card.dart' as ModelCard;
+import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/navigator.dart';
-import 'package:benkyou/utils/utils.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +128,7 @@ class CardListPageState extends State<CardListPage> {
     return false;
   }
 
-  String _getTitleFormat(ModelCard.Card card) {
+  String _getTitleFormat(card_model.Card card) {
     if (card.hint != null && card.hint.trim().isNotEmpty) {
       return '${card.question} - ${card.hint}';
     }

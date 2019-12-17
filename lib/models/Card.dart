@@ -5,6 +5,7 @@ import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/translator/TextConversion.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:floor/floor.dart';
 import 'dart:core';
 
@@ -81,7 +82,8 @@ class Card {
     AppDatabase database = await DBProvider.db.database;
     List<Answer> answers = await database.answerDao.findAllAnswersForCard(id);
     for (var answer in answers){
-      if (answer.content.toLowerCase() == proposedAnswer.toLowerCase() || getJapaneseTranslation(proposedAnswer) == answer.content){
+//      if (answer.content.toLowerCase() == proposedAnswer.toLowerCase() || getJapaneseTranslation(proposedAnswer) == answer.content){
+      if (normalizedStringDistance(answer.content, proposedAnswer) >= 0.8 || getJapaneseTranslation(proposedAnswer) == answer.content){
         return true;
       }
     }

@@ -153,21 +153,21 @@ const KATAKANA_ALPHABET = {
     "ta": "\u30bf",
     "ti": "\u30c1",
     "tu": "\u30c3",
-    "te": "\u30c5",
-    "to": "\u30c7",
+    "te": "\u30c6",
+    "to": "\u30c8",
     "da": "\u30c0",
     "di": "\u30c2",
     "du": "\u30c4",
     "de": "\u30c6",
     "do": "\u30c8",
-    "na": "\u30c9",
-    "ni": "\u30cd",
-    "nu": "\u30d1",
-    "ne": "\u30d5",
-    "no": "\u30d9",
-    "ha": "\u30ca",
-    "hi": "\u30ce",
-    "fu": "\u30d2",
+    "na": "\u30ca",
+    "ni": "\u30cb",
+    "nu": "\u30cc",
+    "ne": "\u30cd",
+    "no": "\u30ce",
+    "ha": "\u30cf",
+    "hi": "\u30d2",
+    "fu": "\u30d5",
     "he": "\u30d6",
     "ho": "\u30da",
     "ba": "\u30cb",
@@ -385,7 +385,7 @@ const rom = {
 };
 
 String getJapaneseTranslation(String val) {
-  if (val.length == 0) {
+  if (val.isEmpty) {
     return '';
   }
   return getConversion(val,
