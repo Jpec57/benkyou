@@ -2,7 +2,6 @@ import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  //TODO double consonants, bad example (not parseable) and whole sentences
   group('Hiragana', () {
 
     test('arigatou', () {
@@ -34,14 +33,20 @@ void main() {
       });
       test("nvm", (){
         String test = getHiragana('nvm');
-        expect(test, "んvm");
+        expect(test, "んvん");
       });
     });
 
-
-
-
-
+    group("Full sentences", (){
+      test("kore wa kamisama ga sazukete kudasatte ni chigainai", (){
+        String test = getHiragana('kore wa kamisama ga sazukete kudasatte ni chigainai');
+        expect(test, "これ は かみさま が さずけて くださって に ちがいない");
+      });
+      test("kore wa kamisama ga sazukete kudasatte ni chigainai", (){
+        String test = getHiragana('kore wa kamisama ga sazukete kudasatte ni chigainai', hasSpace: false);
+        expect(test, "これはかみさまがさずけてくださってにちがいない");
+      });
+    });
 
     group('syllables', (){
       test('aiueo', () {
@@ -87,6 +92,11 @@ void main() {
       test('wawo', () {
         String test = getHiragana('wawo');
         expect(test, "わを");
+      });
+
+      test('papipupepo', () {
+        String test = getHiragana('papipupepo');
+        expect(test, "ぱぴぷぺぽ");
       });
 
       test('n', () {
@@ -173,9 +183,53 @@ void main() {
         expect(test, "ワヲ");
       });
 
+      test('papipupepo', () {
+        String test = getKatakana('papipupepo');
+        expect(test, "パピプペポ");
+      });
+
       test('n', () {
         String test = getKatakana('n');
         expect(test, "ン");
+      });
+    });
+
+    group("Double consonants", (){
+      test("asatte", (){
+        String test = getKatakana('asatte');
+        expect(test, "アサッテ");
+      });
+
+      test("seppuku", (){
+        String test = getKatakana('seppuku');
+        expect(test, "セップク");
+      });
+
+      test("haragaetta", (){
+        String test = getKatakana('haragaetta');
+        expect(test, "ハラガエッタ");
+      });
+    });
+
+    group("Bad examples", (){
+      test("nar", (){
+        String test = getKatakana('nar');
+        expect(test, "ナr");
+      });
+      test("nvm", (){
+        String test = getKatakana('nvm');
+        expect(test, "ンvン");
+      });
+    });
+
+    group("Full sentences", (){
+      test("kore wa kamisama ga sazukete kudasatte ni chigainai", (){
+        String test = getKatakana('kore wa kamisama ga sazukete kudasatte ni chigainai');
+        expect(test, "コレ ハ カミサマ ガ サズケテ クダサッテ ニ チガイナイ");
+      });
+      test("kore wa kamisama ga sazukete kudasatte ni chigainai", (){
+        String test = getKatakana('kore wa kamisama ga sazukete kudasatte ni chigainai', hasSpace: false);
+        expect(test, "コレハカミサマガサズケテクダサッテニチガイナイ");
       });
     });
 
