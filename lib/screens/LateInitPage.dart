@@ -69,11 +69,11 @@ class _LateInitPageState extends State<LateInitPage>
 
     for (var answerController in answerWidgetKey.currentState
         .textEditingControllers) {
-      if (answerController.text.length > 0) {
+      if (answerController.text.isNotEmpty) {
         answers.add(answerController.text.toLowerCase());
       }
     }
-    if (answers.length == 0) {
+    if (answers.isEmpty) {
       print('no answer');
       //TODO
       return;
@@ -91,7 +91,7 @@ class _LateInitPageState extends State<LateInitPage>
     index = (index == 0) ? 0 : index - 1;
     setState(() {
       remainingCards.removeAt(toRemoveIndex);
-      if (remainingCards.length == 0){
+      if (remainingCards.isEmpty){
         goToDeckInfoPage(context, widget.deckId);
       }
     });
@@ -118,13 +118,13 @@ class _LateInitPageState extends State<LateInitPage>
                         children: <Widget>[
                           ShowUp(
                             child: Text(
-                              remainingCards != null && remainingCards.length > 0 ? remainingCards[index]
+                              remainingCards != null && remainingCards.isNotEmpty ? remainingCards[index]
                                   .question : '',
                               style: TextStyle(fontSize: 30),
                             ),
                           ),
                           Text(
-                            remainingCards != null && remainingCards.length > 0 ? (remainingCards[index].hint ??  '') : '',
+                            remainingCards != null && remainingCards.isNotEmpty ? (remainingCards[index].hint ??  '') : '',
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                         ],

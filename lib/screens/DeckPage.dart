@@ -7,7 +7,6 @@ import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
-import 'package:benkyou/services/firebase/synchronizing.dart';
 import 'package:benkyou/services/login.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
 import 'package:benkyou/widgets/Header.dart';
