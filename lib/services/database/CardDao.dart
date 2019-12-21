@@ -78,12 +78,14 @@ abstract class CardDao {
 
   }
 
-  Future<List<CardWithAnswers>> findAllCardsWithAnswers() async {
+  Future<List<CardWithAnswers>> findAllCardsWithAnswersInForeignLanguage() async {
     AppDatabase db = await DBProvider.db.database;
     List<Map<String, dynamic>> cards = await db.database.rawQuery(
-        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id;');
+        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id HAVING c.isForeignWord = 1;');
     List<CardWithAnswers> parsedRes = [];
+    print(cards);
     for (Map<String, dynamic> card in cards) {
+      print(card);
       parsedRes.add(CardWithAnswers.fromJSON(card));
     }
     return parsedRes;

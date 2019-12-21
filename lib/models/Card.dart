@@ -35,8 +35,8 @@ class Card {
   int nbErrors = 0;
   int nbSuccess = 0;
   int nextAvailable = DateTime.now().millisecondsSinceEpoch;
-  bool isReversible = false;
   bool isSynchronized = false;
+  bool isForeignWord = true;
   //IsInitWithSolution?
   bool hasSolution;
 
@@ -44,7 +44,7 @@ class Card {
   //Need to modify CardWithAnswer too if we change something here...
   Card.init(
       this.id, this.deckId, this.question, this.hint, this.useInContext,
-      this.lvl, this.nbErrors, this.nbSuccess, this.nextAvailable, this.isReversible,
+      this.lvl, this.nbErrors, this.nbSuccess, this.nextAvailable, this.isForeignWord,
       this.isSynchronized, this.hasSolution);
 
   Card.fromDatabase({this.id,
@@ -56,7 +56,7 @@ class Card {
     this.nbErrors,
     this.nbSuccess,
     this.nextAvailable,
-    this.isReversible,
+    this.isForeignWord,
     this.isSynchronized,
     this.hasSolution,
   });
@@ -72,7 +72,7 @@ class Card {
       nbErrors: json['nbErrors'],
       nbSuccess: json['nbSuccess'],
       nextAvailable: json['nextAvailable'],
-      isReversible: (json['isReversible'] == 0),
+      isForeignWord: (json['isForeignWord'] == 0),
       isSynchronized: (json['isSynchronized'] == 0),
       hasSolution: (json['hasSolution'] == 0),
     );
@@ -82,8 +82,7 @@ class Card {
     AppDatabase database = await DBProvider.db.database;
     List<Answer> answers = await database.answerDao.findAllAnswersForCard(id);
     for (var answer in answers){
-//      if (answer.content.toLowerCase() == proposedAnswer.toLowerCase() || getJapaneseTranslation(proposedAnswer) == answer.content){
-      if (normalizedStringDistance(answer.content, proposedAnswer) >= 0.8 || getJapaneseTranslation(proposedAnswer) == answer.content){
+      if (isStringDistanceValid(answer.content, proposedAnswer) || getJapaneseTranslation(proposedAnswer) == answer.content){
         return true;
       }
     }
@@ -106,7 +105,8 @@ class Card {
   }
 
   static Future<Card> setCardWithBasicAnswers(int deckId, String question,
-      List<String> answers, {String useInContext, String hint, Card card}) async{
+      List<String> answers, {String useInContext, String hint, Card card,
+        bool isReversible = true}) async{
     AppDatabase appDatabase = await DBProvider.db.database;
     int cardId;
 
@@ -124,6 +124,17 @@ class Card {
       Answer a = new Answer(null, cardId, answer);
       await appDatabase.answerDao.insertAnswer(a);
     }
+    if (isReversible){
+      Card oppositeCard = new Card(null, deckId, answers.join('|'), null, useInContext, true);
+      oppositeCard.isForeignWord = false;
+      int oppositeCardId = await appDatabase.cardDao.insertCard(oppositeCard);
+      Answer oppositeAnswer = new Answer(null, oppositeCardId, question);
+      await appDatabase.answerDao.insertAnswer(oppositeAnswer);
+      if (hint.isNotEmpty){
+        Answer oppositeAnswerHint = new Answer(null, oppositeCardId, hint);
+        await appDatabase.answerDao.insertAnswer(oppositeAnswerHint);
+      }
+    }
     return card;
   }
 
@@ -138,7 +149,6 @@ class Card {
     toReturn['nbErrors'] = nbErrors;
     toReturn['nbSuccess'] = nbSuccess;
     toReturn['nextAvailable'] = nextAvailable;
-    toReturn['isReversible'] = isReversible;
     return toReturn;
   }
   updateCard(AppDatabase database, bool isRight) async{

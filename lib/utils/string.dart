@@ -76,3 +76,16 @@ double normalizedStringDistance(String s1, String s2) {
   }
   return stringDistance(s1, s2) / maxLength;
 }
+
+bool isStringDistanceValid(String s1, String s2){
+  return (1 - normalizedStringDistance(s1, s2)) >= 0.8;
+}
+
+String getQuestionInNativeLanguage(String fullQuestion){
+  List<String> possibleQuestions = fullQuestion.split('|');
+  Random random = new Random();
+  int index = (possibleQuestions.length - 1 > 2)
+      ? random.nextInt(possibleQuestions.length - 1)
+      : 0;
+  return possibleQuestions[index];
+}

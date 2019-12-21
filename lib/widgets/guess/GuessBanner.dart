@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:benkyou/screens/GuessPage.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -80,7 +83,7 @@ class _GuessBannerState extends State<GuessBanner> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    widget.card.question,
+                    getQuestionInNativeLanguage(widget.card.question),
                     style: TextStyle(fontSize: 30),
                   ),
                   Visibility(

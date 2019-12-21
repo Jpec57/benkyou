@@ -124,7 +124,7 @@ class _GuessPageState extends State<GuessPage>
 
   void _addSynonym() async {
     var answerText = newAnswerController.text;
-    if (answerText.length > 0) {
+    if (answerText.isNotEmpty) {
       Answer answer = new Answer(null, widget.cards[currentQuestionIndex].id,
           newAnswerController.text);
       for (var existingAnswer in _answers) {
