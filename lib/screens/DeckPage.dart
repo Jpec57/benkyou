@@ -1,18 +1,23 @@
-import 'package:benkyou/main.dart';
-import 'package:benkyou/models/Answer.dart' as AnswerModel;
-import 'package:benkyou/models/Card.dart' as CardModel;
-import 'package:benkyou/models/Deck.dart' as DeckModel;
+import 'package:benkyou/models/Answer.dart' as answer_model;
+import 'package:benkyou/models/Card.dart' as card_model;
+import 'package:benkyou/models/Deck.dart' as deck_model;
+import 'package:benkyou/models/TimeCard.dart';
+import 'package:benkyou/models/TimeSeriesBar.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
+import 'package:benkyou/services/login.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
+import 'package:benkyou/widgets/Header.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
 import 'package:benkyou/widgets/MyText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class DeckPage extends StatefulWidget {
   final DeckDao deckDao;
@@ -33,7 +38,7 @@ class DeckPageState extends State<DeckPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future onSelectNotification(String payload) async {
-    showDialog(
+    await showDialog(
       context: context,
       builder: (_) {
         return new AlertDialog(
@@ -44,31 +49,35 @@ class DeckPageState extends State<DeckPage> {
     );
   }
 
-  void printCard() async {}
-
   @override
   void initState() {
     super.initState();
-    var callback = onSelectNotification;
+//    var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-//      synchroniseFirebase();
+      var uuid = await isUserLoggedIn();
+      if (uuid != null) {
+        //TODO SHow welcome back 'name'
+        synchroniseFirebase(uuid);
+      } else {
+        //TODO show need to logged in to save online
+      }
       //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }
 
   void updateEntity(AppDatabase appDatabase, String path, entity) async {
     switch (path) {
-      case DeckModel.FIREBASE_KEY:
-        var deck = entity as DeckModel.Deck;
+      case deck_model.FIREBASE_KEY:
+        var deck = entity as deck_model.Deck;
         deck.isSynchronized = true;
         await appDatabase.deckDao.updateDeck(deck);
         break;
-      case CardModel.FIREBASE_KEY:
-        var card = entity as CardModel.Card;
+      case card_model.FIREBASE_KEY:
+        var card = entity as card_model.Card;
         await appDatabase.cardDao.setSynchronized(appDatabase, card.id, true);
         break;
-      case AnswerModel.FIREBASE_KEY:
-        var answer = entity as AnswerModel.Answer;
+      case answer_model.FIREBASE_KEY:
+        var answer = entity as answer_model.Answer;
         await appDatabase.answerDao.updateAnswer(
             {'isSynchronized': true}, 'id = ?',
             whereArgs: [answer.id]);
@@ -80,60 +89,117 @@ class DeckPageState extends State<DeckPage> {
 
   void sendEntityToFirebase(AppDatabase localDatabase,
       CollectionReference databaseReference, String path, List entities) {
-    if (entities != null && entities.length > 0) {
+    if (entities != null && entities.isNotEmpty) {
       Map<String, Map> map = new Map();
       for (var entity in entities) {
         map["${entity.id}"] = entity.toMap();
         updateEntity(localDatabase, path, entity);
       }
-      databaseReference.document(path).setData(map);
+      databaseReference.document(path).setData(map, merge: true);
     }
   }
 
-  void synchroniseFirebase() async {
+  void synchroniseFirebase(String uuid, {onlyNotSynchronised = false}) async {
     final databaseReference =
-        Firestore.instance.collection('benkyou/users/jpec').reference();
+        Firestore.instance.collection('benkyou/users/$uuid').reference();
     AppDatabase database = await DBProvider.db.database;
-    List<DeckModel.Deck> decks =
-        await database.deckDao.findAllDecksNotSynchronized();
-    List<CardModel.Card> cards =
-        await database.cardDao.findAllCardsNotSynchronized();
-    List<AnswerModel.Answer> answers =
-        await database.answerDao.findAllAnswersNotSynchronized();
+    List<deck_model.Deck> decks;
+    List<card_model.Card> cards;
+    List<answer_model.Answer> answers;
+
+    if (onlyNotSynchronised) {
+      decks = await database.deckDao.findAllDecksNotSynchronized();
+      cards = await database.cardDao.findAllCardsNotSynchronized();
+      answers = await database.answerDao.findAllAnswersNotSynchronized();
+    } else {
+      decks = await database.deckDao.findAllDecks();
+      cards = await database.cardDao.findAllCards();
+      answers = await database.answerDao.findAllAnswers();
+    }
 
     sendEntityToFirebase(
-        database, databaseReference, DeckModel.FIREBASE_KEY, decks);
+        database, databaseReference, deck_model.FIREBASE_KEY, decks);
     sendEntityToFirebase(
-        database, databaseReference, CardModel.FIREBASE_KEY, cards);
+        database, databaseReference, card_model.FIREBASE_KEY, cards);
     sendEntityToFirebase(
-        database, databaseReference, AnswerModel.FIREBASE_KEY, answers);
+        database, databaseReference, answer_model.FIREBASE_KEY, answers);
+  }
+
+  Future<TimeSeriesBar> getTimelineSchedule() async {
+    List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
+    DateTime start = DateTime.now();
+    DateTime end = start.add(Duration(days: 1));
+    DateTime tmp = start;
+    const interval = Duration(hours: 1);
+
+    while (tmp.millisecondsSinceEpoch < end.millisecondsSinceEpoch){
+      dates.add(TimeSeriesSales(tmp, 0));
+      tmp = tmp.add(interval);
+    }
+    List<TimeCard> cards = await widget.cardDao.findCardsByHour(start.millisecondsSinceEpoch, endDate: end.millisecondsSinceEpoch);
+
+    for (var card in cards){
+      DateTime date = DateTime.fromMillisecondsSinceEpoch(card.nextAvailable);
+      if (date.difference(start).inHours == 0){
+      }
+      dates.add(TimeSeriesSales(date, card.num));
+    }
+    return TimeSeriesBar(
+      [
+        new charts.Series<TimeSeriesSales, DateTime>(
+          id: 'Review schedule',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (TimeSeriesSales sales, _) => sales.time,
+          measureFn: (TimeSeriesSales sales, _) => sales.sales,
+          data: dates,
+        )
+      ],
+      // Disable animations for image tests.
+      animate: false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BasicContainer(
       child: Column(children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height * 0.12,
-          decoration: BoxDecoration(color: Colors.orange),
-          child: Center(
-            child: Text(
-              'Benkyou',
-              style: TextStyle(fontSize: 30, fontFamily: 'Pacifico'),
-            ),
-          ),
+        Header(
+            title: 'Benkyou',
+            type: HEADER_ICON,
+            hasBackButton: false,
+            icon: Builder(
+              builder: (BuildContext context) {
+                return (GestureDetector(
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+//            showLoginDialog(context);
+                  },
+                  child: Image.asset('resources/imgs/side_drawer_icon.png'),
+                ));
+              },
+            )),
+        ConstrainedBox(
+            constraints: BoxConstraints.expand(height: 100.0), // adjust the height here
+            child: FutureBuilder(
+                future: getTimelineSchedule(),
+              builder: (BuildContext context, AsyncSnapshot<TimeSeriesBar> snapshot) {
+                  if (!snapshot.hasData){
+                    return Text("Loading...");
+                  }
+                  return snapshot.data;
+            },)
         ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: FutureBuilder(
                 future: widget.deckDao.findAllDecks(),
-                builder: (_, AsyncSnapshot<List<DeckModel.Deck>> snapshot) {
+                builder: (_, AsyncSnapshot<List<deck_model.Deck>> snapshot) {
                   if (!snapshot.hasData) {
                     return (Center(
                       child: MyText("You should create a deck first."),
                     ));
-                  } else if (snapshot.hasData && snapshot.data.length == 0) {
+                  } else if (snapshot.hasData && snapshot.data.isEmpty) {
                     return Text('Empty');
                   } else {
                     return (GridView.count(

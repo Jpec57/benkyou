@@ -1,0 +1,13 @@
+include: package:pedantic/analysis_options.1.8.0.yaml
+# https://dart-lang.github.io/linter/lints/
+analyzer:
+  exclude:
+    - build/**
+    - lib/services/database/Database.g.dart
+#  strong-mode:
+#    implicit-casts: false
+
+linter:
+  rules:
+    unnecessary_new: false
+    unawaited_futures: false

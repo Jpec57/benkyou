@@ -1,9 +1,8 @@
 import 'dart:convert';
-
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';

@@ -19,7 +19,6 @@ class _CreateDeckDialogState extends State<CreateDeckDialog>{
 
   @override
   Widget build(BuildContext context) {
-
     return (
         Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here

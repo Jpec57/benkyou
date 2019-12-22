@@ -13,8 +13,9 @@ class Header extends StatelessWidget{
   final String type;
   final Widget icon;
   final Function backFunction;
+  final bool hasBackButton;
 
-  const Header({Key key, @required this.title, this.percentHeight = 0.12, this.type = HEADER_DEFAULT, this.icon, this.backFunction}) : super(key: key);
+  const Header({Key key, @required this.title, this.percentHeight = 0.12, this.type = HEADER_DEFAULT, this.icon, this.backFunction, this.hasBackButton = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +62,8 @@ class Header extends StatelessWidget{
                   onTap: () {
                     goToHomePage(context);
                   },
-                  child: Container(
-                      child: Image.asset('resources/imgs/arrow_back.png')),
+                  child: hasBackButton ? Container(
+                      child: Image.asset('resources/imgs/arrow_back.png')) : Container(),
                 ),
               ),
               Expanded(
@@ -93,18 +94,22 @@ class Header extends StatelessWidget{
           decoration: BoxDecoration(color: Colors.orange),
           child: Row(
             children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  if (backFunction != null){
-                    backFunction();
-                  } else {
-                    goToHomePage(context);
-                  }
-                },
-                child: Container(
-                    child: Image.asset('resources/imgs/arrow_back.png')),
+              Flexible(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () {
+                    if (backFunction != null){
+                      backFunction();
+                    } else {
+                      goToHomePage(context);
+                    }
+                  },
+                  child: Container(
+                      child: Image.asset('resources/imgs/arrow_back.png')),
+                ),
               ),
               Flexible(
+                flex: 5,
                 child: Align(
                   widthFactor: 3,
                   child: Container(

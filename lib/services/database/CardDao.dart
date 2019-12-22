@@ -1,12 +1,14 @@
 import 'package:benkyou/models/Card.dart';
 import 'package:benkyou/models/CardCounter.dart';
+import 'package:benkyou/models/CardWithAnswers.dart';
+import 'package:benkyou/models/TimeCard.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:floor/floor.dart';
 
 @dao
 abstract class CardDao {
-  @Insert(onConflict: OnConflictStrategy.REPLACE)
+  @Insert(onConflict: OnConflictStrategy.FAIL)
   Future<int> insertCard(Card card);
 
   Future<List<Card>> findAvailableCardsFromDeckId(int deckId, int time) async {
@@ -31,7 +33,6 @@ abstract class CardDao {
       String orderBy,
       int limit,
       int offset}) async {
-
     var cards = await DBProvider.db.find('Card',
         where: where,
         whereArgs: whereArgs,
@@ -54,6 +55,38 @@ abstract class CardDao {
 
   Future<List<Card>> findAllCards() async {
     return await findCards();
+  }
+
+  Future<List<TimeCard>> findCardsByHour(int startDate, {int endDate}) async {
+    AppDatabase db = await DBProvider.db.database;
+    List<Map<String, dynamic>> cards = (endDate != null ) ?
+    await db.database.rawQuery(
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable AND nextAvailable <= $endDate GROUP BY nextAvailable ORDER BY nextAvailable') :
+    await db.database.rawQuery(
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable GROUP BY nextAvailable ORDER BY nextAvailable');
+    //Get cards already available
+    List<Map<String, dynamic>> availableCards = await db.database.rawQuery(
+        'SELECT COUNT(*) AS num FROM Card WHERE nextAvailable <= $startDate');
+    List<TimeCard> parsedRes = [];
+    for (var card in cards) {
+      parsedRes.add(TimeCard.fromJson(card));
+    }
+    if (availableCards[0]["num"] != 0){
+      parsedRes.add(TimeCard.fromJson({"nextAvailable": startDate, "num": availableCards[0]["num"]}));
+    }
+    return parsedRes;
+
+  }
+
+  Future<List<CardWithAnswers>> findAllCardsWithAnswersInForeignLanguage() async {
+    AppDatabase db = await DBProvider.db.database;
+    List<Map<String, dynamic>> cards = await db.database.rawQuery(
+        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id HAVING c.isForeignWord = 1;');
+    List<CardWithAnswers> parsedRes = [];
+    for (Map<String, dynamic> card in cards) {
+      parsedRes.add(CardWithAnswers.fromJSON(card));
+    }
+    return parsedRes;
   }
 
   Future<List<Card>> findAllCardsFromDeckId(int id) async {
@@ -129,9 +162,8 @@ abstract class CardDao {
   Future<int> updateCardWithoutOverriding(
       Map<String, dynamic> values, String where,
       {List<dynamic> whereArgs}) async {
-
-    int res = await DBProvider.db
-        .update('Card', values, where, whereArgs: whereArgs);
+    int res =
+        await DBProvider.db.update('Card', values, where, whereArgs: whereArgs);
     return res;
   }
 
@@ -161,16 +193,16 @@ abstract class CardDao {
   }
 
   Future<void> deleteCardsFromDeck(int deckId) async {
-    var db = await DBProvider.db.database;
+    AppDatabase db = await DBProvider.db.database;
     var res =
         await db.database.rawQuery('DELETE FROM Card WHERE deck_id = $deckId');
     return res;
   }
 
   Future<void> deleteCard(int cardId) async {
-    var db = await DBProvider.db.database;
-    var res =
-        await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
+    AppDatabase db = await DBProvider.db.database;
+    await db.answerDao.deleteAnswersFromCard(cardId);
+    var res = await db.database.rawQuery('DELETE FROM Card WHERE id = $cardId');
     return res;
   }
 }

@@ -1,11 +1,12 @@
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as CardModel;
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/navigator.dart';
+import 'package:benkyou/utils/utils.dart';
 import 'package:benkyou/widgets/AddAnswerCardWidget.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/animations/ShowUp.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -68,11 +69,11 @@ class _LateInitPageState extends State<LateInitPage>
 
     for (var answerController in answerWidgetKey.currentState
         .textEditingControllers) {
-      if (answerController.text.length > 0) {
+      if (answerController.text != null && answerController.text.isNotEmpty) {
         answers.add(answerController.text.toLowerCase());
       }
     }
-    if (answers.length == 0) {
+    if (answers.isEmpty) {
       print('no answer');
       //TODO
       return;
@@ -80,7 +81,7 @@ class _LateInitPageState extends State<LateInitPage>
 
     await CardModel.Card.setCardWithBasicAnswers(
         remainingCards[index].deckId, remainingCards[index].question, answers,
-        card: remainingCards[index]);
+        card: remainingCards[index], hint: remainingCards[index].hint);
 
     _reindexCards(toRemoveIndex);
   }
@@ -90,7 +91,7 @@ class _LateInitPageState extends State<LateInitPage>
     index = (index == 0) ? 0 : index - 1;
     setState(() {
       remainingCards.removeAt(toRemoveIndex);
-      if (remainingCards.length == 0){
+      if (remainingCards.isEmpty){
         goToDeckInfoPage(context, widget.deckId);
       }
     });
@@ -113,12 +114,21 @@ class _LateInitPageState extends State<LateInitPage>
               children: <Widget>[
                 Container(
                   child: Center(
-                      child: ShowUp(
-                        child: Text(
-                          remainingCards != null && remainingCards.length > 0 ? remainingCards[index]
-                              .question : '',
-                          style: TextStyle(fontSize: 30),
-                        ),
+                      child: Column(
+                        children: <Widget>[
+                          ShowUp(
+                            child: Text(
+                              remainingCards != null && remainingCards.isNotEmpty ? remainingCards[index]
+                                  .question : '',
+                              style: TextStyle(fontSize: 30),
+                            ),
+                          ),
+                          Text(
+                            remainingCards != null && remainingCards.isNotEmpty ? (remainingCards[index].hint ??  '') : '',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.center,
                       ),
                   ),
                 ),
@@ -169,6 +179,7 @@ class _LateInitPageState extends State<LateInitPage>
               ),
             ),
           ),
+          isKeyboardVisible(context) ? Container() :
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -178,7 +189,7 @@ class _LateInitPageState extends State<LateInitPage>
                 color: Colors.red,
                 child: Center(
                     child: Text(
-                      'DELETE CARD',
+                      'DISCARD CARD',
                       style: TextStyle(color: Colors.white, fontSize: 30),
                     )),
               ),

@@ -153,21 +153,21 @@ const KATAKANA_ALPHABET = {
     "ta": "\u30bf",
     "ti": "\u30c1",
     "tu": "\u30c3",
-    "te": "\u30c5",
-    "to": "\u30c7",
+    "te": "\u30c6",
+    "to": "\u30c8",
     "da": "\u30c0",
     "di": "\u30c2",
     "du": "\u30c4",
     "de": "\u30c6",
     "do": "\u30c8",
-    "na": "\u30c9",
-    "ni": "\u30cd",
-    "nu": "\u30d1",
-    "ne": "\u30d5",
-    "no": "\u30d9",
-    "ha": "\u30ca",
-    "hi": "\u30ce",
-    "fu": "\u30d2",
+    "na": "\u30ca",
+    "ni": "\u30cb",
+    "nu": "\u30cc",
+    "ne": "\u30cd",
+    "no": "\u30ce",
+    "ha": "\u30cf",
+    "hi": "\u30d2",
+    "fu": "\u30d5",
     "he": "\u30d6",
     "ho": "\u30da",
     "ba": "\u30cb",
@@ -175,11 +175,11 @@ const KATAKANA_ALPHABET = {
     "bu": "\u30d3",
     "be": "\u30d7",
     "bo": "\u30db",
-    "pa": "\u30cc",
-    "pi": "\u30d0",
-    "pu": "\u30d4",
-    "pe": "\u30d8",
-    "po": "\u30dc",
+    "pa": "\u30d1",
+    "pi": "\u30d4",
+    "pu": "\u30d7",
+    "pe": "\u30da",
+    "po": "\u30dd",
     "ma": "\u30de",
     "mi": "\u30df",
     "mu": "\u30e0",
@@ -384,20 +384,23 @@ const rom = {
   12509: "po"
 };
 
-String getJapaneseTranslation(String val) {
-  if (val.length == 0) {
+String getJapaneseTranslation(String val, {bool onlyJapanese = false,
+  bool hasSpace = true}) {
+  if (val.isEmpty) {
     return '';
   }
-  return getConversion(val,
-      val[0].toUpperCase() == val[0] ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET) ?? '';
+  Map<int, Map<String, String>> alphabet = (val[0].toUpperCase() == val[0]) ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET;
+  return getConversion(val, alphabet, onlyJapanese: onlyJapanese, hasSpace: hasSpace) ?? '';
 }
 
-String getHiragana(String val) {
-  return getConversion(val, HIRAGANA_ALPHABET).trim();
+String getHiragana(String val, {bool onlyJapanese = false,
+  bool hasSpace = true}) {
+  return getConversion(val, HIRAGANA_ALPHABET, onlyJapanese: onlyJapanese, hasSpace: hasSpace);
 }
 
-String getKatakana(String val) {
-  return getConversion(val, KATAKANA_ALPHABET).trim();
+String getKatakana(String val, {bool onlyJapanese = false,
+  bool hasSpace = true}) {
+  return getConversion(val, KATAKANA_ALPHABET, onlyJapanese: onlyJapanese, hasSpace: hasSpace);
 }
 // TODO convert kana to romaji
 //String getRomaji(String val) {
@@ -465,7 +468,8 @@ String getSafeSubstring(String str, int startIndex, int size, int strLength) {
       : str.substring(startIndex, startIndex + size);
 }
 
-String getConversion(String val, alphabet) {
+String getConversion(String val, alphabet, {bool onlyJapanese = false,
+  bool hasSpace = true}) {
   var i = 0;
   var res = "";
   String tmpChar;
@@ -476,13 +480,14 @@ String getConversion(String val, alphabet) {
     i = 0;
     wordLength = word.length;
     while (i < wordLength) {
+      //3 letter syllable
       tmpChar = getMatchingCharacterInAlphabet(
           3, getSafeSubstring(word, i, 3, wordLength), alphabet);
 
+      //Compound syllable
       if (tmpChar == null) {
         var ch1 = getSafeSubstring(word, i, 1, wordLength);
         var ch2 = getSafeSubstring(word, i + 1, 2, wordLength);
-
         if (ch1 != null &&
             ch2 != null &&
             ch1 != 'n' &&
@@ -493,10 +498,12 @@ String getConversion(String val, alphabet) {
         }
       }
 
+      //2 letter syllable
       if (tmpChar != null) {
         i += 2;
       } else {
         var char = getSafeSubstring(word, i, 2, wordLength);
+        //Particular case
         if (char == 'wa' && char == word) {
           char = "ha";
         }
@@ -504,6 +511,7 @@ String getConversion(String val, alphabet) {
         if (tmpChar != null) {
           i += 1;
         } else {
+          //1 letter syllable
           tmpChar = getMatchingCharacterInAlphabet(
               1, getSafeSubstring(word, i, 1, wordLength), alphabet);
         }
@@ -511,10 +519,17 @@ String getConversion(String val, alphabet) {
       // We've found a solution with 1, 2 or 3 characters
       if (tmpChar != null) {
         res += tmpChar;
+      } else {
+        //Add the non-translated term to the string for continuous translation
+        if (!onlyJapanese){
+          res += word[i];
+        }
       }
       i++;
     }
-    res += " ";
+    if (hasSpace){
+      res += " ";
+    }
   }
-  return res;
+  return res.trim();
 }

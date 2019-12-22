@@ -5,23 +5,60 @@ import 'DBProvider.dart';
 
 @dao
 abstract class DeckDao {
-  @Insert(onConflict: OnConflictStrategy.REPLACE)
+  @Insert(onConflict: OnConflictStrategy.FAIL)
   Future<void> insertDeck(Deck deck);
 
-  @Query('SELECT * FROM Deck')
-  Stream<List<Deck>> findAllDecksAsSteam();
+  Future<List<Deck>> findDecks(
+      {bool distinct,
+        List<String> columns,
+        String where,
+        List<dynamic> whereArgs,
+        String groupBy,
+        String having,
+        String orderBy,
+        int limit,
+        int offset}) async {
 
-  @Query('SELECT * FROM Deck')
-  Future<List<Deck>> findAllDecks();
+    var decks = await DBProvider.db.find('Deck',
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset);
 
-  @Query('SELECT * FROM Deck WHERE id = :id')
-  Future<Deck> findDeckById(int id);
+    List<Deck> parsedRes = [];
+    for (var deck in decks) {
+      parsedRes.add(Deck.fromJSON(deck));
+    }
+    return parsedRes;
+  }
 
-  @Query('SELECT * FROM Deck WHERE title = :title')
-  Future<Deck> findDeckByTitle(String title);
+  Future<List<Deck>> findAllDecks() async{
+    return await findDecks();
+  }
+
+  Future<Deck> findDeckById(int id) async{
+    var res = await findDecks(where: 'id = ?', whereArgs: [id]);
+    if (res.isEmpty) {
+      return null;
+    }
+    return (res)[0];
+  }
+
+  Future<Deck> findDeckByTitle(String title) async{
+    var res = await findDecks(where: 'title = ?', whereArgs: [title]);
+    if (res.isEmpty) {
+      return null;
+    }
+    return (res)[0];
+  }
 
   @Query('SELECT * FROM Deck WHERE isSynchronized = 0')
-  Future<List<Deck>> findAllDecksNotSynchronized();
+  Future<List<Deck>> findAllDecksNotSynchronized() async{
+    return await findDecks(where: 'isSynchronized = 0');
+  }
 
 
   @Update(onConflict: OnConflictStrategy.REPLACE)

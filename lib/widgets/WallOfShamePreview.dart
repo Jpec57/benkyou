@@ -1,10 +1,7 @@
 import 'dart:async';
-
-import 'package:benkyou/constants/utils.dart';
-import 'package:benkyou/models/Answer.dart';
-import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -46,14 +43,14 @@ class _WallOfShamePreviewState extends State<WallOfShamePreview> {
   void setTimer() async{
     if (_badCardsLength > 0){
       setState(() {
-        _shameQuestion = _badCards[0]['question'];
+        _shameQuestion = getQuestionInNativeLanguage(_badCards[0]['question']);
         _shameAnswer = _badCards[0]['answer'];
         _isVisible = !_isVisible;
       });
       _timer = Timer.periodic(Duration(seconds: fadeInDuration + 1), (timer) {
         _index = (_index + 1) % _badCardsLength;
         setState(() {
-          _shameQuestion = _badCards[_index]['question'];
+          _shameQuestion = getQuestionInNativeLanguage(_badCards[_index]['question']);
           _shameAnswer = _badCards[_index]['answer'];
           _isVisible = !_isVisible;
         });

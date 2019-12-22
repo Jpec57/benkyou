@@ -1,5 +1,4 @@
 import 'package:benkyou/models/AppState.dart';
-import 'package:benkyou/services/database/Database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +40,7 @@ class AppStateContainer extends StatefulWidget {
   // On MediaQueries, Theme, etc
   // This is the secret to accessing your AppState all over your app
   static AppStateContainerState of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(_InheritedStateContainer)
+    return (context.dependOnInheritedWidgetOfExactType()
     as _InheritedStateContainer)
         .data;
   }

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo 'Running tests...'
-flutter test
+echo 'Running linter...'
+sh linter.sh

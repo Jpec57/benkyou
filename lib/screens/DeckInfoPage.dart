@@ -1,4 +1,3 @@
-import 'package:benkyou/main.dart';
 import 'package:benkyou/models/Card.dart' as cardModel;
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/screens/CreateCardPage.dart';
@@ -10,6 +9,7 @@ import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/SRSPreview.dart';
 import 'package:benkyou/widgets/WallOfShamePreview.dart';
+import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
