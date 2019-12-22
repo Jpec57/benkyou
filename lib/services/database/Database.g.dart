@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Deck` (`id` INTEGER, `title` TEXT, `lastUse` INTEGER, `isSynchronized` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Deck` (`id` INTEGER, `title` TEXT, `lastUse` INTEGER, `isSynchronized` INTEGER, `isPublic` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Card` (`id` INTEGER, `deck_id` INTEGER, `question` TEXT, `hint` TEXT, `useInContext` TEXT, `lvl` INTEGER, `nbErrors` INTEGER, `nbSuccess` INTEGER, `nextAvailable` INTEGER, `isSynchronized` INTEGER, `isForeignWord` INTEGER, `hasSolution` INTEGER, FOREIGN KEY (`deck_id`) REFERENCES `Deck` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
         await database.execute(
@@ -123,7 +123,8 @@ class _$DeckDao extends DeckDao {
                   'id': item.id,
                   'title': item.title,
                   'lastUse': item.lastUse,
-                  'isSynchronized': item.isSynchronized ? 1 : 0
+                  'isSynchronized': item.isSynchronized ? 1 : 0,
+                  'isPublic': item.isPublic ? 1 : 0
                 }),
         _deckUpdateAdapter = UpdateAdapter(
             database,
@@ -133,7 +134,8 @@ class _$DeckDao extends DeckDao {
                   'id': item.id,
                   'title': item.title,
                   'lastUse': item.lastUse,
-                  'isSynchronized': item.isSynchronized ? 1 : 0
+                  'isSynchronized': item.isSynchronized ? 1 : 0,
+                  'isPublic': item.isPublic ? 1 : 0
                 });
 
   final sqflite.DatabaseExecutor database;

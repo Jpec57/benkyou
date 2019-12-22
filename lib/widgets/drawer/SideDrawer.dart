@@ -2,6 +2,7 @@ import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/firebase/synchronizing.dart';
 import 'package:benkyou/services/login.dart';
+import 'package:benkyou/services/navigator.dart';
 import 'package:benkyou/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,14 +76,29 @@ class SideDrawerState extends State<SideDrawer> {
             },
           ),
           ListTile(
-            title: Text("Stats"),
-            onTap: () {},
+            title: Text("Profile"),
+            onTap: () {
+              goToUserProfilePage(context);
+            },
           ),
           ListTile(
-            title: Text("Synchronize online"),
+            title: Text("Browse decks"),
+            onTap: () {
+              goToBrowsingDeckPage(context);
+            },
+          ),
+          ListTile(
+            title: Text("Quick reviews"),
+            onTap: () {
+              goToTinderLikePage(context);
+            },
+          ),
+          ListTile(
+            title: Text("Import online data"),
             onTap: () async{
               showLoadingDialog(context);
-              await synchronizeFirebaseWithLocalData();
+              await importFirebaseDataToLocal();
+              Navigator.pop(context);
               Navigator.pop(context);
             },
           ),

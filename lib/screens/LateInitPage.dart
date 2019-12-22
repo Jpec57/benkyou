@@ -69,7 +69,7 @@ class _LateInitPageState extends State<LateInitPage>
 
     for (var answerController in answerWidgetKey.currentState
         .textEditingControllers) {
-      if (answerController.text.isNotEmpty) {
+      if (answerController.text != null && answerController.text.isNotEmpty) {
         answers.add(answerController.text.toLowerCase());
       }
     }
@@ -81,7 +81,7 @@ class _LateInitPageState extends State<LateInitPage>
 
     await CardModel.Card.setCardWithBasicAnswers(
         remainingCards[index].deckId, remainingCards[index].question, answers,
-        card: remainingCards[index]);
+        card: remainingCards[index], hint: remainingCards[index].hint);
 
     _reindexCards(toRemoveIndex);
   }

@@ -61,9 +61,9 @@ abstract class CardDao {
     AppDatabase db = await DBProvider.db.database;
     List<Map<String, dynamic>> cards = (endDate != null ) ?
     await db.database.rawQuery(
-        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable AND nextAvailable <= $endDate GROUP BY nextAvailable') :
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable AND nextAvailable <= $endDate GROUP BY nextAvailable ORDER BY nextAvailable') :
     await db.database.rawQuery(
-        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable GROUP BY nextAvailable');
+        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable GROUP BY nextAvailable ORDER BY nextAvailable');
     //Get cards already available
     List<Map<String, dynamic>> availableCards = await db.database.rawQuery(
         'SELECT COUNT(*) AS num FROM Card WHERE nextAvailable <= $startDate');

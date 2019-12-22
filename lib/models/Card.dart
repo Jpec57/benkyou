@@ -82,7 +82,8 @@ class Card {
     AppDatabase database = await DBProvider.db.database;
     List<Answer> answers = await database.answerDao.findAllAnswersForCard(id);
     for (var answer in answers){
-      if (isStringDistanceValid(answer.content, proposedAnswer) || getJapaneseTranslation(proposedAnswer) == answer.content){
+      String answerWithoutInfo = getAnswerWithoutInfo(answer.content);
+      if (isStringDistanceValid(answerWithoutInfo, proposedAnswer) || getJapaneseTranslation(proposedAnswer) == answerWithoutInfo){
         return true;
       }
     }
@@ -130,7 +131,7 @@ class Card {
       int oppositeCardId = await appDatabase.cardDao.insertCard(oppositeCard);
       Answer oppositeAnswer = new Answer(null, oppositeCardId, question);
       await appDatabase.answerDao.insertAnswer(oppositeAnswer);
-      if (hint.isNotEmpty){
+      if (hint != null && hint.isNotEmpty){
         Answer oppositeAnswerHint = new Answer(null, oppositeCardId, hint);
         await appDatabase.answerDao.insertAnswer(oppositeAnswerHint);
       }

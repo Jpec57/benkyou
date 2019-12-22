@@ -50,7 +50,7 @@ void synchronizeAnswersInDatabaseFromFirebase(AnswerDao answerDao, Map<String, d
   });
 }
 
-void synchronizeFirebaseWithLocalData() async{
+void importFirebaseDataToLocal() async{
   AppDatabase database = await DBProvider.db.database;
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   String uuid = sharedPreferences.getString('uuid');

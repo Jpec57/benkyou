@@ -126,27 +126,28 @@ class DeckPageState extends State<DeckPage> {
   }
 
   Future<TimeSeriesBar> getTimelineSchedule() async {
-    bool hasEnd = false;
-    bool hasStart = false;
     List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
     DateTime start = DateTime.now();
     DateTime end = start.add(Duration(days: 1));
+    DateTime tmp = start;
+    const interval = Duration(hours: 1);
+
+    while (tmp.millisecondsSinceEpoch < end.millisecondsSinceEpoch){
+      dates.add(TimeSeriesSales(tmp, 0));
+      tmp = tmp.add(interval);
+    }
     List<TimeCard> cards = await widget.cardDao.findCardsByHour(start.millisecondsSinceEpoch, endDate: end.millisecondsSinceEpoch);
 
     for (var card in cards){
       DateTime date = DateTime.fromMillisecondsSinceEpoch(card.nextAvailable);
-      if (date.difference(start).inDays == 0){
-        hasStart = true;
-      }
-      if (date.difference(end).inDays == 0){
-        hasEnd = true;
+      if (date.difference(start).inHours == 0){
       }
       dates.add(TimeSeriesSales(date, card.num));
     }
     return TimeSeriesBar(
       [
         new charts.Series<TimeSeriesSales, DateTime>(
-          id: 'Sales',
+          id: 'Review schedule',
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (TimeSeriesSales sales, _) => sales.time,
           measureFn: (TimeSeriesSales sales, _) => sales.sales,

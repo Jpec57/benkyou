@@ -81,6 +81,11 @@ bool isStringDistanceValid(String s1, String s2){
   return (1 - normalizedStringDistance(s1, s2)) >= 0.8;
 }
 
+String getAnswerWithoutInfo(String answer){
+  RegExp regExp = RegExp(r'\(.*\)');
+  return answer.replaceAll(regExp, '').trim();
+}
+
 String getQuestionInNativeLanguage(String fullQuestion){
   List<String> possibleQuestions = fullQuestion.split('|');
   Random random = new Random();

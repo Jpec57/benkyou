@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:benkyou/animations/TinderCard/TinderCardAnimations.dart';
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/CardDao.dart';
+import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/TinderCard.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,6 +29,8 @@ class TinderLikePageState extends State<TinderLikePage>
   Alignment frontCardAlign;
   double frontCardRot = 0.0;
   bool _isAnswerVisible = false;
+  int _success = 0;
+  int _errors = 0;
 
   @override
   void initState() {
@@ -79,8 +82,14 @@ class TinderLikePageState extends State<TinderLikePage>
 
   Widget frontCard(BuildContext context, model_card.Card card) {
     if (card == null) {
-      return Container(
-        child: Text("Empty"),
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text("Congratulations !"),
+            Text("You're done reviewing cards."),
+          ],
+        ),
       );
     }
     return Align(
@@ -144,7 +153,13 @@ class TinderLikePageState extends State<TinderLikePage>
             onPanEnd: (_) {
               // If the front card was swiped far enough to count as swiped
               if (frontCardAlign.x > 3.0 || frontCardAlign.x < -3.0) {
+                if (frontCardAlign.x > 3.0){
+                  _success++;
+                } else {
+                  _errors++;
+                }
                 setState(() {
+                  _isAnswerVisible = false;
                 });
                 animateCards();
               } else {
@@ -165,6 +180,7 @@ class TinderLikePageState extends State<TinderLikePage>
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
+          Header(title: 'Card swiper'),
           Expanded(
             flex: 3,
             child: Padding(
@@ -181,7 +197,23 @@ class TinderLikePageState extends State<TinderLikePage>
           ),
           Expanded(
             flex: 1,
-            child: Container(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Success: ${_success}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Errors: ${_errors}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),

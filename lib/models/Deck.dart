@@ -9,13 +9,20 @@ class Deck {
   final String title;
   int lastUse = new DateTime.now().millisecondsSinceEpoch;
   bool isSynchronized = false;
+  bool isPublic = false;
 
   Deck(this.id, this.title, this.lastUse);
 
-  Deck.init(this.id, this.title, this.lastUse, this.isSynchronized);
+  Deck.fromDatabase({this.id, this.title, this.lastUse, this.isPublic});
+  Deck.init(this.id, this.title, this.lastUse, this.isSynchronized, this.isPublic);
 
   factory Deck.fromJSON(Map<String, dynamic> json) {
-    return Deck(json['id'], json['title'], json['lastUse']);
+    return Deck.fromDatabase(
+        id: json['id'],
+        title: json['title'],
+        lastUse: json['lastUse'],
+        isPublic: json['isPublic'] == 0
+    );
   }
 
   Map<String, dynamic> toMap() {

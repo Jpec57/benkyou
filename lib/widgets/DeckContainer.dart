@@ -46,6 +46,7 @@ class DeckContainerState extends State<DeckContainer> {
   }
 
   void deleteDeck() async{
+    //TODO delete remotely
     AppDatabase database = await DBProvider.db.database;
     database.deckDao.deleteDeck(widget.deck.id);
     widget.parent.setState((){});

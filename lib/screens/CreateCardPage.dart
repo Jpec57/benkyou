@@ -44,6 +44,7 @@ class _CreateCardState extends State<CreateCardPage> {
   bool _needParseInJapanese = true;
   bool _isLateInit = false;
   bool _isQuestionErrorVisible = false;
+  bool _isReversible = true;
   GlobalKey<AddAnswerCardWidgetState> answerWidgetKey =
       new GlobalKey<AddAnswerCardWidgetState>();
 
@@ -112,7 +113,7 @@ class _CreateCardState extends State<CreateCardPage> {
         }
         await CardModel.Card.setCardWithBasicAnswers(
             widget.deck.id, question, answers,
-            hint: hint);
+            hint: hint, isReversible: _isReversible);
       } else {
         CardModel.Card card = new CardModel.Card(
             null, widget.deck.id, question, hint, null, false);
@@ -266,6 +267,23 @@ class _CreateCardState extends State<CreateCardPage> {
                                     'Enter kanji here'),
                           ),
                         ]),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Is card reversible ?', style: TextStyle(fontSize: 18),),
+                          Switch(
+                            value: _isReversible,
+                            onChanged: (bool value) {
+                              setState(() {
+                                _isReversible = !_isReversible;
+                              });
+                          },
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
