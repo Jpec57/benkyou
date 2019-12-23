@@ -77,7 +77,10 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ReviewSchedule(cardDao: widget.cardDao, deckId: widget.deck.id),
+              ReviewSchedule(cardDao: widget.cardDao, deckId: widget.deck.id, colors: [
+                  Color(0xff646461),
+              Color(0xff248CCB),
+            ],),
             SRSPreview(cardDao: widget.cardDao, deckId: widget.deck.id,),
               WallOfShamePreview(cardDao: widget.cardDao, deckId: widget.deck.id),
             ],
@@ -117,7 +120,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
                 builder: (_, AsyncSnapshot<List<cardModel.Card>> snapshot) {
                   if (snapshot.hasData &&
                       snapshot.data != null &&
-                      snapshot.data.length >= 1) {
+                      snapshot.data.isNotEmpty) {
                     return GestureDetector(
                       onTap: () async {
                         AppDatabase appDatabase = await DBProvider.db.database;

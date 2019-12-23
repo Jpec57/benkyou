@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 
 class ReviewSchedule extends StatefulWidget {
   final double size;
-  final Color color;
+  final List<Color> colors;
   final CardDao cardDao;
   final int deckId;
 
   const ReviewSchedule(
       {Key key,
       this.size = 100,
-      this.color = Colors.red,
+      this.colors = const [Colors.red],
         @required this.cardDao, this.deckId})
       : super(key: key);
 
@@ -40,7 +40,7 @@ class ReviewScheduleState extends State<ReviewSchedule> {
     );
   }
 
-  Widget _getColumn(double current, double max) {
+  Widget _getColumn(double current, double max, int index) {
     if (max <= 0.0){
       max = 1;
     }
@@ -63,7 +63,7 @@ class ReviewScheduleState extends State<ReviewSchedule> {
                 ),
               ),
               decoration: BoxDecoration(
-                  color: widget.color,
+                  color: widget.colors[index % widget.colors.length],
                   border: Border(
                       left: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
                       right:
@@ -107,7 +107,7 @@ class ReviewScheduleState extends State<ReviewSchedule> {
         sum += cards[i].num;
         i++;
       }
-      columns.add(_getColumn(sum.toDouble(), maxSum.toDouble()));
+      columns.add(_getColumn(sum.toDouble(), maxSum.toDouble(), j));
       labels.add(_getLabel(this.isWholeWeek ? "${tmp.month}/${tmp.day}" : "${tmp.hour}h", index: j));
       tmp = tmp.add(interval);
       j++;

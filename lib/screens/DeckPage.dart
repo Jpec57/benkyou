@@ -145,7 +145,13 @@ class DeckPageState extends State<DeckPage> {
                 ));
               },
             )),
-        ReviewSchedule(cardDao: widget.cardDao),
+        ReviewSchedule(
+          cardDao: widget.cardDao,
+          colors: [
+            Color(0xff646461),
+            Color(0xff248CCB),
+          ],
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
