@@ -57,28 +57,32 @@ abstract class CardDao {
     return await findCards();
   }
 
-  Future<List<TimeCard>> findCardsByHour(int startDate, {int endDate}) async {
+  Future<List<TimeCard>> findCardsByHour(int startDate, {int endDate, int deckId}) async {
     AppDatabase db = await DBProvider.db.database;
-    List<Map<String, dynamic>> cards = (endDate != null ) ?
-    await db.database.rawQuery(
-        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable AND nextAvailable <= $endDate GROUP BY nextAvailable ORDER BY nextAvailable') :
-    await db.database.rawQuery(
-        'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE $startDate <= nextAvailable GROUP BY nextAvailable ORDER BY nextAvailable');
+    List<Map<String, dynamic>> cards;
+    if (endDate != null) {
+      cards = await db.database.rawQuery(
+          'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE ${deckId != null ? "deck_id = $deckId AND" : ""} $startDate <= nextAvailable AND nextAvailable <= $endDate GROUP BY nextAvailable ORDER BY nextAvailable ASC');
+    } else {
+      cards = await db.database.rawQuery(
+          'SELECT nextAvailable, COUNT(*) AS num FROM Card WHERE ${deckId != null ? "deck_id = $deckId AND" : ""} $startDate <= nextAvailable GROUP BY nextAvailable ORDER BY nextAvailable ASC');
+    }
     //Get cards already available
     List<Map<String, dynamic>> availableCards = await db.database.rawQuery(
-        'SELECT COUNT(*) AS num FROM Card WHERE nextAvailable <= $startDate');
+        'SELECT COUNT(*) AS num FROM Card WHERE ${deckId != null ? "deck_id = $deckId AND" : ""} nextAvailable <= $startDate');
     List<TimeCard> parsedRes = [];
+    if (availableCards[0]["num"] != 0) {
+      parsedRes.add(TimeCard.fromJson(
+          {"nextAvailable": startDate, "num": availableCards[0]["num"]}));
+    }
     for (var card in cards) {
       parsedRes.add(TimeCard.fromJson(card));
     }
-    if (availableCards[0]["num"] != 0){
-      parsedRes.add(TimeCard.fromJson({"nextAvailable": startDate, "num": availableCards[0]["num"]}));
-    }
     return parsedRes;
-
   }
 
-  Future<List<CardWithAnswers>> findAllCardsWithAnswersInForeignLanguage() async {
+  Future<List<CardWithAnswers>>
+      findAllCardsWithAnswersInForeignLanguage() async {
     AppDatabase db = await DBProvider.db.database;
     List<Map<String, dynamic>> cards = await db.database.rawQuery(
         'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id HAVING c.isForeignWord = 1;');

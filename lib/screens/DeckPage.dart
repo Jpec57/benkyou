@@ -10,6 +10,7 @@ import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/services/login.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
 import 'package:benkyou/widgets/Header.dart';
+import 'package:benkyou/widgets/ReviewSchedule.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
 import 'package:benkyou/widgets/MyText.dart';
@@ -125,40 +126,6 @@ class DeckPageState extends State<DeckPage> {
         database, databaseReference, answer_model.FIREBASE_KEY, answers);
   }
 
-  Future<TimeSeriesBar> getTimelineSchedule() async {
-    List<TimeSeriesSales> dates = new List<TimeSeriesSales>();
-    DateTime start = DateTime.now();
-    DateTime end = start.add(Duration(days: 1));
-    DateTime tmp = start;
-    const interval = Duration(hours: 1);
-
-    while (tmp.millisecondsSinceEpoch < end.millisecondsSinceEpoch){
-      dates.add(TimeSeriesSales(tmp, 0));
-      tmp = tmp.add(interval);
-    }
-    List<TimeCard> cards = await widget.cardDao.findCardsByHour(start.millisecondsSinceEpoch, endDate: end.millisecondsSinceEpoch);
-
-    for (var card in cards){
-      DateTime date = DateTime.fromMillisecondsSinceEpoch(card.nextAvailable);
-      if (date.difference(start).inHours == 0){
-      }
-      dates.add(TimeSeriesSales(date, card.num));
-    }
-    return TimeSeriesBar(
-      [
-        new charts.Series<TimeSeriesSales, DateTime>(
-          id: 'Review schedule',
-          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-          domainFn: (TimeSeriesSales sales, _) => sales.time,
-          measureFn: (TimeSeriesSales sales, _) => sales.sales,
-          data: dates,
-        )
-      ],
-      // Disable animations for image tests.
-      animate: false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BasicContainer(
@@ -178,17 +145,7 @@ class DeckPageState extends State<DeckPage> {
                 ));
               },
             )),
-        ConstrainedBox(
-            constraints: BoxConstraints.expand(height: 100.0), // adjust the height here
-            child: FutureBuilder(
-                future: getTimelineSchedule(),
-              builder: (BuildContext context, AsyncSnapshot<TimeSeriesBar> snapshot) {
-                  if (!snapshot.hasData){
-                    return Text("Loading...");
-                  }
-                  return snapshot.data;
-            },)
-        ),
+        ReviewSchedule(cardDao: widget.cardDao),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),

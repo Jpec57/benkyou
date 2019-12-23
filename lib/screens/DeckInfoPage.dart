@@ -7,6 +7,7 @@ import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/widgets/Header.dart';
+import 'package:benkyou/widgets/ReviewSchedule.dart';
 import 'package:benkyou/widgets/SRSPreview.dart';
 import 'package:benkyou/widgets/WallOfShamePreview.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
@@ -38,7 +39,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
   void checkIfAwaitingCards() async{
     List<cardModel.Card> awaitingCards = await widget.cardDao.findCardsWithoutSolution(deckId: widget.deck.id);
     setState(() {
-      _hasNoSolutionCards = (awaitingCards.length > 0);
+      _hasNoSolutionCards = (awaitingCards.isNotEmpty);
     });
   }
 
@@ -76,6 +77,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              ReviewSchedule(cardDao: widget.cardDao, deckId: widget.deck.id),
             SRSPreview(cardDao: widget.cardDao, deckId: widget.deck.id,),
               WallOfShamePreview(cardDao: widget.cardDao, deckId: widget.deck.id),
             ],
