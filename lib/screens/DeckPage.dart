@@ -101,8 +101,8 @@ class DeckPageState extends State<DeckPage> {
   }
 
   void synchroniseFirebase(String uuid, {onlyNotSynchronised = false}) async {
-    final databaseReference =
-        Firestore.instance.collection('benkyou/users/$uuid').reference();
+    Query databaseReference =
+        Firestore.instance.collection('benkyou/users/$uuid').reference().where('uid', isEqualTo: "${uuid}");
     AppDatabase database = await DBProvider.db.database;
     List<deck_model.Deck> decks;
     List<card_model.Card> cards;

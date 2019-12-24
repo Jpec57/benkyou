@@ -55,7 +55,8 @@ void importFirebaseDataToLocal() async{
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   String uuid = sharedPreferences.getString('uuid');
   print(uuid);
-  CollectionReference ref = Firestore.instance.collection('benkyou/users/$uuid').reference();
+  Query ref = Firestore.instance.collection('benkyou/users/$uuid').reference()
+      .where('uid', isEqualTo: "${uuid}");
   QuerySnapshot querySnapshot = await ref.getDocuments();
 
   Map<String, Map<String, dynamic>> orderedDocuments = new Map();
