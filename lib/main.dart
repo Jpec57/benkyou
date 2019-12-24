@@ -1,3 +1,4 @@
+import 'package:benkyou/screens/BrowseOnlineDeckPage.dart';
 import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/screens/CardShowPage.dart';
 import 'package:benkyou/screens/CreateCardPage.dart';
@@ -55,7 +56,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
           home:
-          UserProfilePage(cardDao: database.cardDao),
+          BrowseOnlineDeckPage(),
+//          UserProfilePage(cardDao: database.cardDao),
 //              TinderLikePage(cardDao: database.cardDao)
 //              CardShowPage(card: cards[0]),
 //              CardListPage(database: database,),
