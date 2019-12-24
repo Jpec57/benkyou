@@ -488,6 +488,7 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
       if (tmpChar == null) {
         var ch1 = getSafeSubstring(word, i, 1, wordLength);
         var ch2 = getSafeSubstring(word, i + 1, 2, wordLength);
+
         if (ch1 != null &&
             ch2 != null &&
             ch1 != 'n' &&
@@ -516,6 +517,13 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
               1, getSafeSubstring(word, i, 1, wordLength), alphabet);
         }
       }
+      //particular case with little tsu then three characters like sshi cchi ttsu
+      var ch3 = getSafeSubstring(word, i + 1, 3, wordLength);
+      if (tmpChar == null && ch3 != null){
+        res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
+        tmpChar = getMatchingCharacterInAlphabet(3, ch3, alphabet);
+        i += 3;
+      }
       // We've found a solution with 1, 2 or 3 characters
       if (tmpChar != null) {
         res += tmpChar;
@@ -532,4 +540,12 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
     }
   }
   return res.trim();
+}
+
+void main (){
+//  String test1 = getHiragana('zasshi');
+//  print(test1);
+  String test = getHiragana('zasshi');
+  print(test);
+  //shi chi tsu
 }

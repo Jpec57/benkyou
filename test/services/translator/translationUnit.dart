@@ -15,6 +15,21 @@ void main() {
         expect(test, "あさって");
       });
 
+      test("zasshi", (){
+        String test = getHiragana('zasshi');
+        expect(test, "ざっし");
+      });
+
+      test("zacchi", (){
+        String test = getHiragana('zacchi');
+        expect(test, "ざっち");
+      });
+
+      test("zattsu", (){
+        String test = getHiragana('zattsu');
+        expect(test, "ざっつ");
+      });
+
       test("seppuku", (){
         String test = getHiragana('seppuku');
         expect(test, "せっぷく");
@@ -208,6 +223,21 @@ void main() {
       test("haragaetta", (){
         String test = getKatakana('haragaetta');
         expect(test, "ハラガエッタ");
+      });
+
+      test("zasshi", (){
+        String test = getKatakana('zasshi');
+        expect(test, "ザッシ");
+      });
+
+      test("zacchi", (){
+        String test = getKatakana('zacchi');
+        expect(test, "ザッチ");
+      });
+
+      test("zattsu", (){
+        String test = getKatakana('zattsu');
+        expect(test, "ザッツ");
       });
     });
 

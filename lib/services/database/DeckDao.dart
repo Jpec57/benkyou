@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:benkyou/models/Deck.dart';
 import 'package:floor/floor.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'DBProvider.dart';
 
@@ -19,7 +22,7 @@ abstract class DeckDao {
         int limit,
         int offset}) async {
 
-    var decks = await DBProvider.db.find('Deck',
+    List<Map<String, dynamic>> decks = await DBProvider.db.find('Deck',
         where: where,
         whereArgs: whereArgs,
         groupBy: groupBy,
@@ -40,7 +43,7 @@ abstract class DeckDao {
   }
 
   Future<Deck> findDeckById(int id) async{
-    var res = await findDecks(where: 'id = ?', whereArgs: [id]);
+    List<Deck> res = await findDecks(where: 'id = ?', whereArgs: [id]);
     if (res.isEmpty) {
       return null;
     }
@@ -48,7 +51,7 @@ abstract class DeckDao {
   }
 
   Future<Deck> findDeckByTitle(String title) async{
-    var res = await findDecks(where: 'title = ?', whereArgs: [title]);
+    List<Deck> res = await findDecks(where: 'title = ?', whereArgs: [title]);
     if (res.isEmpty) {
       return null;
     }
@@ -64,8 +67,27 @@ abstract class DeckDao {
   @Update(onConflict: OnConflictStrategy.REPLACE)
   Future<void> updateDeck(Deck deck);
 
+  Future<void> deleteDeckImages(int deckId, {bool cover = true}) async{
+    var db = await DBProvider.db.database;
+    //Delete images associated with deck
+    String titleQuery = 'SELECT title FROM Deck WHERE id = $deckId;';
+    List<Map<String, dynamic>> titleRes = await db.database.rawQuery(titleQuery);
+    String title = titleRes[0]["title"];
+    final String path = (await getApplicationDocumentsDirectory()).path;
+    if (cover){
+      bool fileExists = await File('$path/decks/$title/cover.png').exists();
+      if (fileExists){
+        File('$path/decks/$title/cover.png').delete();
+      }
+    }
+
+  }
+
   Future<void> deleteDeck(int deckId) async{
     var db = await DBProvider.db.database;
+    //Delete images associated with decks
+    deleteDeckImages(deckId);
+
     String deleteAnswersQuery = 'DELETE FROM Answer WHERE card_id IN (SELECT id FROM Card WHERE deck_id = $deckId);';
     String deleteCardsQuery = 'DELETE FROM Card WHERE deck_id = $deckId;';
     String deleteDeckQuery = 'DELETE FROM Deck WHERE id = $deckId';
