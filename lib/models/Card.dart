@@ -107,7 +107,7 @@ class Card {
 
   static Future<Card> setCardWithBasicAnswers(int deckId, String question,
       List<String> answers, {String useInContext, String hint, Card card,
-        bool isReversible = true}) async{
+        bool isReversible = true, bool isForeignWord = true}) async{
     AppDatabase appDatabase = await DBProvider.db.database;
     int cardId;
 
@@ -128,6 +128,7 @@ class Card {
     if (isReversible){
       Card oppositeCard = new Card(null, deckId, answers.join('|'), null, useInContext, true);
       oppositeCard.isForeignWord = false;
+      oppositeCard.hint = '';
       int oppositeCardId = await appDatabase.cardDao.insertCard(oppositeCard);
       Answer oppositeAnswer = new Answer(null, oppositeCardId, question);
       await appDatabase.answerDao.insertAnswer(oppositeAnswer);
@@ -150,6 +151,7 @@ class Card {
     toReturn['nbErrors'] = nbErrors;
     toReturn['nbSuccess'] = nbSuccess;
     toReturn['nextAvailable'] = nextAvailable;
+    toReturn['isForeignWord'] = isForeignWord;
     return toReturn;
   }
   updateCard(AppDatabase database, bool isRight) async{

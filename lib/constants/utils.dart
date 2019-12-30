@@ -1,5 +1,9 @@
 library utils_constants;
 
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+
 const isDev = false;
 
 const String LONG_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean "
@@ -45,3 +49,15 @@ const String LONG_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing eli
     " neque felis, ullamcorper nec tincidunt sed, tincidunt quis lacus. Aenean "
     "dictum tempor neque, vel pulvinar odio elementum vitae. Pellentesque egestas "
     "metus vel enim consectetur dignissim sit amet et risus.";
+
+
+Future<void> insertPublicDecks() async{
+  CollectionReference ref = await Firestore.instance.collection('decks');
+  rootBundle.loadString('lib/fixtures/dev/firebase/public_decks.json').then((String jsonString) {
+    print(jsonString);
+    List<dynamic> jsonDeck = jsonDecode(jsonString);
+    jsonDeck.forEach((deck){
+      ref.document('${deck['author']}:${deck['title']}').setData(deck);
+    });
+  });
+}

@@ -7,21 +7,23 @@ class Deck {
   @PrimaryKey()
   final int id;
   final String title;
-  int lastUse = new DateTime.now().millisecondsSinceEpoch;
-  bool isSynchronized = false;
   bool isPublic = false;
+  String publicRef;
+  int lastUse = new DateTime.now().millisecondsSinceEpoch;
+  String description;
+  bool isSynchronized = false;
 
-  Deck(this.id, this.title, this.lastUse);
+  Deck(this.id, this.title, this.lastUse, this.description, this.publicRef);
 
-  Deck.fromDatabase({this.id, this.title, this.lastUse, this.isPublic});
-  Deck.init(this.id, this.title, this.lastUse, this.isSynchronized, this.isPublic);
+  Deck.fromDatabase({this.id, this.title, this.lastUse, this.description});
+  Deck.init(this.id, this.title, this.lastUse, this.isSynchronized, this.description, {this.publicRef});
 
   factory Deck.fromJSON(Map<String, dynamic> json) {
     return Deck.fromDatabase(
         id: json['id'],
         title: json['title'],
         lastUse: json['lastUse'],
-        isPublic: json['isPublic'] == 0
+        description: json['description']
     );
   }
 
@@ -29,7 +31,8 @@ class Deck {
     Map<String, dynamic> toReturn = new Map();
     toReturn['id'] = this.id;
     toReturn['title'] = this.title;
-    toReturn['lastUse'] = lastUse;
+    toReturn['lastUse'] = this.lastUse;
+    toReturn['description'] = this.description;
     return toReturn;
   }
 

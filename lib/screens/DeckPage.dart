@@ -1,8 +1,6 @@
 import 'package:benkyou/models/Answer.dart' as answer_model;
 import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/Deck.dart' as deck_model;
-import 'package:benkyou/models/TimeCard.dart';
-import 'package:benkyou/models/TimeSeriesBar.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
@@ -18,7 +16,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 class DeckPage extends StatefulWidget {
   final DeckDao deckDao;

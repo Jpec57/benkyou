@@ -33,7 +33,8 @@ abstract class CardDao {
       String orderBy,
       int limit,
       int offset}) async {
-    var cards = await DBProvider.db.find('Card',
+
+    List<Map<String, dynamic>> cards = await DBProvider.db.find('Card',
         where: where,
         whereArgs: whereArgs,
         groupBy: groupBy,
@@ -43,7 +44,7 @@ abstract class CardDao {
         offset: offset);
 
     List<Card> parsedRes = [];
-    for (var card in cards) {
+    for (Map<String, dynamic> card in cards) {
       parsedRes.add(Card.fromJSON(card));
     }
     return parsedRes;
@@ -96,6 +97,18 @@ abstract class CardDao {
   Future<List<Card>> findAllCardsFromDeckId(int id) async {
     return await findCards(
         where: 'deck_id = ? AND hasSolution = 1', whereArgs: [id]);
+  }
+
+  Future<List<String>> findAllCardQuestionsFromDeckId(int id) async {
+    AppDatabase db = await DBProvider.db.database;
+
+    List<Map<String, dynamic>> questions = await db.database.rawQuery(
+        'SELECT question FROM Card WHERE deck_id = $id');
+    List<String> parsedRes = [];
+    for (Map<String, dynamic> question in questions) {
+      parsedRes.add(question['question']);
+    }
+    return parsedRes;
   }
 
   Future<List<Card>> findBadCardsFromDeckId(int id) async {

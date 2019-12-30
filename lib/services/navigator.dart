@@ -1,11 +1,13 @@
 import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/CardWithAnswers.dart';
+import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/screens/BrowseOnlineDeckPage.dart';
 import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/screens/CardShowPage.dart';
 import 'package:benkyou/screens/DeckInfoPage.dart';
 import 'package:benkyou/screens/DeckPage.dart';
+import 'package:benkyou/screens/PreviewOnlineDeckPage.dart';
 import 'package:benkyou/screens/TinderLikePage.dart';
 import 'package:benkyou/screens/UserProfilePage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
@@ -91,6 +93,20 @@ void goToBrowsingDeckPage(BuildContext context) async{
       context,
       MaterialPageRoute(
           builder: (context) => BrowseOnlineDeckPage(
+          )
+      )
+  );
+}
+
+void goToPreviewOnlineDeckPage(BuildContext context, PublicDeck deck) async{
+  AppDatabase appDatabase = await DBProvider.db.database;
+
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => PreviewOnlineDeckPage(
+            deck: deck,
+            deckDao: appDatabase.deckDao
           )
       )
   );

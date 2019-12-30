@@ -1,0 +1,34 @@
+[
+  {
+    "author": "Jpec",
+    "description": "This is a description.",
+    "lastUse": 213124124,
+    "title": "Titre",
+    "cards": [
+      {
+        "question": "This is a question",
+        "isForeignWord": false,
+        "hint": "This is a hint",
+        "answers": [
+          "First answer", "Second answer"
+        ]
+      }
+    ]
+  },
+  {
+    "author": "Jpec",
+    "description": "This is a second description.",
+    "lastUse": 213124124,
+    "title": "Titre2",
+    "cards": [
+      {
+        "question": "This is a question2",
+        "isForeignWord": true,
+        "hint": "This is a hint2",
+        "answers": [
+          "First answer", "Second answer"
+        ]
+      }
+    ]
+  }
+]

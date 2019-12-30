@@ -1,7 +1,9 @@
-import 'package:benkyou/models/Deck.dart';
+import 'package:benkyou/models/DTO/PublicCard.dart';
+import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/services/navigator.dart';
-import 'package:benkyou/widgets/Header.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +16,8 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
   TextEditingController _filter;
   bool _isSearching = false;
   String _searchTerm = '';
-  List<Deck> _decks = new List();
-  List<Deck> _filteredDecks = new List();
+  List<PublicDeck> _decks = new List();
+  List<PublicDeck> _filteredDecks = new List();
   List<Color> colors = [
     Colors.red,
     Colors.blue,
@@ -111,17 +113,75 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
     );
   }
 
-  List<Widget> _getTrendingDecks() {
+  List<Widget> _getTrendingDecks(List<PublicDeck> decks) {
     List<Widget> deckList = new List();
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < decks.length; i++) {
       deckList.add(Container(
         height: 30,
         width: 160.0,
         color: colors[i],
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                '${decks[i].title}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              Text(
+                'from ${decks[i].author}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white
+                ),
+              ),
+            ],
+          ),
+        ),
       ));
     }
     return deckList;
+  }
+
+
+  bool _doesDeckContainString(PublicDeck deck, String researchString){
+    List<String> cardStrings = [
+      deck.description,
+      deck.title,
+      deck.author,
+    ];
+    for (String string in cardStrings) {
+      if (string != null) {
+        String comparableString = getComparableString(string);
+        if (comparableString.isNotEmpty &&
+            comparableString.contains(researchString)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<List<PublicDeck>> _fetchTrendingDeckList() async{
+    QuerySnapshot decks = await Firestore.instance.collection('decks').limit(5).orderBy('lastUse', descending: true).getDocuments();
+    List<PublicDeck> publicDecks = new List();
+    decks.documents.forEach((DocumentSnapshot snapshot){
+      Map<String, dynamic> data = snapshot.data;
+      List<dynamic> cards = data['cards'];
+      List<PublicCard> publicCardList = new List();
+      cards.forEach((card){
+        PublicCard parsedCard = PublicCard.fromJSON(Map<String, dynamic>.from(card));
+        publicCardList.add(parsedCard);
+      });
+      publicDecks.add(PublicDeck.fromJSON(Map<String, dynamic>.from(data), publicCardList));
+    });
+    return publicDecks;
   }
 
   Widget _renderTrendingDecks() {
@@ -135,39 +195,109 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
         ),
         SizedBox(
           height: 100,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: <Widget>[..._getTrendingDecks()],
+          child: FutureBuilder(
+            future: _fetchTrendingDeckList(),
+            builder: (BuildContext context, AsyncSnapshot<List<PublicDeck>> snapshot) {
+              if (snapshot.hasData && snapshot.data.isNotEmpty){
+                return ListView(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[..._getTrendingDecks(snapshot.data)],
+                );
+              }
+              return ListView(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[..._getTrendingDecks([])],
+              );
+          },
           ),
         )
       ],
     );
   }
 
+  Future<List<PublicDeck>> _fetchRegularDeckList() async{
+    QuerySnapshot decks = await Firestore.instance.collection('decks').getDocuments();
+    List<PublicDeck> publicDecks = new List();
+    decks.documents.forEach((DocumentSnapshot snapshot){
+      Map<String, dynamic> data = snapshot.data;
+      List<dynamic> cards = data['cards'];
+      List<PublicCard> publicCardList = new List();
+      cards.forEach((card){
+        PublicCard parsedCard = PublicCard.fromJSON(Map<String, dynamic>.from(card));
+        publicCardList.add(parsedCard);
+      });
+      publicDecks.add(PublicDeck.fromJSON(Map<String, dynamic>.from(data), publicCardList));
+    });
+    return publicDecks;
+  }
+  
   Widget _renderRegularDeckList() {
+    _fetchRegularDeckList();
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0),
-        child: GridView.count(
-          shrinkWrap: true,
-          crossAxisCount: 2,
-          children: List.generate(100, (index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: colors[index % 5],
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                child: Center(
-                  child: Text(
-                    'Item $index',
-                    style: Theme.of(context).textTheme.headline,
-                  ),
-                ),
-              ),
-            );
-          }),
+        child: FutureBuilder(
+          future: _fetchRegularDeckList(),
+          builder: (BuildContext context, AsyncSnapshot<List<PublicDeck>> snapshot) {
+            if (snapshot.hasData){
+              if (_searchTerm.isNotEmpty) {
+                _filteredDecks = new List<PublicDeck>();
+                String researchTermFormatted = getComparableString(_searchTerm);
+                for (PublicDeck deck in snapshot.data) {
+                  if (_doesDeckContainString(deck, researchTermFormatted)) {
+                    _filteredDecks.add(deck);
+                  }
+                }
+              } else {
+                _filteredDecks = snapshot.data;
+              }
+              return GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                children: List.generate(_filteredDecks.length, (index) {
+                  return GestureDetector(
+                    onTap: (){
+                      goToPreviewOnlineDeckPage(context, _filteredDecks[index]);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: colors[index % 5],
+                            borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                '${_filteredDecks[index].title}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              Text(
+                                'from ${_filteredDecks[index].author}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              );
+            }
+            return Container(child: Center(child: Text("No deck available."),),);
+          },
         ),
       ),
     );
@@ -180,7 +310,7 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _renderResearchBar(),
-          _renderTrendingDecks(),
+          (_isSearching) ? Container() : _renderTrendingDecks(),
           Padding(
             padding: const EdgeInsets.only(top: 10.0, left: 10.0),
             child: Text("Decks",

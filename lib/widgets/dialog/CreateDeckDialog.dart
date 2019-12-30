@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/services/navigator.dart';
@@ -9,8 +9,10 @@ import 'package:path_provider/path_provider.dart';
 
 class CreateDeckDialog extends StatefulWidget {
   final DeckDao deckDao;
+  final PublicDeck publicDeck;
+  final bool isFromPublic;
 
-  const CreateDeckDialog({Key key, this.deckDao}) : super(key: key);
+  const CreateDeckDialog({Key key, this.deckDao, this.isFromPublic = false, this.publicDeck}) : super(key: key);
 
   @override
   _CreateDeckDialogState createState() => new _CreateDeckDialogState();
@@ -20,7 +22,6 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   bool _isTitleErrorVisible = false;
-  bool _isPublic = false;
   File _image;
 
   Future getImage() async {
@@ -31,9 +32,16 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
     });
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.publicDeck != null ? widget.publicDeck.title : "";
+  }
+
   @override
   Widget build(BuildContext context) {
-    return (Dialog(
+    return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0)), //this right here
       child: Padding(
@@ -46,7 +54,7 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text('Create a deck', style: TextStyle(fontSize: 20)),
+                Text(widget.isFromPublic ? 'Import a deck' : 'Create a deck', style: TextStyle(fontSize: 20)),
                 Padding(
                   padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                   child: TextFormField(
@@ -70,36 +78,19 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text("Is public ?"),
-                      Switch(
-                        value: _isPublic,
-                        onChanged: (value) {
-                          setState(() {
-                            _isPublic = !_isPublic;
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                ),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: (){
-                      getImage();
-                    },
-                    child: _image == null
-                      ? Container(
-                          margin: EdgeInsets.only(bottom: 10.0),
-                          decoration: BoxDecoration(color: Colors.black45),
-                          child: Image.asset('resources/imgs/add_photo.png'),
-                        )
-                      : Image.file(_image),
-                  )
+                    child: GestureDetector(
+                      onTap: (){
+                        getImage();
+                      },
+                      child: _image == null
+                          ? Container(
+                        margin: EdgeInsets.only(bottom: 10.0),
+                        decoration: BoxDecoration(color: Colors.black45),
+                        child: Image.asset('resources/imgs/add_photo.png'),
+                      )
+                          : Image.file(_image),
+                    )
                 ),
                 RaisedButton(
                   onPressed: () {
@@ -116,7 +107,7 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
           ),
         ),
       ),
-    ));
+    );
   }
 
   Future<bool> _validateDeckTitle() async {
@@ -154,8 +145,20 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
       await Directory('$path/decks/$title').create(recursive: true);
       await _image.copy('$path/decks/$title/cover.png');
     }
-    await widget.deckDao.insertDeck(new Deck.init(null, titleController.text,
-        new DateTime.now().millisecondsSinceEpoch, false, _isPublic));
+
+    if (widget.isFromPublic){
+      widget.publicDeck.title = titleController.text;
+      await widget.deckDao.createDeckFromPublic(widget.publicDeck);
+    } else {
+      await widget.deckDao.insertDeck(new Deck.init(null, titleController.text,
+          new DateTime.now().millisecondsSinceEpoch, false, ""));
+    }
     return true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    titleController.dispose();
   }
 }

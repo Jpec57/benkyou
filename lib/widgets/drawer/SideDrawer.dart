@@ -82,7 +82,7 @@ class SideDrawerState extends State<SideDrawer> {
             },
           ),
           ListTile(
-            title: Text("Browse decks"),
+            title: Text("Browse online decks"),
             onTap: () {
               goToBrowsingDeckPage(context);
             },
@@ -93,15 +93,15 @@ class SideDrawerState extends State<SideDrawer> {
               goToTinderLikePage(context);
             },
           ),
-          ListTile(
-            title: Text("Import online data"),
-            onTap: () async{
-              showLoadingDialog(context);
-              await importFirebaseDataToLocal();
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-          ),
+//          ListTile(
+//            title: Text("Import online data"),
+//            onTap: () async{
+//              showLoadingDialog(context);
+//              await importFirebaseDataToLocal();
+//              Navigator.pop(context);
+//              Navigator.pop(context);
+//            },
+//          ),
           ListTile(
             title: Text(this.isLoggedIn != null ? "Log out" : "Log in"),
             onTap: () async{

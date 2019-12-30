@@ -324,7 +324,7 @@ class _GuessPageState extends State<GuessPage>
                                         if (snapshot.hasError) {
                                           return Text('Error: ${snapshot.error}');
                                         }
-                                        if (snapshot.hasData) {
+                                        if (snapshot.hasData && snapshot.data.isNotEmpty) {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
@@ -334,8 +334,9 @@ class _GuessPageState extends State<GuessPage>
                                             ],
                                           );
                                         }
+                                        return Container();
                                     }
-                                    return null; // unreachable
+                                    return Container();
                                   },
                                 ),
                               ),

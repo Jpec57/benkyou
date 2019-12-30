@@ -1,6 +1,10 @@
 import 'dart:io';
 
+import 'package:benkyou/models/Card.dart';
+import 'package:benkyou/models/DTO/PublicCard.dart';
+import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/models/Deck.dart';
+import 'package:benkyou/services/database/Database.dart';
 import 'package:floor/floor.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,7 +13,36 @@ import 'DBProvider.dart';
 @dao
 abstract class DeckDao {
   @Insert(onConflict: OnConflictStrategy.FAIL)
-  Future<void> insertDeck(Deck deck);
+  Future<int> insertDeck(Deck deck);
+
+  Future<void> createDeckFromPublic(PublicDeck deck) async{
+    String ref = "Jpec:${deck.title}";
+//    String ref = "${deck.author}:${deck.title}";
+    Deck refDeck = await findDeckByPublicRef(ref);
+    if (refDeck == null){
+      Deck newDeck = new Deck.init(null, deck.title,
+          new DateTime.now().millisecondsSinceEpoch, false, deck.description);
+      newDeck.publicRef = ref;
+      int deckId = await insertDeck(newDeck);
+      List<PublicCard> publicCards = deck.cards;
+
+      for (PublicCard card in publicCards){
+        await Card.setCardWithBasicAnswers(deckId, card.question, card.answers, hint: card.hint, isForeignWord: card.isForeignWord, isReversible: false);
+      }
+    } else {
+      //Check which cards should be added
+      List<PublicCard> publicCards = deck.cards;
+      AppDatabase appDatabase = await DBProvider.db.database;
+      List<String> existingQuestions = await appDatabase.cardDao.findAllCardQuestionsFromDeckId(refDeck.id);
+
+      for (PublicCard card in publicCards){
+        if (existingQuestions.contains(card.question)){
+          await Card.setCardWithBasicAnswers(refDeck.id, card.question, card.answers, hint: card.hint, isForeignWord: card.isForeignWord, isReversible: false);
+        }
+      }
+    }
+
+  }
 
   Future<List<Deck>> findDecks(
       {bool distinct,
@@ -52,6 +85,14 @@ abstract class DeckDao {
 
   Future<Deck> findDeckByTitle(String title) async{
     List<Deck> res = await findDecks(where: 'title = ?', whereArgs: [title]);
+    if (res.isEmpty) {
+      return null;
+    }
+    return (res)[0];
+  }
+
+  Future<Deck> findDeckByPublicRef(String ref) async{
+    List<Deck> res = await findDecks(where: 'publicRef = ?', whereArgs: [ref]);
     if (res.isEmpty) {
       return null;
     }
