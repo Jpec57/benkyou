@@ -212,6 +212,12 @@ class TinderLikePageState extends State<TinderLikePage>
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Remaining: ${_cards.length}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
               ],
             ),
           )

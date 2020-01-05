@@ -29,8 +29,8 @@ Future<void> main() async {
       await $FloorAppDatabase.databaseBuilder('flutter_database.db')
           .addCallback(callback).build().catchError((err)=>print(err.toString()));
   setOneSignalListeners();
-  var cards = await database.cardDao.findAvailableCardsFromDeckId(1, DateTime.now().millisecondsSinceEpoch);
-  var deck = await database.deckDao.findDeckById(1);
+  List<prefix0.Card> cards = await database.cardDao.findAvailableCardsFromDeckId(1, DateTime.now().millisecondsSinceEpoch);
+  Deck deck = await database.deckDao.findDeckById(1);
   WidgetsFlutterBinding.ensureInitialized();
   runApp(AppStateContainer(
       state: AppState(), child: MyApp(database: database, deck: deck, cards: cards)));

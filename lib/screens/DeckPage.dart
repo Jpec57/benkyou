@@ -1,3 +1,4 @@
+import 'package:benkyou/constants/utils.dart';
 import 'package:benkyou/models/Answer.dart' as answer_model;
 import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/Deck.dart' as deck_model;
@@ -16,6 +17,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DeckPage extends StatefulWidget {
   final DeckDao deckDao;
@@ -47,14 +49,24 @@ class DeckPageState extends State<DeckPage> {
     );
   }
 
+  Future<void> _showAppExplanation() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.get('isFirstTime') == null){
+      showHelp(context);
+    }
+
+  }
+
   @override
   void initState() {
     super.initState();
 //    var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _showAppExplanation();
+
       var uuid = await isUserLoggedIn();
       if (uuid != null) {
-        //TODO SHow welcome back 'name'
+        //TODO Show welcome back 'name'
         synchroniseFirebase(uuid);
       } else {
         //TODO show need to logged in to save online

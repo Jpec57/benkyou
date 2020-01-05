@@ -1,7 +1,10 @@
 library utils_constants;
 
 import 'dart:convert';
+import 'package:benkyou/widgets/dialog/PresentationDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const isDev = false;
@@ -60,4 +63,13 @@ Future<void> insertPublicDecks() async{
       ref.document('${deck['author']}:${deck['title']}').setData(deck);
     });
   });
+}
+
+void showHelp(BuildContext context){
+  showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return PresentationDialog();
+      });
 }

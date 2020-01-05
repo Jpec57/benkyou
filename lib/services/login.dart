@@ -6,20 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<AuthResult> loginUser(String email, String password) async {
   try {
-    var result = await FirebaseAuth.instance
+    AuthResult result = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', email);
     return result;
   } catch (e) {
-    print("hello");
     throw new Exception(e.message);
   }
 }
 
 Future<AuthResult> registerUser(String email, String password) async {
   try {
-    var result = await FirebaseAuth.instance
+    AuthResult result = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', email);

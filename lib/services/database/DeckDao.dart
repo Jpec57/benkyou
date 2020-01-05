@@ -5,6 +5,8 @@ import 'package:benkyou/models/DTO/PublicCard.dart';
 import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/models/Deck.dart';
 import 'package:benkyou/services/database/Database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floor/floor.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -98,17 +100,15 @@ abstract class DeckDao {
     return (res)[0];
   }
 
-  @Query('SELECT * FROM Deck WHERE isSynchronized = 0')
   Future<List<Deck>> findAllDecksNotSynchronized() async{
     return await findDecks(where: 'isSynchronized = 0');
   }
-
 
   @Update(onConflict: OnConflictStrategy.REPLACE)
   Future<void> updateDeck(Deck deck);
 
   Future<void> deleteDeckImages(int deckId, {bool cover = true}) async{
-    var db = await DBProvider.db.database;
+    AppDatabase db = await DBProvider.db.database;
     //Delete images associated with deck
     String titleQuery = 'SELECT title FROM Deck WHERE id = $deckId;';
     List<Map<String, dynamic>> titleRes = await db.database.rawQuery(titleQuery);
@@ -124,7 +124,7 @@ abstract class DeckDao {
   }
 
   Future<void> deleteDeck(int deckId) async{
-    var db = await DBProvider.db.database;
+    AppDatabase db = await DBProvider.db.database;
     //Delete images associated with decks
     deleteDeckImages(deckId);
 

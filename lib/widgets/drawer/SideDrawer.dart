@@ -47,7 +47,7 @@ class SideDrawerState extends State<SideDrawer> {
                   child: FutureBuilder(
                     future: getCurrentUsername(),
                     builder: (BuildContext context, AsyncSnapshot<String> username) {
-                    return Text(username != null
+                    return Text(username.hasData && username.data != null
                         ? "Hello ${username.data}"
                         : "No user logged in",
                       softWrap: true,
@@ -82,12 +82,12 @@ class SideDrawerState extends State<SideDrawer> {
                           CardListPage(database: widget.database)));
             },
           ),
-          ListTile(
-            title: Text("Profile"),
-            onTap: () {
-              goToUserProfilePage(context);
-            },
-          ),
+//          ListTile(
+//            title: Text("Profile"),
+//            onTap: () {
+//              goToUserProfilePage(context);
+//            },
+//          ),
           ListTile(
             title: Text("Browse online decks"),
             onTap: () async{

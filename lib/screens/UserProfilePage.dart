@@ -102,7 +102,7 @@ class UserProfilePageState extends State<UserProfilePage> {
               child: Container(
                 width: MediaQuery.of(context).size.width - 50,
                 child: Text(
-                  "Hello"
+                  "This feature is currently not available. Come back later :)"
                 ),
               ),
             ),

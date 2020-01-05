@@ -541,11 +541,3 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
   }
   return res.trim();
 }
-
-void main (){
-//  String test1 = getHiragana('zasshi');
-//  print(test1);
-  String test = getHiragana('zasshi');
-  print(test);
-  //shi chi tsu
-}
