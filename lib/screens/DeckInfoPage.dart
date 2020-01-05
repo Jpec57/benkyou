@@ -173,7 +173,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
                       )));
         },
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.10,
+          height: MediaQuery.of(context).size.height * 0.08,
           decoration: BoxDecoration(color: Colors.orange),
           child: Center(
             child: Text(
@@ -186,7 +186,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
       GestureDetector(
         onTap: () {},
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.10,
+          height: MediaQuery.of(context).size.height * 0.08,
           decoration: BoxDecoration(color: Colors.lightBlue),
           child: Center(
             child: FutureBuilder(

@@ -68,7 +68,13 @@ class _WallOfShamePreviewState extends State<WallOfShamePreview> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(color: Colors.black),
+            decoration: BoxDecoration(
+                color: Color(0xff646461),
+                borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(4.0),
+                    topRight: const Radius.circular(4.0)
+                ) //
+            ),
             child: Center(
               child: Text(
                 "Wall of shame",

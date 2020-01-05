@@ -19,11 +19,10 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
   List<PublicDeck> _decks = new List();
   List<PublicDeck> _filteredDecks = new List();
   List<Color> colors = [
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange
+    Color(0xff646461),
+    Color(0xff248CCB),
+    Color(0xff248CCB),
+    Color(0xff646461)
   ];
 
   @override
@@ -120,7 +119,7 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
       deckList.add(Container(
         height: 30,
         width: 160.0,
-        color: colors[i],
+        color: colors[i % 2],
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -267,7 +266,7 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: colors[index % 5],
+                            color: colors[index % colors.length],
                             borderRadius: BorderRadius.all(Radius.circular(5.0))),
                         child: Center(
                           child: Column(

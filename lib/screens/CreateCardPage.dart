@@ -339,28 +339,25 @@ class _CreateCardState extends State<CreateCardPage> {
             ),
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: GestureDetector(
-            onTap: () async {
-              _kanjiEditingController.clear();
-              _kanaEditingController.clear();
-              setState(() {
-                japanese = '';
-                _researchWord = '';
-                _bottomButtonLabel = 'NEXT';
-              });
-              _pageController.animateToPage(0,
-                  duration: Duration(milliseconds: 500), curve: Curves.easeIn);
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.12,
-              decoration: BoxDecoration(color: Colors.red),
-              child: Center(
-                child: Text(
-                  'CREATE ANOTHER CARD',
-                  style: TextStyle(fontSize: 30, color: Colors.white),
-                ),
+        GestureDetector(
+          onTap: () async {
+            _kanjiEditingController.clear();
+            _kanaEditingController.clear();
+            setState(() {
+              japanese = '';
+              _researchWord = '';
+              _bottomButtonLabel = 'NEXT';
+            });
+            _pageController.animateToPage(0,
+                duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+          },
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.08,
+            decoration: BoxDecoration(color: Color(0xff646461)),
+            child: Center(
+              child: Text(
+                'CREATE ANOTHER CARD',
+                style: TextStyle(fontSize: 30, color: Colors.white),
               ),
             ),
           ),
@@ -397,8 +394,8 @@ class _CreateCardState extends State<CreateCardPage> {
             _createCardOrLeave();
           },
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.12,
-            decoration: BoxDecoration(color: Colors.lightBlueAccent),
+            height: MediaQuery.of(context).size.height * 0.08,
+            decoration: BoxDecoration(color: Color(0xff248CCB)),
             child: Center(
               child: Text(
                 _bottomButtonLabel,

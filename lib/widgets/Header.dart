@@ -1,3 +1,4 @@
+import 'package:benkyou/constants/utils.dart';
 import 'package:benkyou/services/navigator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,17 @@ class Header extends StatelessWidget{
                 flex: 1,
                 child: GestureDetector(
                   onTap: () {
-                    goToHomePage(context);
+                    if (hasBackButton){
+                      goToHomePage(context);
+                    } else {
+                      showHelp(context);
+                    }
                   },
                   child: hasBackButton ? Container(
-                      child: Image.asset('resources/imgs/arrow_back.png')) : Container(),
+                      child: Image.asset('resources/imgs/arrow_back.png')) :
+                  Container(
+                    child: Icon(Icons.help, size: 30),
+                  ),
                 ),
               ),
               Expanded(

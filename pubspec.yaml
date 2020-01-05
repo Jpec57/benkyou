@@ -61,10 +61,10 @@ dev_dependencies:
 #dependency_overrides:
 #  image: 2.0.7
 
-#flutter_icons:
-##  image_path: "resources/icon/app_icon.png"
-#  android: true
-#  ios: true
+flutter_icons:
+  image_path: "resources/icon/app_icon.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

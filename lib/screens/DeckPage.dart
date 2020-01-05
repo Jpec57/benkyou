@@ -7,6 +7,7 @@ import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/services/login.dart';
+import 'package:benkyou/services/notifications/notification.dart';
 import 'package:benkyou/widgets/DeckContainer.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/ReviewSchedule.dart';
@@ -53,6 +54,7 @@ class DeckPageState extends State<DeckPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.get('isFirstTime') == null){
       showHelp(context);
+      prefs.setBool('isFirstTime', false);
     }
 
   }
@@ -60,18 +62,14 @@ class DeckPageState extends State<DeckPage> {
   @override
   void initState() {
     super.initState();
-//    var callback = onSelectNotification;
+    var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _showAppExplanation();
-
       var uuid = await isUserLoggedIn();
       if (uuid != null) {
-        //TODO Show welcome back 'name'
-        synchroniseFirebase(uuid);
-      } else {
-        //TODO show need to logged in to save online
+//        synchroniseFirebase(uuid);
       }
-      //      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
+      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }
 
@@ -201,7 +199,7 @@ class DeckPageState extends State<DeckPage> {
           },
           child: Container(
             height: MediaQuery.of(context).size.height * 0.12,
-            decoration: BoxDecoration(color: Colors.lightBlueAccent),
+            decoration: BoxDecoration(color: Color(0xff248CCB)),
             child: Center(
               child: Text(
                 '+',
