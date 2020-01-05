@@ -68,8 +68,7 @@ class PreviewOnlineDeckPageState extends State<PreviewOnlineDeckPage>{
             ),
           ),
           FutureBuilder(
-            //TODO jpec rename
-            future: widget.deckDao.findDeckByPublicRef('Jpec:${widget.deck.title}'),
+            future: widget.deckDao.findDeckByPublicRef('${widget.deck.author}:${widget.deck.title}'),
             builder: (BuildContext context, AsyncSnapshot<Deck> snapshot) {
               return GestureDetector(
                 onTap: () async{

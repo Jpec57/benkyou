@@ -106,7 +106,7 @@ void goToPreviewOnlineDeckPage(BuildContext context, PublicDeck deck) async{
       MaterialPageRoute(
           builder: (context) => PreviewOnlineDeckPage(
             deck: deck,
-            deckDao: appDatabase.deckDao
+            deckDao: appDatabase.deckDao,
           )
       )
   );

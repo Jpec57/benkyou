@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 
 class PublishDeckDialog extends StatefulWidget{
   final Deck deck;
+  final String author;
 
-  const PublishDeckDialog({Key key, @required this.deck}) : super(key: key);
+  const PublishDeckDialog({Key key, @required this.deck, @required this.author}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PublishDeckDialogState();
 
@@ -38,12 +39,12 @@ class PublishDeckDialogState extends State<PublishDeckDialog>{
   Future<void> _publishDeck() async {
     Deck deck = widget.deck;
     AppDatabase appDatabase = await DBProvider.db.database;
-    //TODO user instead of Jpec
     deck.isPublic = true;
     deck.description = _descriptionController.text;
+    deck.publicRef = "${widget.author}:${deck.title}";
     await appDatabase.deckDao.updateDeck(deck);
-    Map<String, dynamic> data = await convertDeckToPublic(deck);
-    await Firestore.instance.collection('decks').document('Jpec:${deck.title}').setData(data);
+    Map<String, dynamic> data = await convertDeckToPublic(deck, widget.author);
+    await Firestore.instance.collection('decks').document('${widget.author}:${deck.title}').setData(data);
   }
 
   @override

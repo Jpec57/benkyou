@@ -16,8 +16,7 @@ abstract class DeckDao {
   Future<int> insertDeck(Deck deck);
 
   Future<void> createDeckFromPublic(PublicDeck deck) async{
-    String ref = "Jpec:${deck.title}";
-//    String ref = "${deck.author}:${deck.title}";
+    String ref = "${deck.author}:${deck.title}";
     Deck refDeck = await findDeckByPublicRef(ref);
     if (refDeck == null){
       Deck newDeck = new Deck.init(null, deck.title,

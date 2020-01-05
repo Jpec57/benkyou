@@ -170,6 +170,7 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
 
   Future<List<PublicDeck>> _fetchTrendingDeckList() async{
     QuerySnapshot decks = await Firestore.instance.collection('decks').limit(5).orderBy('lastUse', descending: true).getDocuments();
+//    QuerySnapshot decks = await Firestore.instance.collection('decks').limit(5).orderBy('lastUse', descending: true).where('uid', isEqualTo: "UfNhvvQiGQOTaixk0Cc4vW9GHAM2").getDocuments();
     List<PublicDeck> publicDecks = new List();
     decks.documents.forEach((DocumentSnapshot snapshot){
       Map<String, dynamic> data = snapshot.data;
@@ -219,6 +220,7 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
 
   Future<List<PublicDeck>> _fetchRegularDeckList() async{
     QuerySnapshot decks = await Firestore.instance.collection('decks').getDocuments();
+//    QuerySnapshot decks = await Firestore.instance.collection('decks').where('uid', isEqualTo: "UfNhvvQiGQOTaixk0Cc4vW9GHAM2").getDocuments();
     List<PublicDeck> publicDecks = new List();
     decks.documents.forEach((DocumentSnapshot snapshot){
       Map<String, dynamic> data = snapshot.data;

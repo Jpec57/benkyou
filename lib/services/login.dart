@@ -41,11 +41,17 @@ void showLoginDialog(BuildContext context) {
 void logOut() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('uuid', null);
+  await prefs.setString('username', null);
 }
 
 Future<String> isUserLoggedIn() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString('uuid');
+}
+
+Future<String> getCurrentUsername() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('username');
 }
 
 Future<String> getUsualUser() async{

@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
           home:
-          BrowseOnlineDeckPage(),
+//          BrowseOnlineDeckPage(),
 //          UserProfilePage(cardDao: database.cardDao),
 //              TinderLikePage(cardDao: database.cardDao)
 //              CardShowPage(card: cards[0]),
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
-//          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
+          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
 //        CreateCardPage(cardDao: database.cardDao, deck: deck,)
       ),

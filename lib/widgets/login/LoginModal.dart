@@ -4,6 +4,8 @@ import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/login.dart';
 import 'package:benkyou/utils/utils.dart';
 import 'package:benkyou/widgets/LoadingCircle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,13 +18,15 @@ class LoginModal extends StatefulWidget {
 class LoginModalState extends State<LoginModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = new TextEditingController();
+  TextEditingController _usernameController;
   final TextEditingController _passwordController = new TextEditingController();
   final snackBar = SnackBar(content: Text("Successfully logged in."));
   String _error = '';
 
-
   @override
   void initState() {
+    super.initState();
+    _usernameController = new TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       String usualUser = await getUsualUser();
       if (usualUser != null){
@@ -39,25 +43,31 @@ class LoginModalState extends State<LoginModal> {
       child: Padding(
         padding: EdgeInsets.all(15.0),
         child: Container(
-          height: 280.0,
-          width: 300.0,
+          width: MediaQuery.of(context).size.width * 0.7,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text('Login', style: TextStyle(fontSize: 20)),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextFormField(
-                        validator: (String value) {
-                          if (value.isEmpty) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
+                        onChanged: (value) {
+                          setState(() {
+                            _error = '';
+                          });
                         },
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          contentPadding:
+                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                          hintText: "Username*",
+                        )),
+                    TextFormField(
                         onChanged: (value) {
                           setState(() {
                             _error = '';
@@ -70,12 +80,6 @@ class LoginModalState extends State<LoginModal> {
                           hintText: "Email",
                         )),
                     TextFormField(
-                      validator: (String value) {
-                        if (value.isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        return null;
-                      },
                       onChanged: (value) {
                         setState(() {
                           _error = '';
@@ -97,6 +101,16 @@ class LoginModalState extends State<LoginModal> {
                     _error,
                     style: TextStyle(
                       color: Colors.red,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                  child: Text(
+                    "*Username is required only for registering",
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -133,16 +147,55 @@ class LoginModalState extends State<LoginModal> {
     );
   }
 
+  void _returnError(String error){
+    Navigator.pop(context);
+    setState(() {
+      _error = error;
+    });
+  }
+
   void launchLoginOrRegisterProcess(
       BuildContext context, String email, String password, bool isLogin) async {
-    _formKey.currentState.validate();
+    CollectionReference usersRef = Firestore.instance.collection('users');
+    String username = _usernameController.text.trim();
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty){
+      setState(() {
+        _error = "The email and password cannot be empty";
+      });
+      return;
+    }
     showLoadingDialog(context);
+    if (!isLogin){
+      if (username.isEmpty){
+        _returnError("The username cannot be empty");
+        return;
+      }
+
+      var v = await usersRef.document(username).get();
+      if (v != null && v.exists){
+        _returnError("The username '${username}' is already in use");
+        return;
+      }
+
+    }
     try
     {
-      var res = (isLogin) ? await loginUser(email.trim(), password.trim()) :
-      await registerUser(email.trim(), password.trim());
+      AuthResult res;
+      if (isLogin){
+        res = await loginUser(email.trim(), password.trim());
+        DocumentSnapshot user = await Firestore.instance.collection('users').document(res.user.uid).get();
+        username = user.data['username'];
+        print(user);
+      } else{
+        res = await registerUser(email.trim(), password.trim());
+        Map<String, dynamic> user = new Map();
+        user['username'] = username;
+        usersRef.document(res.user.uid).setData(user);
+      }
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('uuid', res.user.uid);
+      await prefs.setString('username', username);
       AppDatabase database = await DBProvider.db.database;
       Navigator.pop(context);
       await Navigator.push(
@@ -153,10 +206,7 @@ class LoginModalState extends State<LoginModal> {
       );
     }
     on Exception catch(exception){
-      Navigator.pop(context);
-      setState(() {
-        _error = exception.toString().replaceFirst("Exception: ", '');
-      });
+      _returnError(exception.toString().replaceFirst("Exception: ", ''));
     }
 
   }
@@ -166,5 +216,6 @@ class LoginModalState extends State<LoginModal> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _usernameController.dispose();
   }
 }

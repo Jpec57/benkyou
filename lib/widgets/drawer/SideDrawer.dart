@@ -44,9 +44,16 @@ class SideDrawerState extends State<SideDrawer> {
                     width: 40, height: 40),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                  child: Text(this.isLoggedIn != null
-                      ? "Coucou toi"
-                      : "No user logged in"),
+                  child: FutureBuilder(
+                    future: getCurrentUsername(),
+                    builder: (BuildContext context, AsyncSnapshot<String> username) {
+                    return Text(username != null
+                        ? "Hello ${username.data}"
+                        : "No user logged in",
+                      softWrap: true,
+                    );
+                  },
+                  ),
                 ),
               ],
             ),
@@ -83,8 +90,13 @@ class SideDrawerState extends State<SideDrawer> {
           ),
           ListTile(
             title: Text("Browse online decks"),
-            onTap: () {
-              goToBrowsingDeckPage(context);
+            onTap: () async{
+              String username = await getCurrentUsername();
+              if (username != null){
+                goToBrowsingDeckPage(context);
+              } else {
+                showLoginDialog(context);
+              }
             },
           ),
           ListTile(

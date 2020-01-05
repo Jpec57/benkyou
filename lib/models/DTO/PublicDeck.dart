@@ -53,11 +53,11 @@ Future<List<Map<String, dynamic>>> _getMappingBetweenPublicDeckAndDeck(Deck deck
   return parsedCards;
 }
 
-Future<Map<String, dynamic>> convertDeckToPublic(Deck deck) async {
+Future<Map<String, dynamic>> convertDeckToPublic(Deck deck, String author) async {
   List<Map<String, dynamic>> parsedCards = await _getMappingBetweenPublicDeckAndDeck(deck);
 
   return {
-    "author": 'Jpec',
+    "author": author,
     "title": deck.title,
     "lastUse": DateTime.now().millisecondsSinceEpoch,
     "description": deck.description,

@@ -57,7 +57,6 @@ class _SynchronizePageState extends State<SynchronizePage> {
         }
       }
     }
-    print('done');
   }
 
   @override
