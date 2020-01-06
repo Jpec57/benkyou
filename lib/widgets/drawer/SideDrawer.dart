@@ -38,24 +38,33 @@ class SideDrawerState extends State<SideDrawer> {
           alignment: Alignment.bottomLeft,
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: Row(
-              children: <Widget>[
-                Image.asset('resources/imgs/luffy_icon.png',
-                    width: 40, height: 40),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                  child: FutureBuilder(
-                    future: getCurrentUsername(),
-                    builder: (BuildContext context, AsyncSnapshot<String> username) {
-                    return Text(username.hasData && username.data != null
-                        ? "Hello ${username.data}"
-                        : "No user logged in",
-                      softWrap: true,
-                    );
-                  },
+            child: GestureDetector(
+              onTap: (){
+                if (isLoggedIn != null){
+                  goToUserProfilePage(context);
+                } else {
+                  showLoginDialog(context);
+                }
+              },
+              child: Row(
+                children: <Widget>[
+                  Image.asset('resources/imgs/luffy_icon.png',
+                      width: 40, height: 40),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: FutureBuilder(
+                      future: getCurrentUsername(),
+                      builder: (BuildContext context, AsyncSnapshot<String> username) {
+                      return Text(username.hasData && username.data != null
+                          ? "Hello ${username.data}"
+                          : "No user logged in",
+                        softWrap: true,
+                      );
+                    },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -82,12 +91,12 @@ class SideDrawerState extends State<SideDrawer> {
                           CardListPage(database: widget.database)));
             },
           ),
-//          ListTile(
-//            title: Text("Profile"),
-//            onTap: () {
-//              goToUserProfilePage(context);
-//            },
-//          ),
+          ListTile(
+            title: Text("Profile"),
+            onTap: () {
+              goToUserProfilePage(context);
+            },
+          ),
           ListTile(
             title: Text("Browse online decks"),
             onTap: () async{

@@ -309,16 +309,11 @@ class _CreateCardState extends State<CreateCardPage> {
   }
 
   void getBackTranslation(JishoTranslation translation){
-    if (_kanjiEditingController.text.isEmpty){
-      _kanjiEditingController.text = translation.kanji;
-    }
-    if (_kanaEditingController.text.isEmpty){
-      _kanaEditingController.text = translation.reading;
-    }
+    _kanjiEditingController.text = translation.kanji;
+    _kanaEditingController.text = translation.reading;
     setState(() {
     });
     answerWidgetKey.currentState.setNewAnswers(translation.english);
-    //Call setNewAnswer(translation.english)
   }
 
   Widget _renderAgainOrLeave() {

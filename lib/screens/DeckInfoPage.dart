@@ -69,7 +69,9 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
   @override
   Widget build(BuildContext context) {
     return BasicContainer(
-        child: Column(children: <Widget>[
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
       Header(
           title: this.widget.deck.title,
           type: HEADER_ICON,
@@ -107,61 +109,76 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
               ),
               WallOfShamePreview(
                   cardDao: widget.cardDao, deckId: widget.deck.id),
-              FutureBuilder(
-                  future: getCurrentUsername(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> currentUsername) {
-                    if (!currentUsername.hasData || currentUsername.data == null){
-                      return Container();
-                    }
-                    return FutureBuilder(
-                      future: _hasAlreadyPublicRef(currentUsername.data),
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        return GestureDetector(
-                            onTap: () async {
-                              if (snapshot.hasData && snapshot.data) {
-                                Map<String, dynamic> data =
-                                    await convertDeckToPublic(widget.deck, currentUsername.data);
-                                await Firestore.instance
-                                    .collection('decks')
-                                    .document('${currentUsername.data}:${widget.deck.title}')
-                                    .setData(data);
-                                print('${currentUsername.data}:${widget.deck.title}');
-                                goToBrowsingDeckPage(context);
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) {
-                                    return PublishDeckDialog(author: currentUsername.data,deck: widget.deck);
-                                  },
-                                );
-                              }
-                            },
-                            child: Container(
-                              color: Colors.lightBlue,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0,
-                                    right: 8.0,
-                                    top: 8.0,
-                                    bottom: 8.0),
-                                child: Text(
-                                  (snapshot.hasData && snapshot.data)
-                                      ? "Update online".toUpperCase()
-                                      : "Make public".toUpperCase(),
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
-                                ),
-                              ),
-                            ));
-                      },
-                    );
-                  })
+              GestureDetector(
+                onTap: (){
+                  goToTinderLikePage(context, deckId: widget.deck.id);
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(2.0),
+                  child: Container(
+                      color: Colors.orange,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, right: 8.0, top: 8.0, bottom: 8.0),
+                        child: Text(
+                          "Quick review".toUpperCase(),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      )),
+                ),
+              )
             ],
           ),
         ),
       ),
+      FutureBuilder(
+          future: getCurrentUsername(),
+          builder:
+              (BuildContext context, AsyncSnapshot<String> currentUsername) {
+            if (!currentUsername.hasData || currentUsername.data == null) {
+              return Container();
+            }
+            return FutureBuilder(
+              future: _hasAlreadyPublicRef(currentUsername.data),
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                return GestureDetector(
+                    onTap: () async {
+                      if (snapshot.hasData && snapshot.data) {
+                        Map<String, dynamic> data = await convertDeckToPublic(
+                            widget.deck, currentUsername.data);
+                        await Firestore.instance
+                            .collection('decks')
+                            .document(
+                                '${currentUsername.data}:${widget.deck.title}')
+                            .setData(data);
+                        goToBrowsingDeckPage(context);
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return PublishDeckDialog(
+                                author: currentUsername.data,
+                                deck: widget.deck);
+                          },
+                        );
+                      }
+                    },
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.07,
+                      width: double.infinity,
+                      color: Color(0xff646461),
+                      child: Center(
+                        child: Text(
+                          (snapshot.hasData && snapshot.data)
+                              ? "Update online".toUpperCase()
+                              : "Make public".toUpperCase(),
+                          style: TextStyle(fontSize: 30, color: Colors.white),
+                        ),
+                      ),
+                    ));
+              },
+            );
+          }),
       GestureDetector(
         onTap: () {
           Navigator.push(
@@ -173,7 +190,7 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
                       )));
         },
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.08,
+          height: MediaQuery.of(context).size.height * 0.07,
           decoration: BoxDecoration(color: Colors.orange),
           child: Center(
             child: Text(
@@ -186,8 +203,8 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
       GestureDetector(
         onTap: () {},
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.08,
-          decoration: BoxDecoration(color: Colors.lightBlue),
+          height: MediaQuery.of(context).size.height * 0.07,
+          decoration: BoxDecoration(color: Color(0xff248CCB)),
           child: Center(
             child: FutureBuilder(
                 future: widget.cardDao.findAvailableCardsFromDeckId(

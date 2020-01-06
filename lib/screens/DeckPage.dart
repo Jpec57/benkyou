@@ -39,15 +39,15 @@ class DeckPageState extends State<DeckPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future onSelectNotification(String payload) async {
-    await showDialog(
-      context: context,
-      builder: (_) {
-        return new AlertDialog(
-          title: Text("PayLoad"),
-          content: Text("Payload : $payload"),
-        );
-      },
-    );
+//    await showDialog(
+//      context: context,
+//      builder: (_) {
+//        return new AlertDialog(
+//          title: Text("PayLoad"),
+//          content: Text("Payload : $payload"),
+//        );
+//      },
+//    );
   }
 
   Future<void> _showAppExplanation() async{
@@ -65,10 +65,10 @@ class DeckPageState extends State<DeckPage> {
     var callback = onSelectNotification;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _showAppExplanation();
-      var uuid = await isUserLoggedIn();
-      if (uuid != null) {
+//      var uuid = await isUserLoggedIn();
+//      if (uuid != null) {
 //        synchroniseFirebase(uuid);
-      }
+//      }
       scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }

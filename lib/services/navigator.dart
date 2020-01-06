@@ -12,6 +12,7 @@ import 'package:benkyou/screens/TinderLikePage.dart';
 import 'package:benkyou/screens/UserProfilePage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database/Database.dart';
 
@@ -66,24 +67,25 @@ void goToCardListPage(BuildContext context) async{
 }
 
 
-void goToTinderLikePage(BuildContext context) async{
+void goToTinderLikePage(BuildContext context, {int deckId}) async{
   AppDatabase appDatabase = await DBProvider.db.database;
   Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => TinderLikePage(
             cardDao: appDatabase.cardDao,
+            deckId: deckId,
           )
       )
   );
 }
 
 void goToUserProfilePage(BuildContext context) async{
+  SharedPreferences preferences = await SharedPreferences.getInstance();
   Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => UserProfilePage(
-          )
+          builder: (context) => UserProfilePage(username: preferences.getString('username'), userUid: preferences.getString('uuid'), cardDao: null,)
       )
   );
 }

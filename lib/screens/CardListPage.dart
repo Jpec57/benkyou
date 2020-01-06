@@ -51,7 +51,7 @@ class CardListPageState extends State<CardListPage> {
 
   Widget _buildList() {
     return FutureBuilder(
-        future: widget.database.cardDao.findAllCardsWithAnswersInForeignLanguage(),
+        future: widget.database.cardDao.findAllCardsWithAnswers(),
         builder: (BuildContext context,
             AsyncSnapshot<List<CardWithAnswers>> snapshot) {
           if (snapshot.hasData) {

@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:benkyou/animations/TinderCard/TinderCardAnimations.dart';
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/CardDao.dart';
+import 'package:benkyou/services/database/DBProvider.dart';
+import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/TinderCard.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
@@ -11,8 +13,9 @@ import 'package:benkyou/models/Card.dart' as model_card;
 
 class TinderLikePage extends StatefulWidget {
   final CardDao cardDao;
+  final int deckId;
 
-  const TinderLikePage({Key key, @required this.cardDao}) : super(key: key);
+  const TinderLikePage({Key key, @required this.cardDao, this.deckId}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => TinderLikePageState();
@@ -36,7 +39,11 @@ class TinderLikePageState extends State<TinderLikePage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _cards = await widget.cardDao.findAllCardsWithAnswersInForeignLanguage();
+      if (widget.deckId != null){
+        _cards = await widget.cardDao.findCardsFromDeckWithAnswers(widget.deckId, isAvailableOnly: true);
+      } else {
+        _cards = await widget.cardDao.findAllCardsWithAnswers(isAvailableOnly: true);
+      }
       setState(() {});
     });
 
@@ -150,10 +157,14 @@ class TinderLikePageState extends State<TinderLikePage>
               });
             },
             // When releasing the first card
-            onPanEnd: (_) {
+            onPanEnd: (_) async {
               // If the front card was swiped far enough to count as swiped
               if (frontCardAlign.x > 3.0 || frontCardAlign.x < -3.0) {
-                if (frontCardAlign.x > 3.0){
+                AppDatabase database = await DBProvider.db.database;
+                bool isSuccess = frontCardAlign.x > 3.0;
+                await _cards[0]
+                    .updateCard(database, isSuccess);
+                if (isSuccess){
                   _success++;
                 } else {
                   _errors++;

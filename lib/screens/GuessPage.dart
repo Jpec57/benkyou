@@ -235,14 +235,10 @@ class _GuessPageState extends State<GuessPage>
           child: Scaffold(
               body: Column(children: <Widget>[
             Header(title: '', type: HEADER_SMALL),
-            StreamBuilder<List<Card>>(
-                stream: null,
-                builder: (context, snapshot) {
-                  return GuessBanner(
-                      card: widget.cards.isNotEmpty
-                          ? widget.cards[currentQuestionIndex]
-                          : null);
-                }),
+                GuessBanner(
+                    card: widget.cards.isNotEmpty
+                        ? widget.cards[currentQuestionIndex]
+                        : null),
             Expanded(
               child: Column(
                 children: <Widget>[

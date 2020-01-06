@@ -26,7 +26,7 @@ class TinderCard extends StatelessWidget {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(card.question,
+                Text(card.question.replaceAll('|', ', '),
                     style: TextStyle(fontSize: 40),
                     textAlign: TextAlign.center),
                 Text(card.hint != null ? card.hint : "",

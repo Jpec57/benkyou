@@ -85,8 +85,18 @@ class ReviewScheduleState extends State<ReviewSchedule> {
     List<Widget> labels = new List();
     DateTime start = DateTime.now();
     DateTime tmp = start;
-    Duration interval = this.isWholeWeek ? Duration(days: 1): Duration(hours: 1);
-    DateTime end = start.add(this.isWholeWeek ? Duration(days: 14) : Duration(hours: 12));
+    Duration interval;
+    DateTime end;
+
+    if (this.isWholeWeek){
+      interval = Duration(days: 1);
+      start = start.subtract(Duration(hours: start.hour, minutes: start.minute, seconds: start.second));
+      end = start.add(Duration(days: 14));
+    } else {
+      interval = Duration(hours: 1);
+      end = start.add(Duration(hours: 12));
+    }
+
     int sum;
     int maxSum = 0;
     List<TimeCard> cards = await widget.cardDao.findCardsByHour(

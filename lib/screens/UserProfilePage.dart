@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 
 class UserProfilePage extends StatefulWidget {
   final CardDao cardDao;
+  final String userUid;
+  final String username;
 
-  const UserProfilePage({Key key, this.cardDao}) : super(key: key);
+  const UserProfilePage({Key key, @required this.cardDao, @required this.userUid, @required this.username}) : super(key: key);
   @override
   State<StatefulWidget> createState() => UserProfilePageState();
 }
@@ -57,7 +59,7 @@ class UserProfilePageState extends State<UserProfilePage> {
                       child: Center(
                           child: Column(
                             children: <Widget>[
-                              Text("Luffy",
+                              Text(widget.username,
                                 style: TextStyle(fontFamily: 'Pacifico', fontSize: 20)
                                 ),
                               Text("-lvl -",

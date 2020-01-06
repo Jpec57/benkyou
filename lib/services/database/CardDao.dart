@@ -83,10 +83,30 @@ abstract class CardDao {
   }
 
   Future<List<CardWithAnswers>>
-      findAllCardsWithAnswersInForeignLanguage() async {
+      findAllCardsWithAnswers({bool isForeignWordOnly = false, bool isAvailableOnly = false}) async {
     AppDatabase db = await DBProvider.db.database;
+    int date = DateTime.now().millisecondsSinceEpoch;
     List<Map<String, dynamic>> cards = await db.database.rawQuery(
-        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id HAVING c.isForeignWord = 1;');
+        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c '
+            'INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id '
+            '${(isForeignWordOnly) ?  "HAVING c.isForeignWord = 1": ""} '
+    '${(isAvailableOnly) ?  "AND c.nextAvailable <= $date": ""};');
+    List<CardWithAnswers> parsedRes = [];
+    for (Map<String, dynamic> card in cards) {
+      parsedRes.add(CardWithAnswers.fromJSON(card));
+    }
+    return parsedRes;
+  }
+
+  Future<List<CardWithAnswers>>
+  findCardsFromDeckWithAnswers(int deckId, {bool isForeignWordOnly = false, bool isAvailableOnly = false}) async {
+    AppDatabase db = await DBProvider.db.database;
+    int date = DateTime.now().millisecondsSinceEpoch;
+    List<Map<String, dynamic>> cards = await db.database.rawQuery(
+        'SELECT c.*, group_concat(DISTINCT a.content) AS answers FROM Card c '
+            'INNER JOIN Answer a ON a.card_id = c.id GROUP BY c.id HAVING c.deck_id = $deckId'
+            '${(isForeignWordOnly) ?  " AND c.isForeignWord = 1": ""} '
+            '${(isAvailableOnly) ?  "AND c.nextAvailable <= $date": ""};');
     List<CardWithAnswers> parsedRes = [];
     for (Map<String, dynamic> card in cards) {
       parsedRes.add(CardWithAnswers.fromJSON(card));
