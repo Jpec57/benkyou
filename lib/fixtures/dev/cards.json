@@ -9,7 +9,6 @@
     "nbErrors": 0,
     "nbSuccess": 2,
     "nextAvailable": 1575147537501,
-    "isReversible": true,
     "hasSolution": true
   },
   {
@@ -22,7 +21,6 @@
     "nbErrors": 0,
     "nbSuccess": 1,
     "nextAvailable": 1575147537501,
-    "isReversible": true,
     "hasSolution": true
   },
   {
@@ -35,7 +33,6 @@
     "nbErrors": 5,
     "nbSuccess": 1,
     "nextAvailable": 1575147537501,
-    "isReversible": true,
     "hasSolution": true
   },
   {
@@ -46,7 +43,6 @@
     "nbErrors": 0,
     "nbSuccess": 0,
     "nextAvailable": 1575147537501,
-    "isReversible": false,
     "hasSolution": false
   },
   {
@@ -57,7 +53,6 @@
     "nbErrors": 0,
     "nbSuccess": 0,
     "nextAvailable": 1575147537501,
-    "isReversible": false,
     "hasSolution": true
   }
 ]
