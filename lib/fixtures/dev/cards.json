@@ -26,8 +26,8 @@
   {
     "id": 3,
     "deck_id": 1,
-    "question": "Too many errors",
-    "hint": "nul",
+    "question": "夢",
+    "hint": "ゆめ",
     "useInContext": null,
     "lvl": 1,
     "nbErrors": 5,
@@ -38,21 +38,11 @@
   {
     "id": 4,
     "deck_id": 1,
-    "question": "Not init",
+    "question": "夢中に",
     "lvl": 0,
     "nbErrors": 0,
     "nbSuccess": 0,
     "nextAvailable": 1575147537501,
     "hasSolution": false
-  },
-  {
-    "id": 5,
-    "deck_id": 2,
-    "question": "Not in  japanese",
-    "lvl": 0,
-    "nbErrors": 0,
-    "nbSuccess": 0,
-    "nextAvailable": 1575147537501,
-    "hasSolution": true
   }
 ]

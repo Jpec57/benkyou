@@ -20,13 +20,13 @@
   {
     "id": 4,
     "card_id": 3,
-    "content": "Test",
+    "content": "Dream",
     "isSynchronized": true
   },
   {
-    "id": 5,
-    "card_id": 5,
-    "content": "French",
+    "id": 4,
+    "card_id": 3,
+    "content": "Rêve",
     "isSynchronized": true
   }
 ]

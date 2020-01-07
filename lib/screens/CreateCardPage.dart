@@ -186,15 +186,15 @@ class _CreateCardState extends State<CreateCardPage> {
   }
 
   Widget _renderForm() {
-    return Padding(
-      padding: EdgeInsets.only(left: 50.0, right: 50.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Expanded(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(left: 50.0, right: 50.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -292,8 +292,8 @@ class _CreateCardState extends State<CreateCardPage> {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
