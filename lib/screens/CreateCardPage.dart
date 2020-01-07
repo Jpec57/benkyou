@@ -41,7 +41,6 @@ class _CreateCardState extends State<CreateCardPage> {
   TextEditingController _kanaEditingController;
   final FocusNode _kanjiFocusNode = FocusNode();
   final FocusNode _kanaFocusNode = FocusNode();
-  bool _needParseInJapanese = true;
   bool _isLateInit = false;
   bool _isQuestionErrorVisible = false;
   bool _isReversible = true;
@@ -92,7 +91,7 @@ class _CreateCardState extends State<CreateCardPage> {
       String hint;
       String question;
       if (_kanaEditingController.text.trim().isNotEmpty){
-        hint = _needParseInJapanese
+        hint = stringNeedToBeParsed(_kanaEditingController.text)
             ? getJapaneseTranslation(_kanaEditingController.text)
             : _kanaEditingController.text;
       }
@@ -136,7 +135,7 @@ class _CreateCardState extends State<CreateCardPage> {
 
   Future<String> _validateCreateCard() async {
     String hint = _kanaEditingController.text.trim();
-    String question = _needParseInJapanese
+    String question = stringNeedToBeParsed(_kanaEditingController.text)
         ? getJapaneseTranslation(_kanjiEditingController.text)
         : _kanjiEditingController.text;
     if (question == null || question.trim().isEmpty) {
@@ -180,15 +179,9 @@ class _CreateCardState extends State<CreateCardPage> {
       int char = text.codeUnitAt(i);
       if ((startLower <= char && char <= endLower) ||
           (startUpper <= char && char <= endUpper)){
-        setState(() {
-          _needParseInJapanese = true;
-        });
         return true;
       }
     }
-    setState(() {
-      _needParseInJapanese = false;
-    });
     return false;
   }
 
@@ -221,7 +214,6 @@ class _CreateCardState extends State<CreateCardPage> {
                             _isQuestionErrorVisible = false;
                             bool needtoBeParsed = stringNeedToBeParsed(_kanaEditingController.text);
                             setState(() {
-                              _needParseInJapanese = needtoBeParsed;
                               japanese = needtoBeParsed ?
                               "${getJapaneseTranslation(_kanaEditingController.text) ?? ''}": '';
                             });
@@ -240,10 +232,7 @@ class _CreateCardState extends State<CreateCardPage> {
                       child: Padding(
                         padding: EdgeInsets.only(bottom: 10.0),
                         child: Column(children: <Widget>[
-                          Visibility(
-                            visible: _needParseInJapanese,
-                            child: Text(japanese),
-                          ),
+                          Text(japanese),
                           TextFormField(
                             focusNode: _kanjiFocusNode,
                             controller: _kanjiEditingController,
