@@ -86,8 +86,13 @@ String getAnswerWithoutInfo(String answer){
   return answer.replaceAll(regExp, '').trim();
 }
 
-String getQuestionInNativeLanguage(String fullQuestion){
+String getQuestionInNativeLanguage(String fullQuestion, {int num}){
   List<String> possibleQuestions = fullQuestion.split('|');
+  if (num != null){
+    //TODO
+    return fullQuestion.replaceAll('|', ', ');
+    return possibleQuestions[num % possibleQuestions.length];
+  }
   Random random = new Random();
   int index = (possibleQuestions.length - 1 > 2)
       ? random.nextInt(possibleQuestions.length - 1)

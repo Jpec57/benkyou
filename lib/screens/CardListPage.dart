@@ -1,3 +1,4 @@
+import 'package:benkyou/constants/colors.dart';
 import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/Database.dart';
@@ -69,33 +70,42 @@ class CardListPageState extends State<CardListPage> {
             return ListView.separated(
               itemCount: _cards == null ? 0 : _filteredCards.length,
               itemBuilder: (BuildContext context, int index) {
-                return ExpansionTile(
-                  title: Text(_getTitleFormat(_filteredCards[index])),
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        goToCardPage(context, _filteredCards[index]);
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount:
-                              _filteredCards[index].answerContents.length,
-                          itemBuilder: (BuildContext context, int subIndex) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(_filteredCards[index]
-                                    .answerContents[subIndex]),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) => Divider(),
+                return Container(
+                  color: GREY_AND_BLUE[index % GREY_AND_BLUE.length],
+                  child: ExpansionTile(
+                    title: Text(
+                      _getTitleFormat(_filteredCards[index]),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          goToCardPage(context, _filteredCards[index]);
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount:
+                                _filteredCards[index].answerContents.length,
+                            itemBuilder: (BuildContext context, int subIndex) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Text(_filteredCards[index]
+                                      .answerContents[subIndex],
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Divider(),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
@@ -129,10 +139,11 @@ class CardListPageState extends State<CardListPage> {
   }
 
   String _getTitleFormat(card_model.Card card) {
+    String cardQuestion = card.question.replaceAll('|', ', ');
     if (card.hint != null && card.hint.trim().isNotEmpty) {
-      return '${card.question} - ${card.hint}';
+      return '${cardQuestion} - ${card.hint}';
     }
-    return '${card.question}';
+    return '${cardQuestion}';
   }
 
   Widget _renderSearchBar() {

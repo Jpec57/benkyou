@@ -40,4 +40,11 @@ class Answer {
         isSynchronized: (json['hasSolution'] == 0)
     );
   }
+
+  @override
+  String toString() {
+    return 'Answer{id: $id, cardId: $cardId, content: $content, isSynchronized: $isSynchronized}';
+  }
+
+
 }

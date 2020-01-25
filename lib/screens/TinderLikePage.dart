@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:benkyou/animations/TinderCard/TinderCardAnimations.dart';
-import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/CardDao.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
@@ -26,7 +25,7 @@ List<Size> cardsSize = new List(2);
 
 class TinderLikePageState extends State<TinderLikePage>
     with SingleTickerProviderStateMixin {
-  List<CardWithAnswers> _cards = new List();
+  List<model_card.Card> _cards = new List();
   AnimationController _controller;
   final Alignment defaultFrontCardAlign = new Alignment(0.0, 0.0);
   Alignment frontCardAlign;
@@ -40,9 +39,9 @@ class TinderLikePageState extends State<TinderLikePage>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.deckId != null){
-        _cards = await widget.cardDao.findCardsFromDeckWithAnswers(widget.deckId, isAvailableOnly: true);
+        _cards = await widget.cardDao.findAvailableCardsFromDeckId(widget.deckId, DateTime.now().millisecondsSinceEpoch);
       } else {
-        _cards = await widget.cardDao.findAllCardsWithAnswers(isAvailableOnly: true);
+        _cards = await widget.cardDao.findAvailableCards(DateTime.now().millisecondsSinceEpoch);
       }
       setState(() {});
     });
@@ -72,7 +71,7 @@ class TinderLikePageState extends State<TinderLikePage>
             ? TinderCardAnimations.backCardSizeAnim(_controller, cardsSize)
                 .value
             : cardsSize[1],
-        child: TinderCard(isAnswerVisible: false, card: card),
+        child: TinderCard(isAnswerVisible: false, card: card, database: null),
       ),
     );
   }
@@ -87,7 +86,8 @@ class TinderLikePageState extends State<TinderLikePage>
     }
   }
 
-  Widget frontCard(BuildContext context, model_card.Card card) {
+  Future<Widget> frontCard(BuildContext context, model_card.Card card) async{
+    AppDatabase appDatabase = await DBProvider.db.database;    
     if (card == null) {
       return Center(
         child: Column(
@@ -109,7 +109,12 @@ class TinderLikePageState extends State<TinderLikePage>
           angle: (pi / 180.0) * frontCardRot,
           child: SizedBox.fromSize(
             size: cardsSize[0],
-            child: TinderCard(isAnswerVisible: _isAnswerVisible, card: card, color: _getCardColor(),),
+            child: TinderCard(
+              isAnswerVisible: _isAnswerVisible, 
+              card: card, 
+              color: _getCardColor(),
+              database: appDatabase
+            ),
           ),
         ));
   }
@@ -185,6 +190,8 @@ class TinderLikePageState extends State<TinderLikePage>
         : Container();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return BasicContainer(
@@ -200,7 +207,15 @@ class TinderLikePageState extends State<TinderLikePage>
               child: Stack(
                 children: <Widget>[
                   backCard(context, (0 + 1 < _cards.length) ? _cards[0 + 1] : null),
-                  frontCard(context, (_cards.isNotEmpty) ? _cards[0] : null),
+                  FutureBuilder(
+                    future: frontCard(context, (_cards.isNotEmpty) ? _cards[0] : null),
+                    builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                      if (snapshot.hasData){
+                        return snapshot.data;
+                      }
+                      return Container();
+                    },
+                  ),
                   _cardSwipingWidget()
                 ],
               ),

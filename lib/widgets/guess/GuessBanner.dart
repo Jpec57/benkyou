@@ -9,8 +9,9 @@ import 'package:benkyou/models/Card.dart' as prefix0;
 
 class GuessBanner extends StatefulWidget {
   final prefix0.Card card;
+  final int pseudoRandomIndex;
 
-  GuessBanner({Key key, this.card}) : super(key: key);
+  GuessBanner({Key key, this.card, this.pseudoRandomIndex}) : super(key: key);
 
   @override
   _GuessBannerState createState() => _GuessBannerState();
@@ -19,7 +20,8 @@ class GuessBanner extends StatefulWidget {
 class _GuessBannerState extends State<GuessBanner> {
   FlutterTts flutterTts = new FlutterTts();
   TtsState ttsState = TtsState.stopped;
-  bool _isHintNeeded = true;
+  bool _isHintNeeded = false;
+  int pseudoRandomIndexOffset = 0;
 
   @override
   void initState() {
@@ -47,13 +49,12 @@ class _GuessBannerState extends State<GuessBanner> {
   }
 
   Future initTts() async {
-//    List<dynamic> languages = await flutterTts.getLanguages;
     await flutterTts.setLanguage("ja-JP");
     await flutterTts.setSpeechRate(1.0);
     await flutterTts.setVolume(1.0);
     await flutterTts.setPitch(1.0);
     await flutterTts.isLanguageAvailable("ja-JP");
-    _speak();
+//    _speak();
   }
 
   Future _speak() async {
@@ -64,6 +65,23 @@ class _GuessBannerState extends State<GuessBanner> {
   Future _stop() async {
     var result = await flutterTts.stop();
     if (result == 1) setState(() => ttsState = TtsState.stopped);
+  }
+
+  //TODO
+  String _getHint(){
+    if (widget.card.hint != null){
+      return widget.card.hint;
+    }
+    print(widget.card.question);
+    List<String> hints = widget.card.question.split('|');
+    print("length ${hints.length}");
+    hints.removeAt(pseudoRandomIndexOffset + widget.pseudoRandomIndex % hints.length);
+    print(hints.toString());
+    if (hints.isNotEmpty){
+      print(hints.join(', '));
+      return hints.join(', ');
+    }
+    return '';
   }
 
   @override
@@ -78,22 +96,39 @@ class _GuessBannerState extends State<GuessBanner> {
         child: Stack(children: <Widget>[
           Container(
             decoration: BoxDecoration(color: Colors.white),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    getQuestionInNativeLanguage(widget.card.question),
-                    style: TextStyle(fontSize: 30),
+            child: GestureDetector(
+              onTap: (){
+                setState(() {
+                  pseudoRandomIndexOffset++;
+                });
+              },
+              onLongPress: (){
+                setState(() {
+                  _isHintNeeded = true;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        getQuestionInNativeLanguage(widget.card.question, num: pseudoRandomIndexOffset + widget.pseudoRandomIndex),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Visibility(
+                        visible: _isHintNeeded,
+                        child: Text(
+                          _getHint(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                    ],
                   ),
-                  Visibility(
-                    visible: _isHintNeeded,
-                    child: Text(
-                      widget.card.hint ?? '',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

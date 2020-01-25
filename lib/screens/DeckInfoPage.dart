@@ -68,178 +68,184 @@ class _DeckInfoPageState extends State<DeckInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BasicContainer(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-      Header(
-          title: this.widget.deck.title,
-          type: HEADER_ICON,
-          icon: Visibility(
-            visible: _hasNoSolutionCards,
-            child: GestureDetector(
-              onTap: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            LateInitPage(deckId: widget.deck.id)));
-              },
-              child: Container(
-                child: Image.asset('resources/imgs/waiting_cards.png'),
-              ),
-            ),
-          )),
-      Expanded(
-        child: SingleChildScrollView(
+    return WillPopScope(
+      onWillPop: () async {
+        goToHomePage(context);
+        return Future.value(false);
+      },
+      child: BasicContainer(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ReviewSchedule(
-                cardDao: widget.cardDao,
-                deckId: widget.deck.id,
-                colors: [
-                  Color(0xff646461),
-                  Color(0xff248CCB),
-                ],
-              ),
-              SRSPreview(
-                cardDao: widget.cardDao,
-                deckId: widget.deck.id,
-              ),
-              WallOfShamePreview(
-                  cardDao: widget.cardDao, deckId: widget.deck.id),
-              GestureDetector(
-                onTap: (){
-                  goToTinderLikePage(context, deckId: widget.deck.id);
+              children: <Widget>[
+        Header(
+            title: this.widget.deck.title,
+            type: HEADER_ICON,
+            icon: Visibility(
+              visible: _hasNoSolutionCards,
+              child: GestureDetector(
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LateInitPage(deckId: widget.deck.id)));
                 },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(2.0),
-                  child: Container(
-                      color: Colors.orange,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, top: 8.0, bottom: 8.0),
-                        child: Text(
-                          "Quick review".toUpperCase(),
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                      )),
+                child: Container(
+                  child: Image.asset('resources/imgs/waiting_cards.png'),
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-      FutureBuilder(
-          future: getCurrentUsername(),
-          builder:
-              (BuildContext context, AsyncSnapshot<String> currentUsername) {
-            if (!currentUsername.hasData || currentUsername.data == null) {
-              return Container();
-            }
-            return FutureBuilder(
-              future: _hasAlreadyPublicRef(currentUsername.data),
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                return GestureDetector(
-                    onTap: () async {
-                      if (snapshot.hasData && snapshot.data) {
-                        Map<String, dynamic> data = await convertDeckToPublic(
-                            widget.deck, currentUsername.data);
-                        await Firestore.instance
-                            .collection('decks')
-                            .document(
-                                '${currentUsername.data}:${widget.deck.title}')
-                            .setData(data);
-                        goToBrowsingDeckPage(context);
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (_) {
-                            return PublishDeckDialog(
-                                author: currentUsername.data,
-                                deck: widget.deck);
-                          },
-                        );
-                      }
-                    },
+              ),
+            )),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ReviewSchedule(
+                  cardDao: widget.cardDao,
+                  deckId: widget.deck.id,
+                  colors: [
+                    Color(0xff646461),
+                    Color(0xff248CCB),
+                  ],
+                ),
+                SRSPreview(
+                  cardDao: widget.cardDao,
+                  deckId: widget.deck.id,
+                ),
+                WallOfShamePreview(
+                    cardDao: widget.cardDao, deckId: widget.deck.id),
+                GestureDetector(
+                  onTap: (){
+                    goToTinderLikePage(context, deckId: widget.deck.id);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(2.0),
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.07,
-                      width: double.infinity,
-                      color: Color(0xff646461),
-                      child: Center(
-                        child: Text(
-                          (snapshot.hasData && snapshot.data)
-                              ? "Update online".toUpperCase()
-                              : "Make public".toUpperCase(),
-                          style: TextStyle(fontSize: 30, color: Colors.white),
-                        ),
-                      ),
-                    ));
-              },
-            );
-          }),
-      GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateCardPage(
-                        cardDao: widget.cardDao,
-                        deck: widget.deck,
-                      )));
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.07,
-          decoration: BoxDecoration(color: Colors.orange),
-          child: Center(
-            child: Text(
-              'Add a card'.toUpperCase(),
-              style: TextStyle(fontSize: 30, color: Colors.white),
+                        color: Colors.orange,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 8.0, right: 8.0, top: 8.0, bottom: 8.0),
+                          child: Text(
+                            "Quick review".toUpperCase(),
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        )),
+                  ),
+                )
+              ],
             ),
           ),
         ),
-      ),
-      GestureDetector(
-        onTap: () {},
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.07,
-          decoration: BoxDecoration(color: Color(0xff248CCB)),
-          child: Center(
-            child: FutureBuilder(
-                future: widget.cardDao.findAvailableCardsFromDeckId(
-                    widget.deck.id, DateTime.now().millisecondsSinceEpoch),
-                builder: (_, AsyncSnapshot<List<card_model.Card>> snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.data != null &&
-                      snapshot.data.isNotEmpty) {
-                    return GestureDetector(
+        FutureBuilder(
+            future: getCurrentUsername(),
+            builder:
+                (BuildContext context, AsyncSnapshot<String> currentUsername) {
+              if (!currentUsername.hasData || currentUsername.data == null) {
+                return Container();
+              }
+              return FutureBuilder(
+                future: _hasAlreadyPublicRef(currentUsername.data),
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return GestureDetector(
                       onTap: () async {
-                        AppDatabase appDatabase = await DBProvider.db.database;
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GuessPage(
-                                      appDatabase: appDatabase,
-                                      cards: snapshot.data,
-                                      deckId: widget.deck.id,
-                                    )));
+                        if (snapshot.hasData && snapshot.data) {
+                          Map<String, dynamic> data = await convertDeckToPublic(
+                              widget.deck, currentUsername.data);
+                          await Firestore.instance
+                              .collection('decks')
+                              .document(
+                                  '${currentUsername.data}:${widget.deck.title}')
+                              .setData(data);
+                          goToBrowsingDeckPage(context);
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (_) {
+                              return PublishDeckDialog(
+                                  author: currentUsername.data,
+                                  deck: widget.deck);
+                            },
+                          );
+                        }
                       },
-                      child: Text(
-                        '${availableCards != null ? availableCards.length : 0} Review${availableCards != null && availableCards.length > 1 ? 's' : ''}'
-                            .toUpperCase(),
-                        style: TextStyle(fontSize: 30, color: Colors.white),
-                      ),
-                    );
-                  }
-                  return (Text(
-                    '0 Review'.toUpperCase(),
-                    style: TextStyle(fontSize: 30, color: Colors.white),
-                  ));
-                }),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.07,
+                        width: double.infinity,
+                        color: Color(0xff646461),
+                        child: Center(
+                          child: Text(
+                            (snapshot.hasData && snapshot.data)
+                                ? "Update online".toUpperCase()
+                                : "Make public".toUpperCase(),
+                            style: TextStyle(fontSize: 30, color: Colors.white),
+                          ),
+                        ),
+                      ));
+                },
+              );
+            }),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CreateCardPage(
+                          cardDao: widget.cardDao,
+                          deck: widget.deck,
+                        )));
+          },
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.07,
+            decoration: BoxDecoration(color: Colors.orange),
+            child: Center(
+              child: Text(
+                'Add a card'.toUpperCase(),
+                style: TextStyle(fontSize: 30, color: Colors.white),
+              ),
+            ),
           ),
         ),
-      )
-    ]));
+        GestureDetector(
+          onTap: () {},
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.07,
+            decoration: BoxDecoration(color: Color(0xff248CCB)),
+            child: Center(
+              child: FutureBuilder(
+                  future: widget.cardDao.findAvailableCardsFromDeckId(
+                      widget.deck.id, DateTime.now().millisecondsSinceEpoch),
+                  builder: (_, AsyncSnapshot<List<card_model.Card>> snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.data != null &&
+                        snapshot.data.isNotEmpty) {
+                      return GestureDetector(
+                        onTap: () async {
+                          AppDatabase appDatabase = await DBProvider.db.database;
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GuessPage(
+                                        appDatabase: appDatabase,
+                                        cards: snapshot.data,
+                                        deckId: widget.deck.id,
+                                      )));
+                        },
+                        child: Text(
+                          '${availableCards != null ? availableCards.length : 0} Review${availableCards != null && availableCards.length > 1 ? 's' : ''}'
+                              .toUpperCase(),
+                          style: TextStyle(fontSize: 30, color: Colors.white),
+                        ),
+                      );
+                    }
+                    return (Text(
+                      '0 Review'.toUpperCase(),
+                      style: TextStyle(fontSize: 30, color: Colors.white),
+                    ));
+                  }),
+            ),
+          ),
+        )
+      ])),
+    );
   }
 }

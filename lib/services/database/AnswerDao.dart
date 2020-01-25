@@ -66,8 +66,8 @@ abstract class AnswerDao {
 
   Future<List<Answer>> findAllAnswersForCard(int id){
     return findAnswers(
-        where: 'card_id = ?',
-        whereArgs: [id],
+      where: 'card_id = ?',
+      whereArgs: [id],
     );
   }
 

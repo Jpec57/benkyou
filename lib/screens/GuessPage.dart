@@ -40,6 +40,7 @@ class _GuessPageState extends State<GuessPage>
   bool _isSearching = true;
   final newAnswerController = TextEditingController();
   final _answerScrollController = ScrollController();
+  int index = 0;
 
   String boxColor = 'standard';
   int currentQuestionIndex = 0;
@@ -115,6 +116,7 @@ class _GuessPageState extends State<GuessPage>
         answerController.clear();
         setState(() {
           _isSearching = true;
+          index = this.index++;
         });
       } else {
         goToDeckInfoPage(context, widget.deckId);
@@ -224,116 +226,113 @@ class _GuessPageState extends State<GuessPage>
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return KeyboardAwareInput(
-        focusNode: pageFocusNode,
-        specialCallbacks: {
-          KEYBOARD_ENTER_CODE: () {
-            getNextQuestion();
-          }
-        },
-        child: SafeArea(
-          child: Scaffold(
-              body: Column(children: <Widget>[
-            Header(title: '', type: HEADER_SMALL),
-                GuessBanner(
-                    card: widget.cards.isNotEmpty
-                        ? widget.cards[currentQuestionIndex]
-                        : null),
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(color: boxColors[boxColor]),
-                    child: ConstrainedBox(
-                      child: Row(
-                        children: <Widget>[
-                          Flexible(
-                              child: Container(
-                            child: Center(
-                                child: Transform(
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                focusNode: inputFocusNode,
-                                autofocus: true,
-                                onEditingComplete: () {
-                                  getNextQuestion();
-                                },
-                                controller: answerController,
-                                style: TextStyle(color: Colors.white),
-                                decoration: InputDecoration.collapsed(
-                                    border: InputBorder.none,
-                                    hintText: 'Enter a search term',
-                                    hintStyle:
-                                        TextStyle(color: Colors.white30)),
+    return
+      SafeArea(
+        child: Scaffold(
+            body: Column(children: <Widget>[
+              Header(title: '', type: HEADER_SMALL),
+              GuessBanner(
+                  card: widget.cards.isNotEmpty
+                      ? widget.cards[currentQuestionIndex]
+                      : null,
+                  pseudoRandomIndex: this.index
+              ),
+              Expanded(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(color: boxColors[boxColor]),
+                      child: ConstrainedBox(
+                        child: Row(
+                          children: <Widget>[
+                            Flexible(
+                                child: Container(
+                                  child: Center(
+                                      child: Transform(
+                                        child: TextField(
+                                          textAlign: TextAlign.center,
+                                          focusNode: inputFocusNode,
+                                          autofocus: true,
+                                          onEditingComplete: () {
+                                            getNextQuestion();
+                                          },
+                                          controller: answerController,
+                                          style: TextStyle(color: Colors.white),
+                                          decoration: InputDecoration.collapsed(
+                                              border: InputBorder.none,
+                                              hintText: 'Enter a search term',
+                                              hintStyle:
+                                              TextStyle(color: Colors.white30)),
+                                        ),
+                                        transform: Matrix4.translation(_shake()),
+                                      )),
+                                )),
+                            GestureDetector(
+                              onTap: () => getNextQuestion(),
+                              child: ConstrainedBox(
+                                child: Container(
+                                  child: Center(
+                                      child: Image.asset(
+                                          'resources/imgs/arrow_forward.png')),
+                                ),
+                                constraints: BoxConstraints(
+                                    minWidth: 40.0, minHeight: 40.0),
                               ),
-                              transform: Matrix4.translation(_shake()),
-                            )),
-                          )),
-                          GestureDetector(
-                            onTap: () => getNextQuestion(),
-                            child: ConstrainedBox(
-                              child: Container(
-                                child: Center(
-                                    child: Image.asset(
-                                        'resources/imgs/arrow_forward.png')),
-                              ),
-                              constraints: BoxConstraints(
-                                  minWidth: 40.0, minHeight: 40.0),
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
+                        constraints: BoxConstraints(minHeight: 40),
                       ),
-                      constraints: BoxConstraints(minHeight: 40),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(color: Color(0xffE3E3E3)),
+                    Expanded(
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        decoration: BoxDecoration(color: Color(0xC0C0C0)),
-                        child: Visibility(
-                          visible: !_isSearching,
-                          child: Card(
-                            elevation: 5.0,
-                            margin: EdgeInsets.only(
-                                top: 15.0, bottom: 20.0, left: 5, right: 5),
-                            child: Padding(
-                              padding: EdgeInsets.all(7.0),
-                              child: SingleChildScrollView(
-                                controller: _answerScrollController,
-                                child: FutureBuilder<List<Answer>>(
-                                  future: widget.appDatabase.answerDao
-                                      .findAllAnswersForCard(widget
-                                          .cards[currentQuestionIndex].id),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<List<Answer>> snapshot) {
-                                    _answers = snapshot.data;
-                                    switch (snapshot.connectionState) {
-                                      case ConnectionState.none:
-                                        return Text('No result.');
-                                      case ConnectionState.active:
-                                      case ConnectionState.waiting:
-                                        return Text('Awaiting result...');
-                                      case ConnectionState.done:
-                                        if (snapshot.hasError) {
-                                          return Text('Error: ${snapshot.error}');
-                                        }
-                                        if (snapshot.hasData && snapshot.data.isNotEmpty) {
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              _getCardAnswers(snapshot),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(color: Color(0xffE3E3E3)),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          decoration: BoxDecoration(color: Color(0xC0C0C0)),
+                          child: Visibility(
+                            visible: !_isSearching,
+                            child: Card(
+                              elevation: 5.0,
+                              margin: EdgeInsets.only(
+                                  top: 15.0, bottom: 20.0, left: 5, right: 5),
+                              child: Padding(
+                                padding: EdgeInsets.all(7.0),
+                                child: SingleChildScrollView(
+                                  controller: _answerScrollController,
+                                  child: FutureBuilder<List<Answer>>(
+                                    future: widget.appDatabase.answerDao
+                                        .findAllAnswersForCard(widget
+                                        .cards[currentQuestionIndex].id),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<Answer>> snapshot) {
+                                      _answers = snapshot.data;
+                                      switch (snapshot.connectionState) {
+                                        case ConnectionState.none:
+                                          return Text('No result.');
+                                        case ConnectionState.active:
+                                        case ConnectionState.waiting:
+                                          return Text('Awaiting result...');
+                                        case ConnectionState.done:
+                                          if (snapshot.hasError) {
+                                            return Text('Error: ${snapshot.error}');
+                                          }
+                                          if (snapshot.hasData && snapshot.data.isNotEmpty) {
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                _getCardAnswers(snapshot),
 //TODO FixMe: rebuilding widget when keyboard pops up
 //                                              _getSynonymWidget()
-                                            ],
-                                          );
-                                        }
-                                        return Container();
-                                    }
-                                    return Container();
-                                  },
+                                              ],
+                                            );
+                                          }
+                                          return Container();
+                                      }
+                                      return Container();
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
@@ -341,11 +340,10 @@ class _GuessPageState extends State<GuessPage>
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ])),
-        ));
+            ])),
+      );
   }
 }
