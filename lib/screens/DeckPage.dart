@@ -69,7 +69,8 @@ class DeckPageState extends State<DeckPage> {
 //      if (uuid != null) {
 //        synchroniseFirebase(uuid);
 //      }
-      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
+      //TODO enable when user preferences are created
+//      scheduleNotification(context, flutterLocalNotificationsPlugin, callback);
     });
   }
 
