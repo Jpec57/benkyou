@@ -116,31 +116,36 @@ class BrowseOnlineDeckPageState extends State<BrowseOnlineDeckPage> {
     List<Widget> deckList = new List();
 
     for (int i = 0; i < decks.length; i++) {
-      deckList.add(Container(
-        height: 30,
-        width: 160.0,
-        color: colors[i % 2],
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '${decks[i].title}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
+      deckList.add(GestureDetector(
+        onTap: (){
+          goToPreviewOnlineDeckPage(context, decks[i]);
+        },
+        child: Container(
+          height: 30,
+          width: 160.0,
+          color: colors[i % 2],
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  '${decks[i].title}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                  ),
                 ),
-              ),
-              Text(
-                'from ${decks[i].author}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white
+                Text(
+                  'from ${decks[i].author}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ));

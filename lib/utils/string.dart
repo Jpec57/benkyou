@@ -99,3 +99,7 @@ String getQuestionInNativeLanguage(String fullQuestion, {int num}){
       : 0;
   return possibleQuestions[index];
 }
+
+String getReadableMultipleAnswers(String answers){
+  return answers.replaceAll('|', ', ');
+}

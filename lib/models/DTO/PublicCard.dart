@@ -11,8 +11,15 @@ class PublicCard {
     return PublicCard.fromDatabase(
       question: json['question'],
       hint: json['hint'],
-      isForeignWord: json['isForeignWord'] == 0,
+      isForeignWord: json['isForeignWord'] == true,
       answers: List<String>.from(json['answers']),
     );
   }
+
+  @override
+  String toString() {
+    return 'PublicCard{question: $question, hint: $hint, isForeignWord: $isForeignWord, answers: $answers}';
+  }
+
+
 }

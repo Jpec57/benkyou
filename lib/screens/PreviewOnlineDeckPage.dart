@@ -1,3 +1,4 @@
+import 'package:benkyou/constants/colors.dart';
 import 'package:benkyou/models/DTO/PublicCard.dart';
 import 'package:benkyou/models/DTO/PublicDeck.dart';
 import 'package:benkyou/models/Deck.dart';
@@ -5,6 +6,7 @@ import 'package:benkyou/services/database/DBProvider.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/database/DeckDao.dart';
 import 'package:benkyou/services/navigator.dart';
+import 'package:benkyou/utils/string.dart';
 import 'package:benkyou/widgets/Header.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:benkyou/widgets/dialog/CreateDeckDialog.dart';
@@ -23,9 +25,37 @@ class PreviewOnlineDeckPage extends StatefulWidget{
 }
 
 class PreviewOnlineDeckPageState extends State<PreviewOnlineDeckPage>{
+  List<PublicCard> _visibleCards = [];
+  bool _isJapanese = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _visibleCards = widget.deck.cards;
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void displayMatchingCards(){
+    List<PublicCard> allCards = widget.deck.cards;
+    List<PublicCard> tmpList = [];
+    for (PublicCard card in allCards){
+      if (!card.isForeignWord == _isJapanese){
+        tmpList.add(card);
+      }
+    }
+    setState(() {
+      _visibleCards = tmpList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<PublicCard> cards = widget.deck.cards;
+  displayMatchingCards();
     return BasicContainer(
       child: Column(
         mainAxisSize: MainAxisSize.max,
@@ -44,27 +74,82 @@ class PreviewOnlineDeckPageState extends State<PreviewOnlineDeckPage>{
                   )
               )
           ),
-          Expanded(
-            flex: 4,
-            child: Container(
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: cards.length,
-                    itemBuilder: (BuildContext context, int index){
-
-                      return Card(
-                        elevation: 8.0,
-                        child: ListTile(
-                          title: Text(
-                              cards[index].question
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      _isJapanese = true;
+                    });
+                  },
+                  child: Container(
+                      color: COLOR_BLUE,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Japanese".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                            ),
                           ),
                         ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index){
-                      return Divider();
-                    },
-                )
+                      )
+                  ),
+                ),
+              ),
+
+              Expanded(
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      _isJapanese = false;
+                    });
+                  },
+                  child: Container(
+                      color: COLOR_DARK_GREY,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "English".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                      )
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+          Expanded(
+            flex: 4,
+            child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: _visibleCards.length,
+                itemBuilder: (BuildContext context, int index){
+
+                  return Card(
+                    elevation: 8.0,
+                    child: ListTile(
+                      title: Text(
+                          getReadableMultipleAnswers(_visibleCards[index].question)
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index){
+                  return Divider();
+                },
             ),
           ),
           FutureBuilder(
