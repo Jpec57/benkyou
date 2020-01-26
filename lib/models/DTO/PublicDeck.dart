@@ -27,6 +27,13 @@ class PublicDeck {
         description: json['description'],
         cards: cards);
   }
+
+  @override
+  String toString() {
+    return 'PublicDeck{author: $author, lastUse: $lastUse, title: $title, description: $description, cards: $cards}';
+  }
+
+
 }
 
 Future<List<Map<String, dynamic>>> _getMappingBetweenPublicDeckAndDeck(Deck deck) async{
@@ -41,7 +48,6 @@ Future<List<Map<String, dynamic>>> _getMappingBetweenPublicDeckAndDeck(Deck deck
     answers.forEach((Answer answer){
       answerStrings.add(answer.content);
     });
-
     Map<String, dynamic> map = {
       "question": card.question,
       "hint": card.hint,

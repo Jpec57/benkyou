@@ -26,26 +26,34 @@ class TinderCard extends StatefulWidget{
 }
 
 class TinderCardState extends State<TinderCard> {
-  List<String> _parsedAnswers = [];
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (widget.database != null){
-        List<Answer> unparsedAnswers = await widget.database.answerDao.findAllAnswersForCard(widget.card.id);
-        for (Answer a in unparsedAnswers){
-          _parsedAnswers.add(a.content);
-        }
-      }
-    });
-  }
-
-
-  @override
-  void dispose() {
-      super.dispose();
-      _parsedAnswers = [];
+  Widget _renderSolution(){
+    if (widget.database != null){
+      return FutureBuilder(
+          future: widget.database.answerDao.findAllAnswersForCard(widget.card.id),
+          builder: (BuildContext context, AsyncSnapshot<List<Answer>> unparsedAnswers) {
+            if (unparsedAnswers.hasData){
+              List<String> _parsedAnswers = [];
+              for (Answer a in unparsedAnswers.data){
+                _parsedAnswers.add(a.content);
+              }
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Opacity(
+                    opacity: widget.isAnswerVisible ? 1.0 : 0.0,
+                    child: Text(_parsedAnswers.isNotEmpty ? _parsedAnswers.join(', ') : '',
+                        style: TextStyle(fontSize: 20.0),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              );
+            }
+            return Container();
+          }
+      );
+    }
+    return Container();
   }
 
   @override
@@ -70,17 +78,7 @@ class TinderCardState extends State<TinderCard> {
                     style: TextStyle(fontSize: 24), textAlign: TextAlign.center)
               ],
             ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Opacity(
-                  opacity: widget.isAnswerVisible ? 1.0 : 0.0,
-                  child: Text(_parsedAnswers.isNotEmpty ? _parsedAnswers.join(', ') : '',
-                      style: TextStyle(fontSize: 20.0),
-                      textAlign: TextAlign.center),
-                ),
-              ),
-            ),
+            _renderSolution()
           ],
         ),
       ),

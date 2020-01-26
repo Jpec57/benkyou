@@ -160,7 +160,9 @@ class Card {
       this.nbSuccess++;
     } else {
       this.nbErrors++;
-      if (this.lvl > 0){
+      if (this.lvl > 1){
+        this.lvl = this.lvl -2;
+      } else if (this.lvl > 0){
         this.lvl--;
       }
     }

@@ -38,6 +38,7 @@ class _GuessPageState extends State<GuessPage>
   final answerController = TextEditingController();
   List<Answer> _answers;
   bool _isSearching = true;
+  bool _mustBeDeleted = false;
   final newAnswerController = TextEditingController();
   final _answerScrollController = ScrollController();
   int index = 0;
@@ -102,21 +103,23 @@ class _GuessPageState extends State<GuessPage>
       setState(() {
         boxColor = newBoxColor;
         _isSearching = false;
+        _mustBeDeleted = res;
       });
     } else {
       boxColor = 'standard';
 
       FocusScope.of(context).requestFocus(inputFocusNode);
       if (widget.cards.length > 1) {
-        widget.cards.remove(widget.cards[currentQuestionIndex]);
-        Random random = new Random();
-        currentQuestionIndex = (widget.cards.length - 1 > 2)
-            ? random.nextInt(widget.cards.length - 1)
-            : 0;
+        //Only delete if given answer was correct
+        if (_mustBeDeleted){
+          widget.cards.remove(widget.cards[currentQuestionIndex]);
+        }
+        currentQuestionIndex = index % widget.cards.length;
         answerController.clear();
         setState(() {
+          _mustBeDeleted = false;
           _isSearching = true;
-          index = this.index++;
+          index = index + 1;
         });
       } else {
         goToDeckInfoPage(context, widget.deckId);
