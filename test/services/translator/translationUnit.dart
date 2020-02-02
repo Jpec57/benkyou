@@ -285,4 +285,149 @@ void main() {
       }
     });
   });
+
+
+  /// Romaji section
+  ///
+  ///
+  group('Romaji', (){
+    test('arigatou', () {
+      String test = getRomConversion('アリガトウ');
+      expect(test, "arigatou");
+    });
+
+    group("syllables", (){
+      test('aiueo', () {
+        String test = getRomConversion('アイウエオ');
+        expect(test, "aiueo");
+      });
+
+      test('kakikukeko', () {
+        String test = getRomConversion('カキクケコ');
+        expect(test, "kakikukeko");
+      });
+
+      test('sashisuseso', () {
+        String test = getRomConversion('サシスセソ');
+        expect(test, "sashisuseso");
+      });
+
+      test('tachitsuteto', () {
+        String test = getRomConversion('タチツテト');
+        expect(test, "tachitsuteto");
+      });
+
+      test('naninuneno', () {
+        String test = getRomConversion('ナニヌネノ');
+        expect(test, "naninuneno");
+      });
+
+      test('hahimumemo', () {
+        String test = getRomConversion('ハヒムメモ');
+        expect(test, "hahimumemo");
+      });
+
+      test('yayuyo', () {
+        String test = getRomConversion('ヤユヨ');
+        expect(test, "yayuyo");
+      });
+
+      test('rarirurero', () {
+        String test = getRomConversion('ラリルレロ');
+        expect(test, "rarirurero");
+      });
+
+      test('wawo', () {
+        String test = getRomConversion('ワヲ');
+        //wo -> o
+        expect(test, "wao");
+      });
+
+      test('papipupepo', () {
+        String test = getRomConversion('パピプペポ');
+        expect(test, "papipupepo");
+      });
+
+      test('n', () {
+        String test = getRomConversion('ン');
+        expect(test, "n");
+      });
+    });
+
+    group("Double consonants", (){
+      test("asatte", (){
+        String test = getRomConversion('アサッテ');
+        expect(test, "asatte");
+      });
+
+      test("seppuku", (){
+        String test = getRomConversion('セップク');
+        expect(test, "seppuku");
+      });
+
+      test("haragaetta", (){
+        String test = getRomConversion('ハラガエッタ');
+        expect(test, "haragaetta");
+      });
+
+      test("zasshi", (){
+        String test = getRomConversion('ザッシ');
+        expect(test, "zasshi");
+      });
+
+      test("zacchi", (){
+        String test = getRomConversion('ザッチ');
+        expect(test, "zacchi");
+      });
+
+      test("zattsu", (){
+        String test = getRomConversion('ザッツ');
+        expect(test, "zattsu");
+      });
+    });
+
+    group("Bad examples", (){
+      test("nar", (){
+        String test = getRomConversion('ナr');
+        expect(test, "nar");
+      });
+      test("nvm", (){
+        //Loss of information accurate because n=m in japanese
+        String test = getRomConversion('ンvン');
+        expect(test, "nvn");
+      });
+    });
+
+    group("Full sentence", (){
+      test("kore wa kamisama ga sazukete kudasatte ni chigainai", (){
+        String test = getRomConversion('コレ ハ カミサマ ガ サズケテ クダサッテ ニ チガイナイ');
+        expect(test, "kore wa kamisama ga sazukete kudasatte ni chigainai");
+      });
+    });
+
+
+    group('compound syllables', (){
+
+      List<String> originalStrings = [
+        "キャ", "キュ", "キョ", "シャ", "シュ", "ショ",
+        "シ","ツ", "チャ", "チュ", "チ", "ニャ", "ニュ", "ニョ", "ヒャ","ヒュ", "ヒョ",
+        "ミャ", "ミュ", "ミョ", "リャ", "リュ", "リョ", "ギャ", "ギュ", "ギョ", "ビャ", "ビュ",
+        "ビョ", "ピャ", "ピュ", "ピョ"
+      ];
+
+      List<String> expectedTranslations = ["kya", "kyu", "kyo", "sha", "shu", "sho",
+        "shi","tsu", "cha", "chu", "chi", "nya", "nyu", "nyo", "hya","hyu", "hyo",
+        "mya", "myu", "myo", "rya", "ryu", "ryo", "gya", "gyu", "gyo", "bya", "byu",
+        "byo", "pya", "pyu", "pyo"
+      ];
+
+      int length = originalStrings.length;
+      for (int i = 0; i < length; i++){
+        test('${originalStrings[i]}', () {
+          String givenString = getRomConversion(originalStrings[i]);
+          expect(givenString, expectedTranslations[i]);
+        });
+      }
+    });
+  });
 }

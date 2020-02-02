@@ -31,6 +31,7 @@ dependencies:
   flutter_launcher_icons:
   shared_preferences: ^0.4.2
   image_picker: ^0.6.2+3
+#  stripe_payment: ^1.0.6
   # Add the dependencies for any other Firebase products you want to use in your app
   # For example, to use Firebase Authentication and Cloud Firestore
 #  firebase_auth: ^0.11.1+3

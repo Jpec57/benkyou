@@ -1,3 +1,17 @@
+const HAh = 12399;
+const HAk = 12495;
+const WAhk = 12431;
+const TSUh = 12387;
+const TSUk = 12483;
+
+
+const YAh = 12419;
+const YAk = 12515;
+const YUh = 12421;
+const YUk = 12517;
+const YOh = 12423;
+const YOk = 12519;
+
 const HIRAGANA_ALPHABET = {
   1: {
     "a": "\u3042",
@@ -402,57 +416,77 @@ String getKatakana(String val, {bool onlyJapanese = false,
   bool hasSpace = true}) {
   return getConversion(val, KATAKANA_ALPHABET, onlyJapanese: onlyJapanese, hasSpace: hasSpace);
 }
-// TODO convert kana to romaji
-//String getRomaji(String val) {
-//  return rom[val];
-//}
-//
-//String getRomConversion(val) {
-//  var res = "";
-//  List<String> str = val.split(" ");
-//
-//  for (var i = 0; i < str.length; i++) {
-//    var tmpWord = str[i];
-//    for (var j = 0; j < tmpWord.length; j++) {
-//      var ch = tmpWord.charCodeAt(j);
-//      if ((ch == 12399 || ch == 12495) && tmpWord.length == 1) {
-//        ch = 12431;
-//      }
-//      if ((ch == 12387 || ch == 12483)) {
-//        var nextch = getRomaji(tmpWord.charCodeAt(j + 1));
-//        if (nextch != null) {
-//          res += nextch.substring(0, 1);
-//          j++;
-//          ch = tmpWord.charCodeAt(j);
-//        }
-//      }
-//      var tmpch = getRomaji(ch);
-//      var nch = tmpWord.charCodeAt(j + 1);
-//      if (tmpch != null &&
-//          nch &&
-//          (nch == 12419 ||
-//              nch == 12515 ||
-//              nch == 12421 ||
-//              nch == 12517 ||
-//              nch == 12423 ||
-//              nch == 12519)) {
-//        var beg = tmpch.substring(0, tmpch.length - 1);
-//        var en = getRomaji((nch + 1));
-//        if (beg == 'sh' || beg == 'ch' || beg == 'j') {
-//          tmpch = beg + en.substring(1);
-//        } else {
-//          tmpch = beg + en;
-//        }
-//        j++;
-//      }
-//      if (tmpch != null) {
-//        res += tmpch;
-//      }
-//    }
-//    res += ' ';
-//  }
-//  return res;
-//}
+
+String getRomaji(int val) {
+  return rom[val];
+}
+String getRomConversion(String val, {bool onlyRomaji = false}) {
+  var res = "";
+  RegExp regExp = RegExp(' |　');
+  List<String> listStrings = val.split(regExp);
+  int nbStrings = listStrings.length;
+  for (var i = 0; i < nbStrings; i++) {
+    String wordRes = getWordToRom(listStrings[i], onlyRomaji: onlyRomaji);
+    if (wordRes != null){
+      res += wordRes;
+    }
+    if (i < nbStrings - 1){
+      res += ' ';
+    }
+  }
+  return res;
+}
+
+String getWordToRom(String word, {bool onlyRomaji = false}){
+  String res = "";
+
+  int wordLength = word.length;
+  for (var j = 0; j < wordLength; j++) {
+    int ch = word.codeUnitAt(j);
+
+    if ((ch == HAk || ch == HAh) && word.length == 1) {
+      ch = WAhk;
+    }
+    if ((ch == TSUh || ch == TSUk)
+    ) {
+      String nextch = (j + 1 < wordLength) ? getRomaji(word.codeUnitAt(j + 1)) : null;
+      if (nextch != null) {
+        res += nextch.substring(0, 1);
+        j++;
+        ch = word.codeUnitAt(j);
+      }
+    }
+
+    String tmpch = getRomaji(ch);
+    int nch = (j + 1 < wordLength) ? word.codeUnitAt(j + 1) : null;
+    if (tmpch != null &&
+          nch != null &&
+        (nch == YAh ||
+            nch == YAk ||
+            nch == YUh ||
+            nch == YUk ||
+            nch == YOh ||
+            nch == YOk)) {
+      String beg = tmpch.substring(0, tmpch.length - 1);
+      String en = getRomaji((nch + 1));
+      if (beg == 'sh' || beg == 'ch' || beg == 'j') {
+        tmpch = beg + en.substring(1);
+      } else {
+        tmpch = beg + en;
+      }
+      j++;
+    }
+    if (tmpch != null) {
+      res += tmpch;
+    } else {
+      //Add the non-translated term to the string for continuous translation
+      if (!onlyRomaji){
+        res += word[j];
+      }
+    }
+  }
+  return res;
+}
 
 String getMatchingCharacterInAlphabet(int nbCaracters, val, alphabet) {
   if (val == null) {

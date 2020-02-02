@@ -46,7 +46,8 @@ class _GuessPageState extends State<GuessPage>
   String boxColor = 'standard';
   int currentQuestionIndex = 0;
   Map<String, MaterialColor> boxColors = {
-    "standard": Colors.blueGrey,
+    "standard": Colors.orange,
+    "japanese": Colors.blueGrey,
     "error": Colors.red,
     "success": Colors.green
   };
@@ -56,6 +57,7 @@ class _GuessPageState extends State<GuessPage>
     super.initState();
     pageFocusNode = new FocusNode();
     inputFocusNode = new FocusNode();
+    boxColor = widget.cards[currentQuestionIndex].isForeignWord ? 'japanese' : 'standard';
     setAnimation();
   }
 
@@ -106,7 +108,6 @@ class _GuessPageState extends State<GuessPage>
         _mustBeDeleted = res;
       });
     } else {
-      boxColor = 'standard';
 
       FocusScope.of(context).requestFocus(inputFocusNode);
       if (widget.cards.length > 1) {
@@ -115,8 +116,11 @@ class _GuessPageState extends State<GuessPage>
           widget.cards.remove(widget.cards[currentQuestionIndex]);
         }
         currentQuestionIndex = index % widget.cards.length;
+
+
         answerController.clear();
         setState(() {
+          boxColor = (widget.cards[currentQuestionIndex].isForeignWord) ? 'japanese' : 'standard';
           _mustBeDeleted = false;
           _isSearching = true;
           index = index + 1;
@@ -229,6 +233,7 @@ class _GuessPageState extends State<GuessPage>
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool waitForJapanese = widget.cards[currentQuestionIndex].isForeignWord;
     return
       SafeArea(
         child: Scaffold(
@@ -244,7 +249,9 @@ class _GuessPageState extends State<GuessPage>
                 child: Column(
                   children: <Widget>[
                     Container(
-                      decoration: BoxDecoration(color: boxColors[boxColor]),
+                      decoration: BoxDecoration(
+                          color: boxColors[boxColor]
+                      ),
                       child: ConstrainedBox(
                         child: Row(
                           children: <Widget>[
@@ -263,9 +270,9 @@ class _GuessPageState extends State<GuessPage>
                                           style: TextStyle(color: Colors.white),
                                           decoration: InputDecoration.collapsed(
                                               border: InputBorder.none,
-                                              hintText: 'Enter a search term',
+                                              hintText: waitForJapanese ? '答え' : 'Translation',
                                               hintStyle:
-                                              TextStyle(color: Colors.white30)),
+                                              TextStyle(color: Colors.white70)),
                                         ),
                                         transform: Matrix4.translation(_shake()),
                                       )),
