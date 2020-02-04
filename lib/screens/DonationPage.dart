@@ -33,7 +33,11 @@ class DonationState extends State<DonationPage>{
         child: Container(
           color: Colors.grey,
           child: Padding(
-              child: RomajiTextInput(mustConvertToKana: true,), padding: EdgeInsets.all(40.0),
+              child: Column(
+                children: <Widget>[
+                  RomajiTextInput(mustConvertToKana: true,),
+                ],
+              ), padding: EdgeInsets.all(40.0),
           ),
         )
     );

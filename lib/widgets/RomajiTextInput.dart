@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class RomajiTextInput extends StatefulWidget{
   final bool mustConvertToKana;
+//  final function;
 
   const RomajiTextInput({Key key, this.mustConvertToKana}) : super(key: key);
 
@@ -16,6 +17,7 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
   TextEditingController _titleEditingController;
   TextEditingController _hiddenTitleEditingController;
   String previousValue = "";
+  String romaji;
 
   @override
   void initState() {
@@ -60,24 +62,33 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _titleEditingController,
-      onChanged: (text){
-        if (widget.mustConvertToKana){
-          _hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
-          String japanese = getJapaneseTranslation(_hiddenTitleEditingController.text);
-          int cursor = getCursorPosition(previousValue, japanese);
-          _titleEditingController.text = japanese;
+    return Column(
+      children: <Widget>[
+        TextField(
+          controller: _titleEditingController,
+          onChanged: (text){
+            if (widget.mustConvertToKana){
+              romaji = text;
+              _hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
+              String japanese = getJapaneseTranslation(_hiddenTitleEditingController.text, hasSpace: true);
+              int cursor = getCursorPosition(previousValue, japanese);
+              _titleEditingController.text = japanese;
 //            _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
-          _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
-          previousValue = japanese;
-        }
-      },
-      decoration: InputDecoration(
-          labelText: 'Question',
-          labelStyle: TextStyle(fontSize: 20),
-          hintText:
-          'Enter a question / a word to remember'),
+              _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
+              previousValue = japanese;
+              setState(() {
+
+              });
+            }
+          },
+          decoration: InputDecoration(
+              labelText: 'Question',
+              labelStyle: TextStyle(fontSize: 20),
+              hintText:
+              'Enter a question / a word to remember'),
+        ),
+        Text(_hiddenTitleEditingController.text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
+      ],
     );
   }
 }
