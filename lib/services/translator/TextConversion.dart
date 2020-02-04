@@ -420,19 +420,19 @@ String getRomaji(int val) {
 }
 String getRomConversion(String val, {bool onlyRomaji = false}) {
   var res = "";
-  return getWordToRom(val, onlyRomaji: onlyRomaji);
-//  RegExp regExp = RegExp(' |　');
-//  List<String> listStrings = val.split(regExp);
-//  int nbStrings = listStrings.length;
-//  for (var i = 0; i < nbStrings; i++) {
-//    String wordRes = getWordToRom(listStrings[i], onlyRomaji: onlyRomaji);
-//    if (wordRes != null){
-//      res += wordRes;
-//    }
-//    if (i < nbStrings - 1){
-//      res += ' ';
-//    }
-//  }
+//  return getWordToRom(val, onlyRomaji: onlyRomaji);
+  RegExp regExp = RegExp(' |　');
+  List<String> listStrings = val.split(regExp);
+  int nbStrings = listStrings.length;
+  for (var i = 0; i < nbStrings; i++) {
+    String wordRes = getWordToRom(listStrings[i], onlyRomaji: onlyRomaji);
+    if (wordRes != null){
+      res += wordRes;
+    }
+    if (i < nbStrings - 1){
+      res += ' ';
+    }
+  }
   return res;
 }
 
@@ -503,143 +503,79 @@ String getSafeSubstring(String str, int startIndex, int size, int strLength) {
 
 String getConversion(String val, alphabet, {bool onlyJapanese = false,
   bool hasSpace = true}) {
-  var i = 0;
-  var res = "";
+  int i = 0;
+  String res = "";
   String tmpChar;
   int wordLength;
-  String word = val.toLowerCase();
+  List<String> wordList = val.toLowerCase().split(" ");
+  int listLength = wordList.length;
 
-  i = 0;
-  wordLength = word.length;
-  while (i < wordLength) {
-    //3 letter syllable
-    tmpChar = getMatchingCharacterInAlphabet(
-        3, getSafeSubstring(word, i, 3, wordLength), alphabet);
-
-    //Compound syllable
-    if (tmpChar == null) {
-      var ch1 = getSafeSubstring(word, i, 1, wordLength);
-      var ch2 = getSafeSubstring(word, i + 1, 2, wordLength);
-
-      if (ch1 != null &&
-          ch2 != null &&
-          ch1 != 'n' &&
-          getMatchingCharacterInAlphabet(2, ch2, alphabet) != null &&
-          (ch1 == getSafeSubstring(ch2, 0, 1, 2))) {
-        tmpChar = getMatchingCharacterInAlphabet(2, ch2, alphabet);
-        res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
-      }
+  for (int j = 0; j < listLength; j++){
+    String word = wordList[j];
+    i = 0;
+    wordLength = word.length;
+    if (wordLength == 0){
+      continue;
     }
+    while (i < wordLength) {
+      //3 letter syllable
+      tmpChar = getMatchingCharacterInAlphabet(
+          3, getSafeSubstring(word, i, 3, wordLength), alphabet);
 
-    //2 letter syllable
-    if (tmpChar != null) {
-      i += 2;
-    } else {
-      var char = getSafeSubstring(word, i, 2, wordLength);
-      //Particular case
-      if (char == 'wa' && char == word) {
-        char = "ha";
+      //Compound syllable
+      if (tmpChar == null) {
+        var ch1 = getSafeSubstring(word, i, 1, wordLength);
+        var ch2 = getSafeSubstring(word, i + 1, 2, wordLength);
+
+        if (ch1 != null &&
+            ch2 != null &&
+            ch1 != 'n' &&
+            getMatchingCharacterInAlphabet(2, ch2, alphabet) != null &&
+            (ch1 == getSafeSubstring(ch2, 0, 1, 2))) {
+          tmpChar = getMatchingCharacterInAlphabet(2, ch2, alphabet);
+          res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
+        }
       }
-      tmpChar = getMatchingCharacterInAlphabet(2, char, alphabet);
+
+      //2 letter syllable
       if (tmpChar != null) {
-        i += 1;
+        i += 2;
       } else {
-        //1 letter syllable
-        tmpChar = getMatchingCharacterInAlphabet(
-            1, getSafeSubstring(word, i, 1, wordLength), alphabet);
+        var char = getSafeSubstring(word, i, 2, wordLength);
+        //Particular case
+        if (char == 'wa' && char == word) {
+          char = "ha";
+        }
+        tmpChar = getMatchingCharacterInAlphabet(2, char, alphabet);
+        if (tmpChar != null) {
+          i += 1;
+        } else {
+          //1 letter syllable
+          tmpChar = getMatchingCharacterInAlphabet(
+              1, getSafeSubstring(word, i, 1, wordLength), alphabet);
+        }
       }
-    }
-    //particular case with little tsu then three characters like sshi cchi ttsu
-    var ch3 = getSafeSubstring(word, i + 1, 3, wordLength);
-    if (tmpChar == null && ch3 != null){
-      res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
-      tmpChar = getMatchingCharacterInAlphabet(3, ch3, alphabet);
-      i += 3;
-    }
-    // We've found a solution with 1, 2 or 3 characters
-    if (tmpChar != null) {
-      res += tmpChar;
-    } else {
-      //Add the non-translated term to the string for continuous translation
-      if (!onlyJapanese){
-        res += word[i];
+      //particular case with little tsu then three characters like sshi cchi ttsu
+      var ch3 = getSafeSubstring(word, i + 1, 3, wordLength);
+      if (tmpChar == null && ch3 != null){
+        res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
+        tmpChar = getMatchingCharacterInAlphabet(3, ch3, alphabet);
+        i += 3;
       }
+      // We've found a solution with 1, 2 or 3 characters
+      if (tmpChar != null) {
+        res += tmpChar;
+      } else {
+        //Add the non-translated term to the string for continuous translation
+        if (!onlyJapanese){
+          res += word[i];
+        }
+      }
+      i++;
     }
-    i++;
+    if (hasSpace && j != listLength - 1){
+      res += " ";
+    }
   }
   return res;
 }
-
-//String getConversion(String val, alphabet, {bool onlyJapanese = false,
-//  bool hasSpace = true}) {
-//  var i = 0;
-//  var res = "";
-//  String tmpChar;
-//  int wordLength;
-//  List<String> str = val.toLowerCase().split(" ");
-//
-//  for (var word in str) {
-//    i = 0;
-//    wordLength = word.length;
-//    while (i < wordLength) {
-//      //3 letter syllable
-//      tmpChar = getMatchingCharacterInAlphabet(
-//          3, getSafeSubstring(word, i, 3, wordLength), alphabet);
-//
-//      //Compound syllable
-//      if (tmpChar == null) {
-//        var ch1 = getSafeSubstring(word, i, 1, wordLength);
-//        var ch2 = getSafeSubstring(word, i + 1, 2, wordLength);
-//
-//        if (ch1 != null &&
-//            ch2 != null &&
-//            ch1 != 'n' &&
-//            getMatchingCharacterInAlphabet(2, ch2, alphabet) != null &&
-//            (ch1 == getSafeSubstring(ch2, 0, 1, 2))) {
-//          tmpChar = getMatchingCharacterInAlphabet(2, ch2, alphabet);
-//          res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
-//        }
-//      }
-//
-//      //2 letter syllable
-//      if (tmpChar != null) {
-//        i += 2;
-//      } else {
-//        var char = getSafeSubstring(word, i, 2, wordLength);
-//        //Particular case
-//        if (char == 'wa' && char == word) {
-//          char = "ha";
-//        }
-//        tmpChar = getMatchingCharacterInAlphabet(2, char, alphabet);
-//        if (tmpChar != null) {
-//          i += 1;
-//        } else {
-//          //1 letter syllable
-//          tmpChar = getMatchingCharacterInAlphabet(
-//              1, getSafeSubstring(word, i, 1, wordLength), alphabet);
-//        }
-//      }
-//      //particular case with little tsu then three characters like sshi cchi ttsu
-//      var ch3 = getSafeSubstring(word, i + 1, 3, wordLength);
-//      if (tmpChar == null && ch3 != null){
-//        res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
-//        tmpChar = getMatchingCharacterInAlphabet(3, ch3, alphabet);
-//        i += 3;
-//      }
-//      // We've found a solution with 1, 2 or 3 characters
-//      if (tmpChar != null) {
-//        res += tmpChar;
-//      } else {
-//        //Add the non-translated term to the string for continuous translation
-//        if (!onlyJapanese){
-//          res += word[i];
-//        }
-//      }
-//      i++;
-//    }
-//    if (hasSpace){
-//      res += " ";
-//    }
-//  }
-//  return res.trim();
-//}

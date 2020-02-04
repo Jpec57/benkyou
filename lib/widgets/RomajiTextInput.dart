@@ -17,7 +17,6 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
   TextEditingController _titleEditingController;
   TextEditingController _hiddenTitleEditingController;
   String previousValue = "";
-  String romaji;
 
   @override
   void initState() {
@@ -60,6 +59,21 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
     return i + 1 + bonus;
   }
 
+
+  void onConversionChanged(String text){
+    if (widget.mustConvertToKana){
+      _hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
+      String japanese = getJapaneseTranslation(_hiddenTitleEditingController.text, hasSpace: true);
+      int cursor = getCursorPosition(previousValue, japanese);
+      setState(() {
+        _titleEditingController.text = japanese;
+//            _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
+        _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
+        previousValue = japanese;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -67,19 +81,7 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
         TextField(
           controller: _titleEditingController,
           onChanged: (text){
-            if (widget.mustConvertToKana){
-              romaji = text;
-              _hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
-              String japanese = getJapaneseTranslation(_hiddenTitleEditingController.text, hasSpace: true);
-              int cursor = getCursorPosition(previousValue, japanese);
-              _titleEditingController.text = japanese;
-//            _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
-              _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
-              previousValue = japanese;
-              setState(() {
-
-              });
-            }
+            onConversionChanged(text);
           },
           decoration: InputDecoration(
               labelText: 'Question',
