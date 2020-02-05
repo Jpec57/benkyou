@@ -3,6 +3,7 @@ import 'package:benkyou/models/Card.dart' as card_model;
 import 'package:benkyou/models/CardWithAnswers.dart';
 import 'package:benkyou/services/database/Database.dart';
 import 'package:benkyou/services/navigator.dart';
+import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:benkyou/utils/string.dart';
 import 'package:benkyou/widgets/app/BasicContainer.dart';
 import 'package:flutter/cupertino.dart';
@@ -120,12 +121,15 @@ class CardListPageState extends State<CardListPage> {
 
   bool _doesCardContainString(
       CardWithAnswers card, String researchTermFormatted) {
-    //TODO add romaji from kana
     List<String> cardStrings = [
       card.question,
       card.hint,
       ...card.answerContents
     ];
+    if (!card.isForeignWord){
+      String kana = getRomConversion((card.hint.isNotEmpty) ? card.hint : card.question);
+      cardStrings.add(kana);
+    }
     for (String string in cardStrings) {
       if (string != null) {
         String comparableString = getComparableString(string);

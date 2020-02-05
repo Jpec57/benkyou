@@ -7,7 +7,7 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:benkyou/models/Answer.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/services/database/Database.dart';
-import 'package:benkyou/widgets/EnterInput.dart';
+import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +35,8 @@ class _GuessPageState extends State<GuessPage>
   Animation<double> animation;
   FocusNode pageFocusNode;
   FocusNode inputFocusNode;
-  final answerController = TextEditingController();
+  TextEditingController answerController;
+  TextEditingController hiddenAnswerController;
   List<Answer> _answers;
   bool _isSearching = true;
   bool _mustBeDeleted = false;
@@ -55,6 +56,8 @@ class _GuessPageState extends State<GuessPage>
   @override
   void initState() {
     super.initState();
+    answerController = TextEditingController();
+    hiddenAnswerController = TextEditingController();
     pageFocusNode = new FocusNode();
     inputFocusNode = new FocusNode();
     boxColor = widget.cards[currentQuestionIndex].isForeignWord ? 'japanese' : 'standard';
@@ -82,6 +85,7 @@ class _GuessPageState extends State<GuessPage>
   @override
   void dispose() {
     answerController.dispose();
+    hiddenAnswerController.dispose();
     newAnswerController.dispose();
     _answerScrollController.dispose();
     super.dispose();
@@ -266,6 +270,13 @@ class _GuessPageState extends State<GuessPage>
                                           onEditingComplete: () {
                                             getNextQuestion();
                                           },
+                                          onChanged: (text){
+                                            var res = onConversionChanged(text, widget.cards[currentQuestionIndex].isForeignWord, answerController, hiddenAnswerController);
+                                            setState(() {
+                                              answerController.text = res.text;
+                                              answerController.selection = res.selection;
+                                            });
+                                          },
                                           controller: answerController,
                                           style: TextStyle(color: Colors.white),
                                           decoration: InputDecoration.collapsed(
@@ -274,6 +285,8 @@ class _GuessPageState extends State<GuessPage>
                                               hintStyle:
                                               TextStyle(color: Colors.white70)),
                                         ),
+
+
                                         transform: Matrix4.translation(_shake()),
                                       )),
                                 )),

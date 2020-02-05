@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
         ),
           home:
 //          DonationPage()
-//                  DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
+                  DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //          BrowseOnlineDeckPage(),
 //          UserProfilePage(cardDao: database.cardDao),
 //              TinderLikePage(cardDao: database.cardDao)
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
-        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
+//        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
 //        CreateCardPage(cardDao: database.cardDao, deck: deck,)
       ),
     );

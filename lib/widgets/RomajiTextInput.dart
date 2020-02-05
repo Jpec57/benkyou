@@ -4,9 +4,18 @@ import 'package:flutter/material.dart';
 
 class RomajiTextInput extends StatefulWidget{
   final bool mustConvertToKana;
-//  final function;
+  final InputDecoration decoration;
+  final Function onChanged;
+  final TextAlign textAlign;
+  final TextEditingController titleEditingController;
+  final FocusNode focusNode;
+  final bool autoFocus;
+  final Function onEditingComplete;
+  final TextStyle textStyle;
 
-  const RomajiTextInput({Key key, this.mustConvertToKana}) : super(key: key);
+//  static _RomajiTextInputState of(BuildContext context) => context.findRootAncestorStateOfType();
+
+  const RomajiTextInput({Key key, @required this.mustConvertToKana, this.decoration, this.onChanged, this.textAlign, this.focusNode, this.autoFocus, this.onEditingComplete, this.textStyle,  @required this.titleEditingController}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RomajiTextInputState();
@@ -14,22 +23,59 @@ class RomajiTextInput extends StatefulWidget{
 
 class _RomajiTextInputState extends State<RomajiTextInput> {
 
-  TextEditingController _titleEditingController;
-  TextEditingController _hiddenTitleEditingController;
+//  TextEditingController titleEditingController;
+  TextEditingController hiddenTitleEditingController;
   String previousValue = "";
 
   @override
   void initState() {
     super.initState();
-    _titleEditingController = new TextEditingController();
-    _hiddenTitleEditingController = new TextEditingController();
+//    titleEditingController = new TextEditingController();
+    hiddenTitleEditingController = new TextEditingController();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _titleEditingController.clear();
-    _hiddenTitleEditingController.clear();
+//    titleEditingController.clear();
+    hiddenTitleEditingController.clear();
+  }
+
+
+
+
+  void onConversionChanged(String text){
+    if (widget.mustConvertToKana){
+      hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
+      String japanese = getJapaneseTranslation(hiddenTitleEditingController.text, hasSpace: true);
+      int cursor = getCursorPosition(previousValue, japanese);
+      setState(() {
+        widget.titleEditingController.text = japanese;
+//            titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
+        widget.titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
+        previousValue = japanese;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.titleEditingController,
+      onChanged: (text){
+        print("help ${text}");
+        onConversionChanged(text);
+        widget.onChanged(text);
+      },
+      decoration: widget.decoration,
+      textAlign: widget.textAlign,
+      style: widget.textStyle,
+      focusNode: widget.focusNode,
+      autofocus: widget.autoFocus,
+      onEditingComplete: (){
+        widget.onEditingComplete();
+      },
+    );
   }
 
   //TODO improve cursor position to be able to modify in a japanese word
@@ -60,37 +106,23 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
   }
 
 
-  void onConversionChanged(String text){
-    if (widget.mustConvertToKana){
-      _hiddenTitleEditingController.text = getRomConversion(text, onlyRomaji: false);
-      String japanese = getJapaneseTranslation(_hiddenTitleEditingController.text, hasSpace: true);
-      int cursor = getCursorPosition(previousValue, japanese);
-      setState(() {
-        _titleEditingController.text = japanese;
-//            _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
-        _titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: japanese.length));
-        previousValue = japanese;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextField(
-          controller: _titleEditingController,
-          onChanged: (text){
-            onConversionChanged(text);
-          },
-          decoration: InputDecoration(
-              labelText: 'Question',
-              labelStyle: TextStyle(fontSize: 20),
-              hintText:
-              'Enter a question / a word to remember'),
-        ),
-        Text(_hiddenTitleEditingController.text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
-      ],
-    );
-  }
+//  @override
+//  Widget build(BuildContext context) {
+//    return Column(
+//      children: <Widget>[
+//        TextField(
+//          controller: titleEditingController,
+//          onChanged: (text){
+//            onConversionChanged(text);
+//          },
+//          decoration: InputDecoration(
+//              labelText: 'Question',
+//              labelStyle: TextStyle(fontSize: 20),
+//              hintText:
+//              'Enter a question / a word to remember'),
+//        ),
+//        Text(hiddenTitleEditingController.text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
+//      ],
+//    );
+//  }
 }
