@@ -63,7 +63,6 @@ class _RomajiTextInputState extends State<RomajiTextInput> {
     return TextField(
       controller: widget.titleEditingController,
       onChanged: (text){
-        print("help ${text}");
         onConversionChanged(text);
         widget.onChanged(text);
       },

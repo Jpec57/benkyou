@@ -4,6 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Hiragana', () {
 
+    group('Particular case: ha', (){
+      test('wa dynamic', () {
+        String test = getHiragana('wa', isStaticAnalysis : false);
+        expect(test, "わ");
+      });
+
+      test('wa static', () {
+        String test = getHiragana('wa', isStaticAnalysis : true);
+        expect(test, "は");
+      });
+    });
+
+
     test('arigatou', () {
       String test = getHiragana('arigatou');
       expect(test, "ありがとう");
@@ -48,7 +61,7 @@ void main() {
       });
       test("nvm", (){
         String test = getHiragana('nvm');
-        expect(test, "んvん");
+        expect(test, "んvm");
       });
     });
 
@@ -152,6 +165,18 @@ void main() {
       expect(test, "アリガトウ");
     });
 
+    group('Particular case: ha', (){
+      test('wa dynamic', () {
+        String test = getKatakana('wa', isStaticAnalysis : false);
+        expect(test, "ワ");
+      });
+
+      test('wa static', () {
+        String test = getKatakana('wa', isStaticAnalysis : true);
+        expect(test, "ハ");
+      });
+    });
+
     group("syllables", (){
       test('aiueo', () {
         String test = getKatakana('aiueo');
@@ -248,7 +273,7 @@ void main() {
       });
       test("nvm", (){
         String test = getKatakana('nvm');
-        expect(test, "ンvン");
+        expect(test, "ンvm");
       });
     });
 

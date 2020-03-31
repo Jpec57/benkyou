@@ -410,15 +410,18 @@ String getJapaneseTranslation(String val,
 }
 
 String getHiragana(String val,
-    {bool onlyJapanese = false, bool hasSpace = true}) {
+    {bool isStaticAnalysis = false, bool onlyJapanese = false, bool hasSpace = true}) {
   return getConversion(val, HIRAGANA_ALPHABET,
-      onlyJapanese: onlyJapanese, hasSpace: hasSpace);
+      onlyJapanese: onlyJapanese, hasSpace: hasSpace,
+      isStaticAnalysis: isStaticAnalysis);
 }
 
 String getKatakana(String val,
-    {bool onlyJapanese = false, bool hasSpace = true}) {
+    {bool isStaticAnalysis = false, bool onlyJapanese = false, bool hasSpace = true}) {
   return getConversion(val, KATAKANA_ALPHABET,
-      onlyJapanese: onlyJapanese, hasSpace: hasSpace);
+      onlyJapanese: onlyJapanese, hasSpace: hasSpace,
+      isStaticAnalysis: isStaticAnalysis
+  );
 }
 
 String getRomaji(int val) {
@@ -427,7 +430,6 @@ String getRomaji(int val) {
 
 String getRomConversion(String val, {bool onlyRomaji = false}) {
   var res = "";
-//  return getWordToRom(val, onlyRomaji: onlyRomaji);
   RegExp regExp = RegExp(' |　');
   List<String> listStrings = val.split(regExp);
   int nbStrings = listStrings.length;
@@ -509,7 +511,8 @@ String getSafeSubstring(String str, int startIndex, int size, int strLength) {
 }
 
 String getConversion(String val, alphabet,
-    {bool onlyJapanese = false, bool hasSpace = true}) {
+    {bool isStaticAnalysis = false, bool onlyJapanese = false,
+      bool hasSpace = true}) {
   int i = 0;
   String res = "";
   String tmpChar;
@@ -549,8 +552,8 @@ String getConversion(String val, alphabet,
         i += 2;
       } else {
         var char = getSafeSubstring(word, i, 2, wordLength);
-        //Particular case
-        if (char == 'wa' && char == word) {
+        //Particular case working only in static analysis
+        if (isStaticAnalysis && char == 'wa' && char == word) {
           char = "ha";
         }
         tmpChar = getMatchingCharacterInAlphabet(2, char, alphabet);
@@ -617,6 +620,7 @@ onConversionChanged(
     TextEditingController rawInputController) {
   if (mustConvertToKana) {
     rawInputController.text = getRomConversion(text, onlyRomaji: false);
+    print(getRomConversion(text, onlyRomaji: false));
     String japanese =
         getJapaneseTranslation(rawInputController.text, hasSpace: true);
 //    int cursor = getCursorPosition(previousValue, japanese);
