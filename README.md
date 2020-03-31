@@ -60,7 +60,7 @@ flutter emulators --launch Nexus_5X_API_29
 ## Launch test suite
 https://flutter.dev/docs/cookbook/testing/widget/introduction
 ```
-flutter test test/translator/translationUnit.dart
+flutter test test/services/translator/translationUnit.dart
 ```
 
 https://flutter.dev/docs/cookbook/testing/integration/introduction

@@ -3,6 +3,8 @@ import 'package:benkyou/screens/CardListPage.dart';
 import 'package:benkyou/screens/CardShowPage.dart';
 import 'package:benkyou/screens/CreateCardPage.dart';
 import 'package:benkyou/screens/DeckPage.dart';
+import 'package:benkyou/screens/DonationPage.dart';
+import 'package:benkyou/screens/GuessPage.dart';
 import 'package:benkyou/screens/TinderLikePage.dart';
 import 'package:benkyou/screens/UserProfilePage.dart';
 import 'package:benkyou/services/database/DBProvider.dart';
@@ -56,6 +58,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
           home:
+//          DonationPage()
+                  DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //          BrowseOnlineDeckPage(),
 //          UserProfilePage(cardDao: database.cardDao),
 //              TinderLikePage(cardDao: database.cardDao)
@@ -64,7 +68,6 @@ class MyApp extends StatelessWidget {
 //            LateInitPage(deckId: 1)
 //            SynchronizePage()
 //            DeckInfoPage(cardDao: database.cardDao, deck: deck,),
-          DeckPage(cardDao: database.cardDao, deckDao: database.deckDao)
 //        GuessPage(appDatabase: database, cards: cards, deckId: 1,)
 //        CreateCardPage(cardDao: database.cardDao, deck: deck,)
       ),

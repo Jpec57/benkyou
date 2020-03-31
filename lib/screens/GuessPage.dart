@@ -7,7 +7,7 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:benkyou/models/Answer.dart';
 import 'package:benkyou/models/Card.dart' as prefix0;
 import 'package:benkyou/services/database/Database.dart';
-import 'package:benkyou/widgets/EnterInput.dart';
+import 'package:benkyou/services/translator/TextConversion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +35,8 @@ class _GuessPageState extends State<GuessPage>
   Animation<double> animation;
   FocusNode pageFocusNode;
   FocusNode inputFocusNode;
-  final answerController = TextEditingController();
+  TextEditingController answerController;
+  TextEditingController hiddenAnswerController;
   List<Answer> _answers;
   bool _isSearching = true;
   bool _mustBeDeleted = false;
@@ -46,7 +47,8 @@ class _GuessPageState extends State<GuessPage>
   String boxColor = 'standard';
   int currentQuestionIndex = 0;
   Map<String, MaterialColor> boxColors = {
-    "standard": Colors.blueGrey,
+    "standard": Colors.orange,
+    "japanese": Colors.blueGrey,
     "error": Colors.red,
     "success": Colors.green
   };
@@ -54,8 +56,11 @@ class _GuessPageState extends State<GuessPage>
   @override
   void initState() {
     super.initState();
+    answerController = TextEditingController();
+    hiddenAnswerController = TextEditingController();
     pageFocusNode = new FocusNode();
     inputFocusNode = new FocusNode();
+    boxColor = widget.cards[currentQuestionIndex].isForeignWord ? 'japanese' : 'standard';
     setAnimation();
   }
 
@@ -80,6 +85,7 @@ class _GuessPageState extends State<GuessPage>
   @override
   void dispose() {
     answerController.dispose();
+    hiddenAnswerController.dispose();
     newAnswerController.dispose();
     _answerScrollController.dispose();
     super.dispose();
@@ -106,7 +112,6 @@ class _GuessPageState extends State<GuessPage>
         _mustBeDeleted = res;
       });
     } else {
-      boxColor = 'standard';
 
       FocusScope.of(context).requestFocus(inputFocusNode);
       if (widget.cards.length > 1) {
@@ -115,8 +120,11 @@ class _GuessPageState extends State<GuessPage>
           widget.cards.remove(widget.cards[currentQuestionIndex]);
         }
         currentQuestionIndex = index % widget.cards.length;
+
+
         answerController.clear();
         setState(() {
+          boxColor = (widget.cards[currentQuestionIndex].isForeignWord) ? 'japanese' : 'standard';
           _mustBeDeleted = false;
           _isSearching = true;
           index = index + 1;
@@ -229,6 +237,7 @@ class _GuessPageState extends State<GuessPage>
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool waitForJapanese = widget.cards[currentQuestionIndex].isForeignWord;
     return
       SafeArea(
         child: Scaffold(
@@ -244,7 +253,9 @@ class _GuessPageState extends State<GuessPage>
                 child: Column(
                   children: <Widget>[
                     Container(
-                      decoration: BoxDecoration(color: boxColors[boxColor]),
+                      decoration: BoxDecoration(
+                          color: boxColors[boxColor]
+                      ),
                       child: ConstrainedBox(
                         child: Row(
                           children: <Widget>[
@@ -259,14 +270,23 @@ class _GuessPageState extends State<GuessPage>
                                           onEditingComplete: () {
                                             getNextQuestion();
                                           },
+                                          onChanged: (text){
+                                            var res = onConversionChanged(text, widget.cards[currentQuestionIndex].isForeignWord, answerController, hiddenAnswerController);
+                                            setState(() {
+                                              answerController.text = res.text;
+                                              answerController.selection = res.selection;
+                                            });
+                                          },
                                           controller: answerController,
                                           style: TextStyle(color: Colors.white),
                                           decoration: InputDecoration.collapsed(
                                               border: InputBorder.none,
-                                              hintText: 'Enter a search term',
+                                              hintText: waitForJapanese ? '答え' : 'Translation',
                                               hintStyle:
-                                              TextStyle(color: Colors.white30)),
+                                              TextStyle(color: Colors.white70)),
                                         ),
+
+
                                         transform: Matrix4.translation(_shake()),
                                       )),
                                 )),

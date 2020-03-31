@@ -1,3 +1,18 @@
+import 'package:flutter/cupertino.dart';
+
+const HAh = 12399;
+const HAk = 12495;
+const WAhk = 12431;
+const TSUh = 12387;
+const TSUk = 12483;
+
+const YAh = 12419;
+const YAk = 12515;
+const YUh = 12421;
+const YUk = 12517;
+const YOh = 12423;
+const YOk = 12519;
+
 const HIRAGANA_ALPHABET = {
   1: {
     "a": "\u3042",
@@ -6,7 +21,6 @@ const HIRAGANA_ALPHABET = {
     "e": "\u3048",
     "o": "\u304a",
     "n": "\u3093",
-    "m": "\u3093"
   },
   2: {
     "ka": "\u304b",
@@ -118,7 +132,7 @@ const HIRAGANA_ALPHABET = {
   },
   4: {"tsu": "\u3063"}
 };
-
+//m not treated as n because otherwise gozaimasu -> gozainasu
 const KATAKANA_ALPHABET = {
   1: {
     "a": "\u30a2",
@@ -127,7 +141,6 @@ const KATAKANA_ALPHABET = {
     "e": "\u30a8",
     "o": "\u30aa",
     "n": "\u30f3",
-    "m": "\u30f3"
   },
   2: {
     "ka": "\u30ab",
@@ -384,75 +397,104 @@ const rom = {
   12509: "po"
 };
 
-String getJapaneseTranslation(String val, {bool onlyJapanese = false,
-  bool hasSpace = true}) {
+String getJapaneseTranslation(String val,
+    {bool onlyJapanese = false, bool hasSpace = true}) {
   if (val.isEmpty) {
     return '';
   }
-  Map<int, Map<String, String>> alphabet = (val[0].toUpperCase() == val[0]) ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET;
-  return getConversion(val, alphabet, onlyJapanese: onlyJapanese, hasSpace: hasSpace) ?? '';
+  Map<int, Map<String, String>> alphabet =
+      (val[0].toUpperCase() == val[0]) ? KATAKANA_ALPHABET : HIRAGANA_ALPHABET;
+  return getConversion(val, alphabet,
+          onlyJapanese: onlyJapanese, hasSpace: hasSpace) ??
+      '';
 }
 
-String getHiragana(String val, {bool onlyJapanese = false,
-  bool hasSpace = true}) {
-  return getConversion(val, HIRAGANA_ALPHABET, onlyJapanese: onlyJapanese, hasSpace: hasSpace);
+String getHiragana(String val,
+    {bool isStaticAnalysis = false, bool onlyJapanese = false, bool hasSpace = true}) {
+  return getConversion(val, HIRAGANA_ALPHABET,
+      onlyJapanese: onlyJapanese, hasSpace: hasSpace,
+      isStaticAnalysis: isStaticAnalysis);
 }
 
-String getKatakana(String val, {bool onlyJapanese = false,
-  bool hasSpace = true}) {
-  return getConversion(val, KATAKANA_ALPHABET, onlyJapanese: onlyJapanese, hasSpace: hasSpace);
+String getKatakana(String val,
+    {bool isStaticAnalysis = false, bool onlyJapanese = false, bool hasSpace = true}) {
+  return getConversion(val, KATAKANA_ALPHABET,
+      onlyJapanese: onlyJapanese, hasSpace: hasSpace,
+      isStaticAnalysis: isStaticAnalysis
+  );
 }
-// TODO convert kana to romaji
-//String getRomaji(String val) {
-//  return rom[val];
-//}
-//
-//String getRomConversion(val) {
-//  var res = "";
-//  List<String> str = val.split(" ");
-//
-//  for (var i = 0; i < str.length; i++) {
-//    var tmpWord = str[i];
-//    for (var j = 0; j < tmpWord.length; j++) {
-//      var ch = tmpWord.charCodeAt(j);
-//      if ((ch == 12399 || ch == 12495) && tmpWord.length == 1) {
-//        ch = 12431;
-//      }
-//      if ((ch == 12387 || ch == 12483)) {
-//        var nextch = getRomaji(tmpWord.charCodeAt(j + 1));
-//        if (nextch != null) {
-//          res += nextch.substring(0, 1);
-//          j++;
-//          ch = tmpWord.charCodeAt(j);
-//        }
-//      }
-//      var tmpch = getRomaji(ch);
-//      var nch = tmpWord.charCodeAt(j + 1);
-//      if (tmpch != null &&
-//          nch &&
-//          (nch == 12419 ||
-//              nch == 12515 ||
-//              nch == 12421 ||
-//              nch == 12517 ||
-//              nch == 12423 ||
-//              nch == 12519)) {
-//        var beg = tmpch.substring(0, tmpch.length - 1);
-//        var en = getRomaji((nch + 1));
-//        if (beg == 'sh' || beg == 'ch' || beg == 'j') {
-//          tmpch = beg + en.substring(1);
-//        } else {
-//          tmpch = beg + en;
-//        }
-//        j++;
-//      }
-//      if (tmpch != null) {
-//        res += tmpch;
-//      }
-//    }
-//    res += ' ';
-//  }
-//  return res;
-//}
+
+String getRomaji(int val) {
+  return rom[val];
+}
+
+String getRomConversion(String val, {bool onlyRomaji = false}) {
+  var res = "";
+  RegExp regExp = RegExp(' |　');
+  List<String> listStrings = val.split(regExp);
+  int nbStrings = listStrings.length;
+  for (var i = 0; i < nbStrings; i++) {
+    String wordRes = getWordToRom(listStrings[i], onlyRomaji: onlyRomaji);
+    if (wordRes != null) {
+      res += wordRes;
+    }
+    if (i < nbStrings - 1) {
+      res += ' ';
+    }
+  }
+  return res;
+}
+
+String getWordToRom(String word, {bool onlyRomaji = false}) {
+  String res = "";
+
+  int wordLength = word.length;
+  for (var j = 0; j < wordLength; j++) {
+    int ch = word.codeUnitAt(j);
+
+    if ((ch == HAk || ch == HAh) && word.length == 1) {
+      ch = WAhk;
+    }
+    if ((ch == TSUh || ch == TSUk)) {
+      String nextch =
+          (j + 1 < wordLength) ? getRomaji(word.codeUnitAt(j + 1)) : null;
+      if (nextch != null) {
+        res += nextch.substring(0, 1);
+        j++;
+        ch = word.codeUnitAt(j);
+      }
+    }
+
+    String tmpch = getRomaji(ch);
+    int nch = (j + 1 < wordLength) ? word.codeUnitAt(j + 1) : null;
+    if (tmpch != null &&
+        nch != null &&
+        (nch == YAh ||
+            nch == YAk ||
+            nch == YUh ||
+            nch == YUk ||
+            nch == YOh ||
+            nch == YOk)) {
+      String beg = tmpch.substring(0, tmpch.length - 1);
+      String en = getRomaji((nch + 1));
+      if (beg == 'sh' || beg == 'ch' || beg == 'j') {
+        tmpch = beg + en.substring(1);
+      } else {
+        tmpch = beg + en;
+      }
+      j++;
+    }
+    if (tmpch != null) {
+      res += tmpch;
+    } else {
+      //Add the non-translated term to the string for continuous translation
+      if (!onlyRomaji) {
+        res += word[j];
+      }
+    }
+  }
+  return res;
+}
 
 String getMatchingCharacterInAlphabet(int nbCaracters, val, alphabet) {
   if (val == null) {
@@ -468,17 +510,23 @@ String getSafeSubstring(String str, int startIndex, int size, int strLength) {
       : str.substring(startIndex, startIndex + size);
 }
 
-String getConversion(String val, alphabet, {bool onlyJapanese = false,
-  bool hasSpace = true}) {
-  var i = 0;
-  var res = "";
+String getConversion(String val, alphabet,
+    {bool isStaticAnalysis = false, bool onlyJapanese = false,
+      bool hasSpace = true}) {
+  int i = 0;
+  String res = "";
   String tmpChar;
   int wordLength;
-  List<String> str = val.toLowerCase().split(" ");
+  List<String> wordList = val.toLowerCase().split(" ");
+  int listLength = wordList.length;
 
-  for (var word in str) {
+  for (int j = 0; j < listLength; j++) {
+    String word = wordList[j];
     i = 0;
     wordLength = word.length;
+    if (wordLength == 0) {
+      continue;
+    }
     while (i < wordLength) {
       //3 letter syllable
       tmpChar = getMatchingCharacterInAlphabet(
@@ -504,8 +552,8 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
         i += 2;
       } else {
         var char = getSafeSubstring(word, i, 2, wordLength);
-        //Particular case
-        if (char == 'wa' && char == word) {
+        //Particular case working only in static analysis
+        if (isStaticAnalysis && char == 'wa' && char == word) {
           char = "ha";
         }
         tmpChar = getMatchingCharacterInAlphabet(2, char, alphabet);
@@ -519,7 +567,7 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
       }
       //particular case with little tsu then three characters like sshi cchi ttsu
       var ch3 = getSafeSubstring(word, i + 1, 3, wordLength);
-      if (tmpChar == null && ch3 != null){
+      if (tmpChar == null && ch3 != null) {
         res += getMatchingCharacterInAlphabet(4, "tsu", alphabet);
         tmpChar = getMatchingCharacterInAlphabet(3, ch3, alphabet);
         i += 3;
@@ -529,15 +577,60 @@ String getConversion(String val, alphabet, {bool onlyJapanese = false,
         res += tmpChar;
       } else {
         //Add the non-translated term to the string for continuous translation
-        if (!onlyJapanese){
+        if (!onlyJapanese) {
           res += word[i];
         }
       }
       i++;
     }
-    if (hasSpace){
+    if (hasSpace && j != listLength - 1) {
       res += " ";
     }
   }
-  return res.trim();
+  return res;
+}
+
+//TODO improve cursor position to be able to modify in a japanese word
+// https://github.com/Jpec57/benkyou/issues/16
+int getCursorPosition(String before, String after) {
+  int beforeLength = before.length;
+  int afterLength = after.length;
+  int bonus = 0;
+  int size = (beforeLength < afterLength) ? beforeLength : afterLength;
+  int i = 0;
+  while (i < size) {
+    if (before[i] != after[i]) {
+      if (afterLength < beforeLength) {
+        return i + bonus;
+      }
+      return i + 1 + bonus;
+    }
+    i++;
+  }
+  if (afterLength < beforeLength) {
+    return i + bonus;
+  }
+  return i + 1 + bonus;
+}
+//TODO dirty function...
+onConversionChanged(
+    String text,
+    bool mustConvertToKana,
+    TextEditingController inputController,
+    TextEditingController rawInputController) {
+  if (mustConvertToKana) {
+    rawInputController.text = getRomConversion(text, onlyRomaji: false);
+    print(getRomConversion(text, onlyRomaji: false));
+    String japanese =
+        getJapaneseTranslation(rawInputController.text, hasSpace: true);
+//    int cursor = getCursorPosition(previousValue, japanese);
+      inputController.text = japanese;
+      inputController.selection =
+          TextSelection.fromPosition(TextPosition(offset: japanese.length));
+//      titleEditingController.selection = TextSelection.fromPosition(TextPosition(offset: cursor));
+//      previousValue = japanese;
+    return {'text': japanese, 'selection': TextSelection.fromPosition(TextPosition(offset: japanese.length))};
+
+  }
+  return {'text': text, 'selection': TextSelection.fromPosition(TextPosition(offset: text.length))};
 }
