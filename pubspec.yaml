@@ -80,32 +80,32 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - resources/imgs/favorite_empty.png
-    - resources/imgs/favorite_full.png
-    - resources/imgs/history.png
-    - resources/imgs/home.png
-    - resources/imgs/add.png
-    - resources/imgs/delete.png
-    - resources/imgs/translate.png
-    - resources/imgs/arrow_forward.png
-    - resources/imgs/arrow_forward_black.png
-    - resources/imgs/arrow_backward_black.png
-    - resources/imgs/waiting_cards.png
-    - resources/imgs/sound.png
-    - resources/imgs/profile.png
-    - resources/imgs/search.png
-    - resources/imgs/luffy.png
-    - resources/imgs/luffy_icon.png
-    - resources/imgs/side_drawer_icon.png
-    - resources/imgs/mute.png
-    - resources/imgs/add_photo.png
-    - resources/imgs/arrow_back.png
+    - resources/imgs/
+#    - resources/imgs/favorite_empty.png
+#    - resources/imgs/favorite_full.png
+#    - resources/imgs/history.png
+#    - resources/imgs/home.png
+#    - resources/imgs/add.png
+#    - resources/imgs/delete.png
+#    - resources/imgs/translate.png
+#    - resources/imgs/arrow_forward.png
+#    - resources/imgs/arrow_forward_black.png
+#    - resources/imgs/arrow_backward_black.png
+#    - resources/imgs/waiting_cards.png
+#    - resources/imgs/sound.png
+#    - resources/imgs/profile.png
+#    - resources/imgs/search.png
+#    - resources/imgs/luffy.png
+#    - resources/imgs/luffy_icon.png
+#    - resources/imgs/side_drawer_icon.png
+#    - resources/imgs/mute.png
+#    - resources/imgs/add_photo.png
+#    - resources/imgs/arrow_back.png
     - resources/icon/app_icon.png
     - lib/fixtures/dev/firebase/public_decks.json
     - lib/fixtures/dev/decks.json
     - lib/fixtures/dev/cards.json
     - lib/fixtures/dev/answers.json
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
 

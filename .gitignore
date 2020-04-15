@@ -71,3 +71,9 @@
 
 **/android/app/google-services.json
 **/android/key.properties
+
+
+
+
+#Personal
+/lib/secrets.json
